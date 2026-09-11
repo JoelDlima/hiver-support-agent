@@ -43,13 +43,19 @@ export default function CurlCopy({ text, brand }: { text: string; brand: string 
         </div>
         {/* Local secondary button (sg Button omits children in its props, so a
             local fallback keeps the same SmartGrey pill styling). */}
-        <button
-          type="button"
-          onClick={copy}
-          className="inline-flex h-8 items-center justify-center rounded-full border border-hairline bg-card px-4 text-sm font-medium text-ink hover:border-hairline-strong hover:bg-paper"
-        >
-          {copied ? "Copied" : "Copy curl"}
-        </button>
+        <div className="flex flex-col items-end gap-1">
+          <p className="text-xs text-muted">
+            Local API · 127.0.0.1:8000 — paste in your own terminal, bypasses
+            this UI.
+          </p>
+          <button
+            type="button"
+            onClick={copy}
+            className="inline-flex h-8 items-center justify-center rounded-full border border-hairline bg-card px-4 text-sm font-medium text-ink hover:border-hairline-strong hover:bg-paper"
+          >
+            {copied ? "Copied" : "Copy curl"}
+          </button>
+        </div>
       </div>
       <pre className="mt-3 max-h-32 overflow-y-auto whitespace-pre-wrap break-all rounded-2xl border border-hairline-soft bg-paper p-3 font-mono text-[11px] leading-relaxed">
         {cmd}

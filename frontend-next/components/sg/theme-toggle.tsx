@@ -10,7 +10,22 @@ export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
-  const dark = mounted ? resolvedTheme === "dark" : true;
+  // Pre-mount render must be byte-identical on server and client (hydration):
+  // fixed icon + label until the resolved theme is known.
+  if (!mounted) {
+    return (
+      <span
+        aria-hidden
+        className={cn(
+          "inline-flex size-9 items-center justify-center rounded-[12px] border border-hairline bg-card text-ink",
+          className
+        )}
+      >
+        <Moon className="size-4" />
+      </span>
+    );
+  }
+  const dark = resolvedTheme === "dark";
 
   return (
     <motion.button

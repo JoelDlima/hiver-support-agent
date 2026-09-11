@@ -760,6 +760,8 @@ def _brand_summary(b: str):
             "p50_latency_ms": _pct(s, 0.50), "p95_latency_ms": _pct(s, 0.95),
             "total_latency_ms": round(tot, 1)}
 
+SERVER_STARTED_AT = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
 @app.get("/metrics")
 def metrics():
     with _metrics_lock:
@@ -772,4 +774,5 @@ def metrics():
     # Backward-compat top-level totals + per-brand breakdown.
     return {"predict_count": tot_n, "escalate_count": tot_esc, "auto_count": tot_auto,
             "avg_latency_ms": avg, "total_latency_ms": tot_lat,
+            "started_at": SERVER_STARTED_AT,
             "per_brand": per}

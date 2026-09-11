@@ -15,34 +15,29 @@ function isFiniteNum(v: unknown): v is number {
   return typeof v === "number" && Number.isFinite(v);
 }
 
-// Positions come from the embed prop (z optional, defaults to 0);
-// fall back to a circle when coordinates are missing or carry no variance.
-function usePositions(points: EmbedPoint[]): [number, number, number][] {
+// Positions come from the embed prop (z optional, defaults to 0), plotted as-is.
+// No synthetic layouts: identical vectors honestly overlap at one spot, flagged below.
+function usePositions(points: EmbedPoint[]): { pos: [number, number, number][]; overlapped: boolean } {
   return useMemo(() => {
-    const ok =
+    const valid =
       points.length > 0 &&
       points.every((p) => isFiniteNum(p.x) && isFiniteNum(p.y) && (p.z === undefined || isFiniteNum(p.z)));
-    if (ok) {
-      const xs = points.map((p) => p.x);
-      const ys = points.map((p) => p.y);
-      const spread =
-        Math.max(...xs) - Math.min(...xs) + (Math.max(...ys) - Math.min(...ys));
-      if (spread > 1e-9) {
-        const s =
-          2.4 /
-          Math.max(
-            1e-6,
-            Math.max(...points.map((p) => Math.abs(p.x) + Math.abs(p.y) + Math.abs(p.z ?? 0)))
-          );
-        return points.map(
-          (p) => [p.x * s * 3, p.y * s * 3, (p.z ?? 0) * s * 3] as [number, number, number]
-        );
-      }
-    }
-    return points.map((_, i) => {
-      const a = (i / Math.max(points.length, 1)) * Math.PI * 2;
-      return [Math.cos(a) * 2, Math.sin(a * 1.7) * 1.1, Math.sin(a) * 2];
-    });
+    if (!valid) return { pos: [], overlapped: false };
+    const xs = points.map((p) => p.x);
+    const ys = points.map((p) => p.y);
+    const spread = Math.max(...xs) - Math.min(...xs) + (Math.max(...ys) - Math.min(...ys));
+    const s =
+      2.4 /
+      Math.max(
+        1e-6,
+        Math.max(...points.map((p) => Math.abs(p.x) + Math.abs(p.y) + Math.abs(p.z ?? 0)))
+      );
+    return {
+      pos: points.map(
+        (p) => [p.x * s * 3, p.y * s * 3, (p.z ?? 0) * s * 3] as [number, number, number]
+      ),
+      overlapped: spread <= 1e-9,
+    };
   }, [points]);
 }
 
@@ -142,7 +137,7 @@ export default function EmbedScene({
 }) {
   const [hovered, setHovered] = useState<EmbedPoint | null>(null);
   const points = embed || [];
-  const positions = usePositions(points);
+  const { pos: positions, overlapped } = usePositions(points);
   const queryIdx = useMemo(() => {
     const q = points.findIndex((p) => p.is_query);
     return q >= 0 ? q : 0;
@@ -160,8 +155,11 @@ export default function EmbedScene({
             Projection
           </p>
           <h3 className="mt-1 font-display text-xl font-semibold tracking-[-0.03em]">
-            Embedding
+            Retrieval neighborhood
           </h3>
+          <p className="mt-1 text-xs text-muted">
+            Two dimensional SVD projection of retrieved passages, computed per query
+          </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted">
           <span className="inline-flex items-center gap-1.5">
@@ -216,6 +214,11 @@ export default function EmbedScene({
           ) : null}
         </div>
       )}
+      {!loading && points.length > 0 && overlapped ? (
+        <p className="mt-2 text-xs text-muted">
+          Identical vectors overlap exactly — plotted as received, no spread added.
+        </p>
+      ) : null}
     </Card>
   );
 }

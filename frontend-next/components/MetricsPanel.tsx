@@ -24,13 +24,13 @@ export default function MetricsPanel() {
     };
   }, []);
   if (!metrics)
-    return <p className="text-sm text-muted">Metrics: backend not reached yet (start FastAPI on port 8000).</p>;
+    return <p className="text-sm text-muted">Session metrics unavailable — backend not reached (start FastAPI on :8000).</p>;
   return (
     <div className="grid grid-cols-2 gap-1.5 text-sm">
       {(["predict_count", "escalate_count", "auto_count", "avg_latency_ms"] as const).map((k) => (
         <div key={k} className="rounded-md border border-line bg-canvas px-2 py-1.5">
           <div className="text-xs text-muted">{k.replace(/_/g, " ")}</div>
-          <div className="font-mono text-base font-semibold tabular-nums">{String(metrics[k] ?? "none")}</div>
+          <div className="font-mono text-base font-semibold tabular-nums">{String(metrics[k] ?? (k === "avg_latency_ms" ? "—" : 0))}</div>
         </div>
       ))}
     </div>

@@ -1,144 +1,245 @@
-# Hiver — Support Agent (VirginTrains primary, AppleSupport kept) — all inside `C:\Hiver`
+<a id="readme-top"></a>
 
-AI support agent, now **VirginTrains primary** (UK rail: Delay Repay + amendment + timetable) with **AppleSupport kept** as v1 evidence + transfer proof. Classifies intent (Virgin 10 / Apple 11 classes), drafts grounded reply from per-brand historical resolutions, decides auto-handle vs escalate with reason. Proof > system: golden sets + harness + baselines + failure analysis.
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python&logoColor=white)](requirements.txt)
+[![Next.js 14](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](frontend-next/package.json)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)](backend/main.py)
+[![Data CC BY-NC-SA 4.0](https://img.shields.io/badge/Data-CC_BY--NC--SA_4.0-lightgrey?style=for-the-badge)](https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter)
 
-## Headline results — VirginTrains (primary)
+<br />
+<div align="center">
 
-Brand **VirginTrains**: 27,817 outbound / 37,444 inbound pool (union 65,346; Oct–Nov 2017 burst 91%), **10 intents** (`delay_claim, ticket_change_refund, timetable_platform, lost_property, complaint_service, fare_ticketing, accessibility_assistance, howto_guidance, support_access_followup, other_out_of_scope`). Golden **200** (`evaluation/virgin/golden_human_200.csv`: 60 manual-style + 140 rulebook-assisted, 41 flips, weak-vs-human acc 0.795 κ 0.772).
+<h3 align="center">Hiver — VirginTrains Support Agent</h3>
 
-| set | system | intent acc / macroF1 | esc P/R/F1 | ground ≥4 |
-|---|---|---|---|---|
-| weak-200 (circular — do not cite) | trivial / simple / final | 0.095/0.017 – 0.975/0.974 – 0.970/0.970 | 0.000 – 0.303 – 0.781 | 0.000 – 0.015 – 0.900 |
-| **human-200 (headline)** | trivial / simple / final | 0.075/0.014 – 0.790/0.796 – **0.795/0.803** | 0.000 – 0.238 – **0.767** (P 0.778 R 0.757) | 0.000 – 0.015 – **0.900** (mean 4.21) |
+  <p align="center">
+    VirginTrains primary agent: classifies intent (10 classes, TF-IDF + LogReg — 0.795 acc / 0.803 macroF1 on human-200), drafts grounded RAG replies, triages auto-handle vs escalate-with-reason (esc F1 0.767).
+    <br />
+    <a href="docs/REPORT_VIRGIN_6PAGE.md"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="#usage">View Demo</a>
+    &middot;
+    <a href="#contact">Report Bug</a>
+    &middot;
+    <a href="#contact">Request Feature</a>
+  </p>
+</div>
 
-Baselines: **trivial** (majority + canned, never-escalate) vs **simple** (virgin keyword + top-1 copy) vs **final** (TF-IDF LogReg balanced + virgin NN k=5 + template + rail rules). Final leads simple on intent (+0.005 acc — balanced weights fixed the accessibility tail 0.500→0.848) and escalation (+0.529 esc_F1) + groundedness. Safety recall **1.000 on n=3 human legal_safety (tiny — gate NOT claimable)**; money recall 0.850 (17/20); esc-vs-human acc 0.915 κ 0.715; mined-slice safety 1.000 (n=20) / money 0.575 (n=40, coverage only). Judge = heuristic offline + LLM hook, **gated (wκ ≥0.60 + safety-recall ≥0.90 to ship, else advisory)** — keyed studies (Groq qwen, n=30): v1 verdict κ=0.253, v2 (passages + double-run, self-consistency 1.000) κ=-0.005 → **gate holds twice: advisory-only**. Groq A/B: 29/30 live drafts (1 too-long rejected), specificity upgrade only. See `evaluation/virgin/JUDGE_AGREEMENT.md` + `evaluation/virgin/LLM_JUDGE_30.md` + `docs/ANNOTATION_PROTOCOL.md` (50-item pack ready for annotator 2). Failures F1–F7 exact-text re-probe 2026-09-11: 9 PASS / 0 FAIL (F3b now `pii_review`, F1 draft states DR30 bands; regression tests `tests/test_virgin_fixes.py`, 24 green) — see `evaluation/virgin/FAILURE_TESTS.md`. Index 27,172 docs, build 0.5s, p50 7.1ms. Repro: eval+judge+24 tests ≈30s CPU. Full report: `docs/REPORT_VIRGIN_6PAGE.md` §1–6. Re-verified 2026-09-11 post-fix: `train_virgin.py` (balanced) → `run_virgin_eval.py` + `run_virgin_judge.py` re-ran clean; numbers match `results_human200.csv`/`BASELINE_VS_FINAL.md` exactly. Weak-200 simple is 0.975 not 1.000 — keyword rules changed after the weak golden froze (disclosed in BASELINE doc).
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
 
-## Virgin quickstart (revamp V2, CPU-only, Windows PowerShell)
+## About The Project
+
+VirginTrains is the primary brand (UK rail: Delay Repay + amendment + timetable). AppleSupport is kept as v1 evidence + transfer proof. The agent classifies intent, retrieves grounded passages from per-brand historical resolutions, drafts a template reply (≤280 chars, no invented £/HH:MM/URL), and decides `auto_handle` vs `escalate` with a reason. Proof over system: golden sets + harness + baselines + failure analysis. All paths inside `C:\Hiver`.
+
+10 Virgin intents (`src/virgin_intents.py`):
+
+`delay_claim, ticket_change_refund, timetable_platform, lost_property, complaint_service, fare_ticketing, accessibility_assistance, howto_guidance, support_access_followup, other_out_of_scope`
+
+Brand pool (source: `docs/REPORT_VIRGIN_6PAGE.md` §1): 27,817 outbound / 37,444 inbound pool (union 65,346). Index: 27,172 docs, 19,898 feats, build 0.5s, p50 7.1ms / p95 7.9ms (source: `docs/REPORT_VIRGIN_6PAGE.md` §2).
+
+Headline — human-200 (source: `evaluation/virgin/results_human200.csv`, `evaluation/virgin/BASELINE_VS_FINAL.md` §B). Golden `evaluation/virgin/golden_human_200.csv`: 60 manual-style + 140 rulebook-assisted, 41/200 intent flips, weak-vs-human acc 0.795 κ 0.772, single-annotator (no inter-annotator κ yet).
+
+| system | intent acc / macroF1 | esc P / R / F1 | ground mean / ≥4 rate |
+|---|---|---|---|
+| trivial (generic canned, never-escalate) | 0.075 / 0.014 | 0.000 / 0.000 / 0.000 | 3.00 / 0.000 |
+| simple (virgin keyword + top-1) | 0.790 / 0.796 | 1.000 / 0.135 / 0.238 | 2.33 / 0.015 |
+| final (TF-IDF LogReg + virgin NN k=5 + template + rules) | **0.795 / 0.803** | **0.778 / 0.757 / 0.767** | **4.21 / 0.900** |
+
+Deltas final−simple on human-200: acc +0.005, macroF1 +0.007, esc_F1 +0.529 (source: `BASELINE_VS_FINAL.md` §B). Balanced `class_weight` retrain fixed the accessibility tail (0.500 → 0.848, matching simple); final ≥ simple on 9/10 per-intent F1, trails only `delay_claim` (source: `BASELINE_VS_FINAL.md` §C).
+
+Circular reference — weak-200 (source: `BASELINE_VS_FINAL.md` §A, do not cite as headline): trivial 0.095/0.017 esc 0.000 ground 3.00/0.000; simple 0.975/0.974 esc 1.000/0.179/0.303 ground 2.33/0.015; final 0.970/0.970 esc 0.694/0.893/0.781 ground 4.21/0.900. Deltas final−simple: acc −0.005, macroF1 −0.004, esc_F1 +0.478. Weak labels were frozen with pre-fix keyword rules, so post-fix simple scores 0.975 (the 5 misses ARE the fixed cases); train-subset acc 0.969 is equally circular. Golden sampling: stratified from 37,444 inbound pool, 10 strata × ~20, seed 7, rare oversample (accessibility 20/148 near-census, lost/howto 20 each ~6%), context = current + ≤2 prior turns, 133 cross-brand agent rows excluded (source: `evaluation/virgin/SAMPLING_NOTE.md`).
+
+Baselines: **trivial** = majority + canned, never-escalate; **simple** = virgin keyword rules (post-fix) + virgin NN top-1 copy; **final** = TF-IDF LogReg (`models/intent_virgin.pkl`, 30k weak post-fix, `class_weight=balanced`) + virgin NN k=5 + virgin templates (delay with DR30 bands) + brand-aware triggers (rail SAFETY_ADDONS, money intents, crowd remap, PII gate) (source: `BASELINE_VS_FINAL.md` header).
+
+Judge gate (source: `evaluation/virgin/JUDGE_AGREEMENT.md`): heuristic offline + LLM hook, ship gate `wκ ≥ 0.60 + safety-recall ≥ 0.90`, currently **advisory-only**. Esc-vs-human: acc 0.915 κ 0.715 (P 0.778 R 0.757 F1 0.767). Safety recall 1.000 on n=3 human `legal_safety` (tiny — CI ~0.4–1.0, gate NOT claimable); money recall 0.850 on n=20 human `money_threshold`. Groundedness judge-harness heuristic: mean 4.32, ≥4 rate 1.000 (template-shaped, circular by design); eval-harness heuristic on the same 200: mean 4.21, ≥4 rate 0.900 (source: `results_human200.csv`). Keyed LLM-judge studies (Groq `qwen/qwen3.8-27b`, temp 0, n=30, source: `evaluation/virgin/LLM_JUDGE_30.md`): v1 (no passages) verdict κ 0.253, groundedness wκ 0.060 → gate holds, advisory-only; v2 (passage texts + double-run, self-consistency 1.000) verdict κ −0.005 → gate holds twice. Groq draft A/B on same 30: 29/30 live drafts, 1 too-long rejected by gate, specificity upgrade only — template stays default.
+
+Failure probes (source: `evaluation/virgin/FAILURE_TESTS.md`): exact-text re-probe 2026-09-11 post-fix F1–F7, 9 probes: **9 PASS / 0 PARTIAL / 0 FAIL** (was 5/1/3 on 2026-09-10). Regression tests: `tests/test_virgin_fixes.py`. F1 draft states DR30 bands; F3b fires `pii_review` on the phone regex itself (number NOT echoed).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### Built With
+
+* Python 3.12 (source: `requirements.txt` header) — `numpy==1.26.4`, `pandas==2.2.3`, `scikit-learn==1.7.1` (TF-IDF + LogReg intent, NN retrieval), `scipy==1.14.1`, `joblib==1.4.2`
+* FastAPI `0.115.12` + `uvicorn==0.34.0` — `backend/main.py` (`/predict` brand-aware, `/healthz`, `/readyz`, `/metrics` per-brand)
+* Next.js 14 (`next ^14.2.18` in `frontend-next/package.json`) + React 18.3.1 + three.js / `@react-three/fiber` + `framer-motion` + `tailwindcss` — demo UI on `:3000`
+* Streamlit `1.41.1` — legacy demo `frontend/app.py` (no server)
+* pytest `8.3.5` + `httpx==0.28.1` — `tests/` incl. `test_virgin_fixes.py`
+* Groq optional drafter behind gate (`src/groq_draft.py`, key via env only, fail-closed to template)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Getting Started
+
+CPU-only, Windows PowerShell. Backend on `:8000`, frontend on `:3000`. No key needed for any gate — template path is default.
+
+### Prerequisites
+
+* Python 3.12 (`py -3.12`)
+* Node.js + npm (for `frontend-next` — Next.js 14)
+* Git (to inspect `evaluation/`, `docs/`)
+* Optional only for live drafts: `GROQ_API_KEY` in env (never in code/logs)
 
 ```powershell
-# 0. venv (already at C:\Hiver\.venv; if fresh:)
+py -3.12 --version
+node --version; npm --version
+Test-Path C:\Hiver\requirements.txt
+Test-Path C:\Hiver\frontend-next\package.json
+```
+
+### Installation
+
+```powershell
+# 0. venv
 py -3.12 -m venv C:\Hiver\.venv
 C:\Hiver\.venv\Scripts\Activate.ps1
 pip install -r C:\Hiver\requirements.txt
 
-# 1. pipeline (Apple v1 still works; Virgin KB/index already built)
+# 1. build Virgin KB + index (already built; re-runnable CPU)
 $env:PYTHONPATH="C:\Hiver"
-python C:\Hiver\scripts\build_virgin_kb.py        # -> data/processed/virgin_kb.csv (27,172), virgin_inbound_pool.csv (37,444)
-python C:\Hiver\scripts\build_virgin_index.py     # -> data/indexes/virgin/ (TF-IDF NN, p50 ~7ms)
-python -m pytest C:\Hiver\tests -q                # all pass (apple regression + virgin/groq fail-closed)
+python C:\Hiver\scripts\build_virgin_kb.py      # -> data/processed/virgin_kb.csv (27,172), virgin_inbound_pool.csv (37,444)
+python C:\Hiver\scripts\build_virgin_index.py   # -> data/indexes/virgin/ (TF-IDF NN)
 
-# 2. API (brand optional, default virgin; apple still served)
-uvicorn backend.main:app --host 127.0.0.1 --port 8000  # from C:\Hiver
-curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"text":"my train from Euston was delayed 45 mins, how do I claim Delay Repay?","brand":"virgin"}'
-curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"text":"my iphone battery drains fast after ios 11 update","brand":"apple"}'
-curl http://127.0.0.1:8000/metrics  # per-brand + totals
+# 2. train (balanced retrain; 30k weak post-fix)
+python C:\Hiver\scripts\train_virgin.py         # -> models/intent_virgin.pkl
 
-# 3. demo — Next.js + three.js (modern, live technicals)
-cd C:\Hiver\frontend-next; npm install; $env:FASTAPI_URL="http://127.0.0.1:8000"; npm run dev  # :3000
-# Shows, all measured live: pipeline stage ms, confidence bars, 3D retrieval graph + ranked scores,
-# SSE-streamed Groq draft tokens, escalation+reason, heuristic judge, /metrics poll. See frontend-next/README.md.
-# Legacy Streamlit (no server): streamlit run C:\Hiver\frontend\app.py
+# 3. verify
+python -m pytest C:\Hiver\tests -q
 ```
 
-## Groq key instructions (optional live drafter; keyless default)
+Repo layout (all inside `C:\Hiver`):
 
-No key needed for any gate — template path is default and Groq fails closed to template.
-
-```powershell
-# 1. set key in env only (never in code; never log it)
-$env:GROQ_API_KEY="gsk_..."  # or OPENAI_API_KEY as fallback; unset = template path (reason no-key)
-
-# 2. client (already wired in src/groq_draft.py; for manual use):
-# from groq import Groq  # pip install groq (in .venv)
-# client = Groq()  # reads GROQ_API_KEY env
-# model = "qwen/qwen3.8-27b"  # preview, 450tps, 131k ctx; fallback "openai/gpt-oss-120b" (prod, $0.15/0.60, 500tps)
-# non-stream: temperature=0.6, max_completion_tokens=2048, top_p=0.95, response_format=json_schema strict
-# stream: same minus response_format (stream+response_format=400), parse tokens, reasoning_effort="default" with retry-without fallback
-
-# 3. fail-closed note: no-key / no-client / error / validation-fail (too-long, ungrounded £/HH:MM/URL) -> template.
-#    UI/API show draft_path (template|groq) + groq_reason (no-key|no-client|validation-fail:*|error|ok).
-#    Free tier ~30 RPM (qwen 429s observed live -> gpt-oss fallback proven) — never on critical path, never bulk in eval gates.
-```
-
-## Apple v1 quickstart (kept)
-
-```powershell
-# 1. venv (already at C:\Hiver\.venv; if fresh:)
-py -3.12 -m venv C:\Hiver\.venv
-C:\Hiver\.venv\Scripts\Activate.ps1
-pip install -r C:\Hiver\requirements.txt  # + kagglehub pandas scikit-learn for data prep
-
-# 2. data (all inside C:\Hiver\data\raw\)
-# primary: twcs.csv 2,811,774 rows (kagglehub thoughtvector/customer-support-on-twitter, CC BY-NC-SA 4.0)
-# secondary: banking77_train.csv (10,003) + banking77_test.csv (3,080), 77 intents (PolyAI GitHub, CC-BY-4.0, intent design only)
-
-# 3. pipeline (verified 2.3 min total, CPU)
-$env:PYTHONPATH="C:\Hiver"
-python C:\Hiver\scripts\build_kb.py            # -> data/processed/apple_kb.csv (89k), apple_inbound_pool.csv (97k)
-python C:\Hiver\scripts\build_retrieval_baseline.py  # -> data/indexes/ (TF-IDF NN, p50 ~35ms)
-python C:\Hiver\scripts\train_classifier.py   # -> models/intent_classifier.pkl (30k weak labels)
-python C:\Hiver\scripts\build_golden.py        # -> evaluation/golden_v1.csv (200 stratified weak-draft)
-python C:\Hiver\scripts\human_correct_60.py    # -> evaluation/golden_human_60.csv (60 manual, flips=39)
-python C:\Hiver\scripts\human_review_200.py    # -> evaluation/golden_human_200.csv (200: 60 manual + 140 assisted)
-python C:\Hiver\scripts\run_eval.py            # weak-200 -> evaluation/results.csv
-python C:\Hiver\scripts\eval_human60.py        # human-60 -> evaluation/results_human60.csv
-python C:\Hiver\scripts\run_judge_agreement.py # judge: safety 0.909, esc F1 0.582 -> JUDGE_AGREEMENT_V2.md
-python -m pytest C:\Hiver\tests -q             # 10 pass
-python C:\Hiver\scripts\smoke_fail.py
-```
-
-API (brand-aware; `brand` optional, default `virgin`):
-```powershell
-$env:PYTHONPATH="C:\Hiver"
-uvicorn backend.main:app --host 127.0.0.1 --port 8000  # from C:\Hiver
-curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"text":"my iphone battery drains fast after ios 11 update"}'
-curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"text":"my iphone battery drains fast after ios 11 update","brand":"apple"}'
-```
-
-## Headline results — Apple (transfer reference, kept)
-
-**Weak-200 (circular — golden labels ARE keyword outputs, see misleading section):**
-
-| system | intent_acc | macroF1 | esc_F1 | ground≥4 |
-|---|---|---|---|---|
-| trivial | 0.095 | 0.016 | 0.000 | 0.000 |
-| simple keyword+BM25 | **1.000** | **1.000** | 0.727 | 0.205 |
-| final TFIDF-LogReg+NN+template+rules | 0.795 | 0.796 | 0.600 | **1.000** |
-
-**Human-60 (trustworthy — 60 blind-reviewed, 39 flips, weak-vs-human intent κ=0.465):**
-
-| system | intent_acc | macroF1 | esc_P | esc_R | esc_F1 |
-|---|---|---|---|---|---|
-| trivial | 0.217 | 0.032 | 0.000 | 0.000 | 0.000 |
-| simple | **0.517** | **0.547** | 0.000 | 0.000 | 0.000 |
-| final | 0.433 | 0.443 | **0.368** | **0.500** | **0.424** |
-
-Final loses intent to simple on human-60 because both train on weak labels (ceiling = weak-human 0.517); wins escalation (simple never escalates safety) + groundedness + latency p50 180ms/p95 192ms. See `docs/FINAL_REPORT.md` §16-18 + `evaluation/` for per-intent, confusion, failure suite.
-
-## Layout (all inside C:\Hiver)
-
-```
+```text
 C:\Hiver\
   src/ (text_norm, intents, virgin_intents, brands, groq_draft, classifier, retriever, agent brand-aware)
   backend/main.py (FastAPI /predict brand-aware, /healthz, /readyz, /metrics per-brand)
-  frontend/app.py (Streamlit brand switcher Virgin default, Apple alt)
-  scripts/ (build_kb, build_retrieval_baseline, train_classifier, build_golden, human_correct_60, run_eval, eval_human60, smoke_fail, build_virgin_kb, build_virgin_index)
-  models/intent_classifier.pkl  data/processed/apple_kb.csv + virgin_kb.csv  data/indexes/apple(legacy) + virgin/
-  evaluation/ (golden_v1.csv, golden_human_60.csv, results.csv, results_human60.csv, rubric.md, virgin/SAMPLING_NOTE.md)
-  research/ (10 tracks + architecture/ + technology-landscape.md)
-  docs/FINAL_REPORT.md + REPORT_VIRGIN_6PAGE.md  tests/  deployment/Dockerfile.simple
+  frontend-next/ (Next.js 14 demo, :3000)
+  frontend/app.py (legacy Streamlit demo)
+  scripts/ (build_virgin_kb, build_virgin_index, train_virgin, run_virgin_eval, run_virgin_judge, run_llm_judge_30, build_annotation_pack, apple v1 scripts)
+  models/intent_virgin.pkl
+  data/processed/virgin_kb.csv + virgin_inbound_pool.csv
+  data/indexes/virgin/
+  evaluation/virgin/ (golden_human_200.csv, results_human200.csv, BASELINE_VS_FINAL.md, JUDGE_AGREEMENT.md, LLM_JUDGE_30.md, SAMPLING_NOTE.md, FAILURE_TESTS.md, annotation_pack_50.csv)
+  docs/REPORT_VIRGIN_6PAGE.md + DECISION_LOG.md + ANNOTATION_PROTOCOL.md
+  tests/test_virgin_fixes.py
 ```
 
-Brands: **VirginTrains primary** (27,817 outbound, Delay Repay + amendment + timetable; see `research/datasets/virgin_data_quality.md`) + **AppleSupport kept** (106,860 replies, v1 evidence + transfer proof; iOS11/iPhoneX era, DM-triage voice; see `research/problem/problem_decomposition.md`).
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## What is misleading about headline number?
+## Usage
 
-Simple's 1.000 on weak-200 is **circular** (eval labels = its own rules). True ceiling is weak-vs-human 0.517. Final's 0.795 likewise optimistic. Trust human-60 + escalation + groundedness, not weak-200 accuracy. Full disclosure in report § “misleading”.
+```powershell
+$env:PYTHONPATH="C:\Hiver"
+# backend
+uvicorn backend.main:app --host 127.0.0.1 --port 8000  # from C:\Hiver
 
-## Decisions (15 + Virgin addendum)
+# predict (brand optional, default virgin)
+curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d '{"text":"my train from Euston was delayed 45 mins, how do I claim Delay Repay?","brand":"virgin"}'
+curl http://127.0.0.1:8000/metrics  # per-brand + totals
 
-See `docs/DECISION_LOG.md` (15 Apple v1 non-obvious + 5-line Virgin addendum: why Virgin, brand-agnostic, Groq-behind-gate, rail safety add-ons, money-intent escalation). Virgin report: `docs/REPORT_VIRGIN_6PAGE.md`.
+# eval (headline numbers re-verified 2026-09-11 post-fix; must match results_human200.csv + BASELINE_VS_FINAL.md)
+python C:\Hiver\scripts\run_virgin_eval.py    # -> evaluation/virgin/results_human200.csv + results_weak200.csv
+python C:\Hiver\scripts\run_virgin_judge.py   # -> evaluation/virgin/JUDGE_AGREEMENT.md inputs
+python -m pytest C:\Hiver\tests -q            # incl. 9/9 failure-probe regressions
 
-## Cite / borrow
+# demo UI (new terminal)
+cd C:\Hiver\frontend-next; npm install; $env:FASTAPI_URL="http://127.0.0.1:8000"; npm run dev  # :3000
+# Shows, all measured live: pipeline stage ms, confidence bars, 3D retrieval graph + ranked scores,
+# SSE-streamed Groq draft tokens, escalation + reason, heuristic judge, /metrics poll.
+# Legacy Streamlit (no server): streamlit run C:\Hiver\frontend\app.py
+```
 
-TF-IDF/LogReg, BM25-style NN, FastAPI, AppleSupport data (CC BY-NC-SA 4.0, Kaggle thoughtvector). Banking77 inspected for intent design, not used for training (insufficient Twitter overlap). All research sources logged in `research/research_log.md`.
+Groq key (optional live drafter; keyless default; fail-closed to template):
+
+```powershell
+# set key in env only (never in code; never log it)
+$env:GROQ_API_KEY="gsk_..."  # unset = template path (reason no-key)
+# fail-closed: no-key / no-client / error / validation-fail (too-long, ungrounded £/HH:MM/URL) -> template.
+# UI/API show draft_path (template|groq) + groq_reason (no-key|no-client|validation-fail:*|error|ok).
+# Keyed study model: qwen/qwen3.8-27b temp 0 (source: evaluation/virgin/LLM_JUDGE_30.md). Free tier ~30 RPM — never on critical path, never bulk in eval gates.
+```
+
+_For more examples, please refer to the [Virgin 6-page report](docs/REPORT_VIRGIN_6PAGE.md) and [BASELINE_VS_FINAL](evaluation/virgin/BASELINE_VS_FINAL.md)._
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Roadmap
+
+Done (source: `docs/DECISION_LOG.md` lines 28–30; `evaluation/virgin/FAILURE_TESTS.md`):
+
+- [x] `class_weight=balanced` retrain — accessibility tail 0.500 → 0.848, headline 0.795/0.803 (no hand-rolled oversampling)
+- [x] PII gate (already done — NOT queued): `has_pii` phone/email regex → `pii_review` before `human_request`; F3b fires on the number itself, templates have no PII slots so echo is structurally impossible
+- [x] DR30 bands in delay template (already done): hedged "typically" 30–59 ≈ 50% single / 60+ ≈ 100% / 120+ ≈ return + booking-ref ask, ≤280 chars
+- [x] Judge v2 + Groq A/B reported against the gate (both kept advisory): passages + double-run self-consistency 1.000 but κ −0.005; A/B 29/30 live drafts, specificity only, template stays default
+- [x] Failure probes 9/9 green + `tests/test_virgin_fixes.py` regressions (timetable `still running`, crowd remap, amend reprint/receipt cues)
+- [x] `frontend-next` demo (:3000) + per-brand `/metrics` + brand-agnostic dict (`DEFAULT_BRAND=virgin`)
+
+Queued (source: `docs/DECISION_LOG.md` line 31; `docs/REPORT_VIRGIN_6PAGE.md` §5):
+
+- [ ] Annotator-2 κ: grade the generated `evaluation/virgin/annotation_pack_50.csv` (30 spotcheck + 20 fresh seed-11) + adjudicate the 41-flip single-annotator set; report inter-annotator κ (biggest trust upgrade left — human-hours, correctly left to humans)
+- [ ] Time-split train ≤2017-11-15 / test >2017-11-15 (burst-month slice) + supervised virgin LogReg/MiniLM on human labels
+- [ ] Hybrid BM25 + MiniLM + rerank, recall@3 ≥ 0.85 on virgin KB
+- [ ] 75-pair judge-human study (wκ ≥ 0.60 + safety-recall ≥ 0.90 to ship, else advisory); 2-turn thread context + language ID
+- [ ] Cache classifier load, per-brand `/metrics` + rate-limit + Docker load test
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contributing
+
+Contributions that keep every number traceable to `evaluation/virgin/*.csv|*.md` are greatly appreciated.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Please include: script re-ran (`train_virgin.py` / `run_virgin_eval.py` / `run_virgin_judge.py`), CSV/md diff, and the "What is misleading" note for any accuracy claim. Do not commit keys (`GROQ_API_KEY` env-only).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## License
+
+Data: Kaggle `thoughtvector/customer-support-on-twitter` (TWCS, `twcs.csv` 2,811,774 rows) under **CC BY-NC-SA 4.0** — Virgin 27,817 outbound / 37,444 inbound pool derived TWCS-strict. Banking77 inspected for intent design only (not training). Code + templates in this repo: see submission target; no separate `LICENSE.txt` shipped — data license governs redistribution of derived data. Research sources logged in `research/research_log.md`.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contact
+
+Submission contact: anurag@hiverhq.com
+
+Project: `C:\Hiver` — Virgin report `docs/REPORT_VIRGIN_6PAGE.md`, decisions `docs/DECISION_LOG.md`, eval `evaluation/virgin/` (`results_human200.csv`, `BASELINE_VS_FINAL.md`, `JUDGE_AGREEMENT.md`, `LLM_JUDGE_30.md`, `SAMPLING_NOTE.md`, `FAILURE_TESTS.md`).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Acknowledgments
+
+* [Best-README-Template](https://github.com/othneildrew/Best-README-Template) — section skeleton followed (title/description, TOC, About, Built With, Getting Started, Usage, Roadmap, Contributing, License, Contact, Acknowledgments)
+* [Customer Support on Twitter (TWCS)](https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter) — CC BY-NC-SA 4.0 source data
+* PolyAI Banking77 (CC-BY-4.0, intent design reference only)
+* scikit-learn / pandas / FastAPI / Next.js / pytest / Streamlit
+* Groq API docs (base_url / JSON mode / rate limits) + National Rail / Virgin Delay Repay pages for policy wording (no prices quoted in templates)
+* [Img Shields](https://shields.io) — static badges only
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
