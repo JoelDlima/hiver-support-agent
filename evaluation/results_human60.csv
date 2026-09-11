@@ -1,4 +1,4 @@
 system,intent_acc,macroF1,esc_P,esc_R,esc_F1
 trivial,0.217,0.032,0.0,0.0,0.0
 simple-keyword,0.517,0.547,0.0,0.0,0.0
-final,0.433,0.443,0.368,0.5,0.424
+final,0.433,0.443,0.4,0.571,0.471

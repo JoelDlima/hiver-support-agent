@@ -8,7 +8,7 @@ Date: 2026-09-10 · Source: `evaluation/golden_human_60.csv` (human_* columns ar
 |---|---|---|---|---|---|
 | trivial | 0.217 | 0.032 | 0.000 | 0.000 | 0.000 |
 | simple-keyword | 0.517 | 0.547 | 0.000 | 0.000 | 0.000 |
-| **final** | **0.433** | **0.443** | **0.368** | **0.500** | **0.424** |
+| **final** | **0.433** | **0.443** | **0.400** | **0.571** | **0.471** |
 
 Weak-200 for contrast only (circular — golden labels = keyword rules): trivial 0.095/0.016/0.000 · simple 1.000/1.000/0.727 · final 0.795/0.796/0.600. Simple "wins" intent by construction; final wins escalation + groundedness.
 
@@ -40,7 +40,7 @@ Note: macro 0.443 verified two ways (`average='macro'` with and without `labels=
 | weak labels vs human (label quality) | 0.517 | **0.465** | 0.700 | **0.015** |
 | final vs human (system) | 0.433 | 0.363 | 0.683 | 0.213 |
 
-Weak-vs-human intent κ 0.465 = the ceiling any weak-trained model can meaningfully beat; final 0.433 sits below simple 0.517 because both train on weak labels and the bigger model does not escape them. Escalation weak κ 0.015 ≈ random — weak esc labels are meaningless, which is why only human-60 esc_F1 0.424 counts. Final esc κ 0.213 beats weak, showing rules add signal over noise.
+Weak-vs-human intent κ 0.465 = the ceiling any weak-trained model can meaningfully beat; final 0.433 sits below simple 0.517 because both train on weak labels and the bigger model does not escape them. Escalation weak κ 0.015 ≈ random — weak esc labels are meaningless, which is why only human-60 esc_F1 0.471 counts. Final esc κ 0.213 beats weak, showing rules add signal over noise.
 
 ## Escalation 2×2 — final vs human (labels [auto=0, escalate=1])
 
@@ -49,7 +49,7 @@ Weak-vs-human intent κ 0.465 = the ceiling any weak-trained model can meaningfu
  [FN  7  TP  7]]
 ```
 
-P 0.368 / R 0.500 / F1 0.424. Recall 0.50 < 0.90 ship bar (see FINAL_REVIEW Q7). 12 FPs are cheap (over-escalation); 7 FNs are the risk — audit list in JUDGE_AGREEMENT/FAILURE_TESTS.
+P 0.400 / R 0.571 / F1 0.471. Recall 0.571 < 0.90 ship bar (see FINAL_REVIEW Q7). FPs are cheap (over-escalation); FNs are the risk — audit list in JUDGE_AGREEMENT/FAILURE_TESTS.
 
 ## Confusion matrix
 

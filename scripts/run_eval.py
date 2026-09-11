@@ -59,7 +59,7 @@ def main():
     except Exception as e:
         print("retriever unavailable:", e)
         retr = None
-    agent = AppleAgent(retr)
+    agent = AppleAgent(retr, brand="apple")  # Apple golden: pin brand (default is virgin primary)
     rows = []
     rows.append(evaluate("trivial (majority+canned, never-escalate→auto)", trivial_baseline, golden))
     rows.append(evaluate("simple (keyword + BM25 top-1)", lambda t: keyword_baseline(t, retr), golden))

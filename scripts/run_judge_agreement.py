@@ -13,7 +13,7 @@ GOLD = Path(r"C:\Hiver\evaluation\golden_human_200.csv")
 
 def main(n=200, seed=5):
     df = pd.read_csv(GOLD)
-    retr = Retriever(); agent = AppleAgent(retr)
+    retr = Retriever(); agent = AppleAgent(retr, brand="apple")  # Apple golden: pin brand (default is virgin primary)
     rows = []
     for r in df.itertuples():
         o = agent.handle(r.text)

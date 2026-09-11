@@ -4,7 +4,7 @@ Date: 2026-09-10 · Owner: Swarm D · Workspace: `C:\Hiver` · Repro: `README.md
 
 ## 1. Executive Summary
 
-Deterministic AppleSupport agent (11-intent classify → 89k-reply TF-IDF-NN retrieve → template-grounded draft → 4-trigger escalate), CPU-only, $0 infer, p50 180ms. Human-60 truth: intent 0.433/macro 0.443, esc_F1 0.424 (P 0.368/R 0.50), groundedness 4.72/1.000 ≥4. Keyword baseline wins intent by construction (0.517 weak-trained ceiling κ 0.465) but scores esc_F1 0.000. New in V2: per-intent table + confusion CSV, offline-judge distribution + LLM gating, F1–F8 suite (13 PASS/3 PARTIAL/1 FAIL with queued fixes), differentiation head-to-heads, §40 audit (5 PASS/7 PARTIAL/0 FAIL). Not shippable this week: esc recall 0.50 < 0.90 bar, n=60 CIs ±12%.
+Deterministic AppleSupport agent (11-intent classify → 89k-reply TF-IDF-NN retrieve → template-grounded draft → trigger escalate), CPU-only, $0 infer, p50 180ms. Human-60 truth: intent 0.433/macro 0.443, esc_F1 0.471 (P 0.400/R 0.571), groundedness 4.72/1.000 ≥4. Keyword baseline wins intent by construction (0.517 weak-trained ceiling κ 0.465) but scores esc_F1 0.000. New in V2: per-intent table + confusion CSV, offline-judge distribution + LLM gating, F1–F8 suite (13 PASS/3 PARTIAL/1 FAIL with queued fixes), differentiation head-to-heads, §40 audit (5 PASS/7 PARTIAL/0 FAIL). Not shippable this week: esc recall 0.50 < 0.90 bar, n=60 CIs ±12%.
 
 ## 2. Problem Interpretation
 
@@ -64,7 +64,7 @@ Dual golden: 200 stratified weak-draft (seed 7, coverage) + 60 human-reviewed (s
 
 ## 16. Baseline Results
 
-Weak-200 (circular, do-not-cite): trivial 0.095/0.016/0.000 (ground 3.00/0.000) · simple 1.000/1.000/0.727 (ground 2.98/0.205) · final 0.795/0.796/0.600 (ground 4.75/1.000). Human-60 (headline): trivial 0.217/0.032/0.000 · simple-keyword 0.517/0.547/0.000 · final 0.433/0.443/0.424. Deltas final−simple (human): intent −0.084, macro −0.104, esc_F1 +0.424. Reading: simple memorizes keyword labels; final trades intent for escalation + groundedness. Weak-vs-human agreement (label ceiling): intent acc 0.517 κ 0.465; esc acc 0.70 κ 0.015 (≈random — weak esc meaningless).
+Weak-200 (circular, do-not-cite): trivial 0.095/0.016/0.000 (ground 3.00/0.000) · simple 1.000/1.000/0.686 (ground 2.98/0.205) · final 0.795/0.796/0.630 (ground 4.75/1.000). Human-60 (headline): trivial 0.217/0.032/0.000 · simple-keyword 0.517/0.547/0.000 · final 0.433/0.443/0.471. Deltas final−simple (human): intent −0.084, macro −0.104, esc_F1 +0.471. Reading: simple memorizes keyword labels; final trades intent for escalation + groundedness. Weak-vs-human agreement (label ceiling): intent acc 0.517 κ 0.465; esc acc 0.70 κ 0.015 (≈random — weak esc meaningless).
 
 ## 17. Final Results
 
@@ -88,7 +88,7 @@ Not "GPT+RAG": thread-aware 89k Apple KB + frozen intent-templates with passage 
 
 ## 22. Known Limitations
 
-Escalation recall 0.50 < 0.90 bar (7 FNs audited); intent 0.433 < 0.85 bar (connectivity/hardware collapsed); n=60 ±12% CIs, single annotator, no inter-annotator κ; per-intent support ≤13 (howto n=1 — do not interpret); groundedness heuristic self-rewards templates; recall@k unmeasured; 1 FAIL + 3 PARTIALs open in F1–F8; English-only; single-message (no thread context); dev-CPU latency ≠ prod; frontend/ empty; no fresh-clone witness log. Every limitation has an owner + queued fix (§23). Nothing material omitted — §36 no-pretend enforced.
+Escalation recall 0.571 < 0.90 bar (FNs audited); intent 0.433 < 0.85 bar (connectivity/hardware collapsed); n=60 ±12% CIs, single annotator, no inter-annotator κ; per-intent support ≤13 (howto n=1 — do not interpret); groundedness heuristic self-rewards templates; recall@k unmeasured; 1 FAIL + 3 PARTIALs open in F1–F8; English-only; single-message (no thread context); dev-CPU latency ≠ prod; frontend/ empty; no fresh-clone witness log. Every limitation has an owner + queued fix (§23). Nothing material omitted — §36 no-pretend enforced.
 
 ## 23. Future Improvements
 

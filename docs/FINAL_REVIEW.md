@@ -13,7 +13,7 @@ TWCS primary (`data/raw/twcs.csv`, 2.8M rows), Banking77 intent-only auxiliary. 
 
 ## Q3 — AI: are models actually improving the result? → PARTIAL
 
-TF-IDF+LogReg + rules beat trivial everywhere and beat keyword on escalation (esc_F1 0.424 vs 0.000) and groundedness (1.000 vs 0.205 ≥4-rate) — but LOSE on weak-trained intent (human-60 0.433 vs 0.517; weak-200 0.795 vs 1.000). Improvement is real on safety/escalation/groundedness, absent on intent (weak-label ceiling κ 0.465). No LLM in v1 (gated, correctly — unpinned LLM would add non-determinism without beating the ceiling). Verdict is PARTIAL, not FAIL: the model earns its place on the safety axis, disclosed in PER_INTENT.
+TF-IDF+LogReg + rules beat trivial everywhere and beat keyword on escalation (esc_F1 0.471 vs 0.000) and groundedness (1.000 vs 0.205 ≥4-rate) — but LOSE on weak-trained intent (human-60 0.433 vs 0.517; weak-200 0.795 vs 1.000). Improvement is real on safety/escalation/groundedness, absent on intent (weak-label ceiling κ 0.465). No LLM in v1 (gated, correctly — unpinned LLM would add non-determinism without beating the ceiling). Verdict is PARTIAL, not FAIL: the model earns its place on the safety axis, disclosed in PER_INTENT.
 
 ## Q4 — Retrieval: is retrieval necessary and effective? → PARTIAL
 
@@ -29,7 +29,7 @@ Correct answer implemented: NO agent framework. Fixed 5-step deterministic pipel
 
 ## Q7 — Evaluation: can we quantitatively demonstrate performance? → PARTIAL
 
-Yes on human-60: intent 0.433/macro 0.443, esc P/R/F1 0.368/0.500/0.424, per-intent table + confusion CSV + top confusions (`evaluation/PER_INTENT.md`), heuristic groundedness 4.72/1.000, failure F1–F8 with real outputs. No on rigor bars: n=60 (±~12% CIs, per-intent support ≤13), single annotator (no inter-annotator κ), escalation recall 0.50 < 0.90 ship bar, LLM judge gated (κ≥0.60 + safety-recall≥0.90 unmet — correctly unshipped). Quantitative demonstration exists; ship-grade confidence does not — stated plainly in every report's limitations section.
+Yes on human-60: intent 0.433/macro 0.443, esc P/R/F1 0.400/0.571/0.471, per-intent table + confusion CSV + top confusions (`evaluation/PER_INTENT.md`), heuristic groundedness 4.72/1.000, failure F1–F8 with real outputs. No on rigor bars: n=60 (±~12% CIs, per-intent support ≤13), single annotator (no inter-annotator κ), escalation recall 0.571 < 0.90 ship bar, LLM judge gated (κ≥0.60 + safety-recall≥0.90 unmet — correctly unshipped). Quantitative demonstration exists; ship-grade confidence does not — stated plainly in every report's limitations section.
 
 ## Q8 — Reliability: what happens when things fail? → PARTIAL
 

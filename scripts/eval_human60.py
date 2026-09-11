@@ -4,7 +4,7 @@ from src.agent import AppleAgent, trivial_baseline, keyword_baseline
 from src.retriever import Retriever
 df = pd.read_csv(r"C:\Hiver\evaluation\golden_human_60.csv")
 yt = df.human_intent.tolist(); ye = df.human_escalate.astype(int).tolist()
-retr = Retriever(); agent = AppleAgent(retr)
+retr = Retriever(); agent = AppleAgent(retr, brand="apple")  # Apple golden: pin brand (default is virgin primary)
 rows = []
 for name, fn in [('trivial', trivial_baseline), ('simple-keyword', lambda t: keyword_baseline(t, retr)), ('final', agent.handle)]:
     outs = [fn(t) for t in df.text.tolist()]

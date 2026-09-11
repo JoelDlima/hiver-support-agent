@@ -8,9 +8,9 @@ Golden **200** (`evaluation/golden_human_200.csv`): stratified from 97k inbound 
 
 | set | system | intent acc / macroF1 | esc P/R/F1 | ground ≥4 |
 |---|---|---|---|---|
-| weak-200 (circular) | trivial / simple / final | 0.095/0.016 – 1.000/1.000 – 0.795/0.796 | 0.000 – 0.727 – 0.600 | 0.000 – 0.205 – 1.000 |
+| weak-200 (circular) | trivial / simple / final | 0.095/0.016 – 1.000/1.000 – 0.795/0.796 | 0.000 – 0.686 – 0.630 | 0.000 – 0.205 – 1.000 |
 | human-200 | trivial / simple / final | 0.140/0.03 – 0.830/0.83 – 0.660/0.65 | 0.000 – 0.55 – **0.582** (P 0.469 R 0.767) | – – 1.000 (4.83) |
-| human-60 (hardest) | trivial / simple / final | 0.217 – 0.517 – 0.433 | 0.000 – 0.000 – 0.424 | – – 1.000 |
+| human-60 (hardest) | trivial / simple / final | 0.217 – 0.517 – 0.433 | 0.000 – 0.000 – 0.471 | – – 1.000 |
 
 Judge (`evaluation/judge.py` v1, heuristic offline + `gpt-4o-mini` hook): safety recall on 11 human legal_safety cases **0.909** (gate ≥0.90 ✓); esc-vs-human κ 0.487. LLM run needs `OPENAI_API_KEY` (pinned `gpt-4o-mini-2026-07-01`, temp 0); without key, heuristic advisory-only. Full harness: `scripts/run_eval.py`, `eval_human60.py`, `run_judge_agreement.py`.
 

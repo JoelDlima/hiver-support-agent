@@ -64,3 +64,15 @@ First keyed LLM-judge run. Key via `GROQ_API_KEY` env only (never in code/logs/o
 - **Annotation pack for annotator 2**: `annotation_pack_50.csv` (30 spotcheck + 20 fresh seed-11) +
   `scripts/build_annotation_pack.py`, per `docs/ANNOTATION_PROTOCOL.md` §1. The single biggest trust
   upgrade left is human, not technical.
+
+## Groq-vs-template judged comparison (same judge, same rubric, n=30)
+
+- Method: the 29 live groq drafts + 1 template fallback from `groq_ab_30.csv`, judged by the same
+  qwen temp-0 rubric → `groq_judge_30.csv`, compared against template-draft scores.
+- Means — groundedness 3.00 vs 3.13 (−0.13, noise), actionability 3.73 vs 3.60 (+0.13, directionally
+  as hypothesized but tiny), voice 4.70 vs 4.73 (tie), safety 5.00 vs 5.00 (tie),
+  **relevance 3.90 vs 3.17 (+0.73 — the one real signal: groq drafts answer the specific ask,
+  templates deflect to generic triage)**, verdict PASS 0.500 vs 0.533 (tie).
+- Caveats (blocking any superiority claim): same-model grading (qwen judges qwen — self-preference
+  risk per literature), n=30 single-run, template path remains default. Verdict: groq stays an
+  opt-in specificity upgrade behind the validation gate, not a replacement.

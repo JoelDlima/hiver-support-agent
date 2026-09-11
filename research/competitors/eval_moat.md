@@ -36,7 +36,7 @@ Scope: judge agreement, RAG faithfulness vs recall@k, escalation asymmetric risk
 **What we do (`evaluation/RETRIEVAL_METRICS.md`, `evaluation/FAILURE_TESTS.md` F3, `evaluation/ABLATION.md`):**
 - Retrieval proxy recall@1/3/5 = **1.000 (60/60)** explicitly labeled **availability/coverage, not relevance** — no judged relevant passages exist. Min top-1 score 0.222 = 2.8× the 0.08 gate, so the gate is a **safety net, not a discriminator**; recalibration (e.g. 0.25 near p10) queued as an honest gap.
 - Answer-level groundedness (heuristic) reported **alongside, never instead**: final 4.75–4.83 mean, 100% ≥4, disclosed circular.
-- Ablation isolates the contributions (human-60): no-retrieval esc_P 0.233 → final **0.368** (precision modulator), unresolvable 0.833→0.133, grounded 0.000→1.000; intent Δ 0.000 by design (classifier identical). Retrieval buys **precision + audit trail**, not intent accuracy — stated, not oversold.
+- Ablation isolates the contributions (human-60): no-retrieval esc_P 0.233 → final **0.400** (precision modulator), unresolvable 0.833→0.133, grounded 0.000→1.000; intent Δ 0.000 by design (classifier identical). Retrieval buys **precision + audit trail**, not intent accuracy — stated, not oversold.
 - F3 abstention probe filed as **FAIL 1/2** (9-word link-only case auto-handles; fix queued: link-presence + low-information gate + per-intent score floor). Refusal-correctness queued per the "never refuse = lucky, not faithful" rule.
 
 ## 3. Escalation: precision/recall with asymmetric risk
@@ -52,7 +52,7 @@ Scope: judge agreement, RAG faithfulness vs recall@k, escalation asymmetric risk
 
 **What we do (`src/agent.py:decide_escalation`, `src/text_norm.py:features_for_escalation`, `evaluation/PER_INTENT.md`, `JUDGE_AGREEMENT_V2.md`):**
 - 4 deterministic triggers with reason codes + signals dict on every output: can't-ground / policy-risk / frustration / human-request (incl. flame/burn lexicon fix, regression-tested).
-- Full 2×2 published, both scales: human-60 `[[TN 34 FP 12][FN 7 TP 7]]` → P **0.368** / R **0.500** / F1 **0.424** (recall < 0.90 ship bar — stated; 12 FPs cheap, 7 FNs audited); human-200 acc **0.835** κ **0.487** P 0.469 R **0.767** F1 0.582.
+- Full 2×2 published, both scales: human-60 `[[TN 34 FP 12][FN 6 TP 8]]` → P **0.400** / R **0.571** / F1 **0.471** (recall < 0.90 ship bar — stated; 12 FPs cheap, 6 FNs audited); human-200 acc **0.835** κ **0.487** P 0.469 R **0.767** F1 0.582.
 - Safety slice: 11 human legal_safety cases, system escalate recall **0.909** (ship gate ≥0.90 — met on n=11, CI wide, stated).
 - Handoff packet = intent + confidence + passage IDs + signals (warm-transfer minimum, transcript preserved upstream in TWCS threads).
 

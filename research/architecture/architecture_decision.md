@@ -16,7 +16,7 @@
 | Intent | keyword, TFIDF-LogReg, MiniLM+LogReg, DistilBERT | weak-200: keyword 1.0 (circular), LogReg 0.795; human-60: keyword 0.517, LogReg 0.433; MiniLM needs torch/GPU, +2-3% est. | TFIDF-LogReg | CPU <2min, interpretable, within weak ceiling; BERT overkill until human labels |
 | Retrieval | BM25/TFIDF, MiniLM dense, hybrid+rerank, Pinecone/Qdrant | 89k docs, TFIDF p50 35ms, 44MB; hybrid +3-5% recall est. but needs embeddings DL; managed $$$ | TFIDF-NN | sufficient, offline, repro; hybrid week-2 |
 | Draft | canned, keyword top-1 copy, template, small LLM (gpt-4o-mini) | template ground 4.75/5, ≥4 rate 1.0 vs copy 2.98; LLM $0.0002-5/req + key + halluc risk | template | safe, keyless, brand-consistent |
-| Escalate | threshold-only, 4-trigger rules, LLM judge | threshold misses flame (smoke-test fail → fixed), rules esc_F1 0.424 vs 0.0 baselines on human-60 | 4-trigger | safety recall > precision; threshold anti-pattern |
+| Escalate | threshold-only, 4-trigger rules, LLM judge | threshold misses flame (smoke-test fail → fixed), rules esc_F1 0.471 vs 0.0 baselines on human-60 | 4-trigger | safety recall > precision; threshold anti-pattern |
 | Orchestration | LangGraph, LlamaIndex, custom | 5 fixed steps, no planning/tool-choice needed | custom deterministic | frameworks add failure/cost, no benefit |
 | Store | SQLite/joblib/JSONL, pgvector, Redis | <100k docs, read-only, single-process | joblib + CSV | simplest; SQLite FTS optional |
 | Eval judge | heuristic, LLM-as-judge | heuristic offline; LLM needs κ≥0.60 gate | heuristic now, LLM gated | avoids judge-hacking |

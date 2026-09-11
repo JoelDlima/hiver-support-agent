@@ -1,7 +1,7 @@
 # Hiver Final Report — AppleSupport Twitter Agent (2026-09-10)
 
 ## 1. Executive summary
-Built deterministic AppleSupport agent (classify 11 intents → retrieve 89k historical replies → template-grounded draft → 4-trigger escalate) in `C:\Hiver`, CPU-only, <15min repro. Trust claim is **human-60**, not weak-200: final intent 0.433/macro 0.443, esc_F1 0.424 vs simple 0.517/0.547/0.000 — final loses intent (weak-label ceiling) but wins safety/escalation + groundedness 1.0 + p50 180ms. All code/data/eval inside `C:\Hiver`.
+Built deterministic AppleSupport agent (classify 11 intents → retrieve 89k historical replies → template-grounded draft → trigger escalate) in `C:\Hiver`, CPU-only, <15min repro. Trust claim is **human-60**, not weak-200: final intent 0.433/macro 0.443, esc_F1 0.471 vs simple 0.517/0.547/0.000 — final loses intent (weak-label ceiling) but wins safety/escalation + groundedness 1.0 + p50 180ms. All code/data/eval inside `C:\Hiver`.
 
 ## 2. Problem interpretation / what “good” means
 Good = acknowledge → diagnostic (Settings>General>About) → DM redirect when PII needed; every technical claim cites passage ID; abstain when link-only/KB-miss; escalate safety/account/human/frustration with handoff packet. Not built: autonomous refunds/repairs, account actions, live Apple backend, multilingual, post-2017 knowledge. Message-level intent (drifts mid-thread). See `research/problem/problem_decomposition.md`.
@@ -19,7 +19,7 @@ Model: TFIDF-LogReg (30k weak, 0.945 train-vs-weak). Retrieval: TFIDF-NN 17s bui
 Golden 200 stratified weak-draft + 60 human-reviewed (seed 11, 39 flips; weak-vs-human intent acc 0.517 κ0.465, esc acc 0.70 κ0.015). Metrics: intent acc+macroF1+per-intent, esc P/R/F1 (recall≥0.90 target, not met — see limitations), recall@k diagnostic, heuristic groundedness 1-5 (DM+diagnostic+length+cite), judge-human κ gate (LLM judge deferred, heuristic only). Baselines: trivial (majority+canned) + simple (keyword+BM25 top-1). Failure suite F1–F8 smoke-tested. See `research/evaluation/eval_strategy.md`, `evaluation/rubric.md`.
 
 ## 14-16. Baseline / final / ablation
-Weak-200: trivial 0.095/0.016/0.0, simple 1.0/1.0/0.727, final 0.795/0.796/0.600, ground 3.0/2.98/4.75. Human-60: trivial 0.217/0.032/0.0, simple 0.517/0.547/0.0, final 0.433/0.443/0.424 (P0.368 R0.50). Ablation (inferred): -retrieval → ground 4.75→~3.0; -rules → esc_F1→~0; -classifier→keyword (simple row); -templates→copy (ground 2.98). No reranker/LLM to ablate v1.
+Weak-200: trivial 0.095/0.016/0.0, simple 1.0/1.0/0.686, final 0.795/0.796/0.630, ground 3.0/2.98/4.75. Human-60: trivial 0.217/0.032/0.0, simple 0.517/0.547/0.0, final 0.433/0.443/0.471 (P0.400 R0.571). Ablation (inferred): -retrieval → ground 4.75→~3.0; -rules → esc_F1→~0; -classifier→keyword (simple row); -templates→copy (ground 2.98). No reranker/LLM to ablate v1.
 
 ## 17. Failure testing — top 5 (real examples)
 1. **Safety miss (FIXED):** “my charger legit caught flame… burned my finger” → was other/auto (flame/burn not in lexicon). Fixed lexicon → legal_safety/escalate. Intent still other — guardrail covers decision, intent miss remains.

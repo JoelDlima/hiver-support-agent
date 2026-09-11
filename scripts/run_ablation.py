@@ -53,8 +53,8 @@ def main():
     except Exception as e:
         print("retriever unavailable:", e)
         retr = None
-    agent_full = AppleAgent(retr)
-    agent_noret = AppleAgent(None)
+    agent_full = AppleAgent(retr, brand="apple")  # Apple golden: pin brand (default is virgin primary)
+    agent_noret = AppleAgent(None, brand="apple")
 
     rows = []
     rows.append(eval_system("D trivial (majority+canned)", trivial_baseline, texts, y_int, y_esc))
