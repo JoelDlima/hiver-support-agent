@@ -1,17 +1,17 @@
 text,slice,pred_esc,pred_reason,intent
-@VirginTrains are the East coast services to London kings x going to be extra busy this afternoon because of the problems with Euston? Last time I travelled on a Sunday when there was a problem everybody was crammed into the train...,safety,1,legal_safety,other_out_of_scope
-"@VirginTrains Yet again, train not moved, no announcement, SO packed nobody can sit. What exactly do I pay for?",safety,1,legal_safety,other_out_of_scope
+@VirginTrains are the East coast services to London kings x going to be extra busy this afternoon because of the problems with Euston? Last time I travelled on a Sunday when there was a problem everybody was crammed into the train...,safety,1,legal_safety,complaint_service
+"@VirginTrains Yet again, train not moved, no announcement, SO packed nobody can sit. What exactly do I pay for?",safety,1,legal_safety,complaint_service
 I do just wish that @VirginTrains would refund me the £117.40 they shamelessly ripped me off for and stop adding insult to injury,safety,1,legal_safety,ticket_change_refund
 @VirginTrains Mans stranded in rugby and the train decides to up and leave after telling us to go to the other platform,safety,1,legal_safety,timetable_platform
 @VirginTrains But if you cancel the 1815 which is now due at 1914 I'll be stranded here? Are there no guaranteed routes???,safety,1,legal_safety,delay_claim
 Had to spend 10% of my monthly wage to sit on the floor  of @VirginTrains for 10 hours due to overselling &amp; overcrowding.,safety,1,legal_safety,complaint_service
-@VirginTrains absolutely ridiculous that 10:30 from new street to London Euston has people crammed in like this!!!! https://t.co/5xykr5NDlb,safety,1,legal_safety,other_out_of_scope
+@VirginTrains absolutely ridiculous that 10:30 from new street to London Euston has people crammed in like this!!!! https://t.co/5xykr5NDlb,safety,1,legal_safety,complaint_service
 "@VirginTrains No was just curious, it was a surprise as it isn’t the first time recently the station has been evacuated. So getting off a train",safety,1,legal_safety,other_out_of_scope
 @VirginTrains Whats your best suggestion for a Day Trip from London :)?  Got  Virgin Red coupons burning to be used :) https://t.co/je0EOCqU30,safety,1,legal_safety,other_out_of_scope
 @VirginTrains absolutely ridiculous! Text @ 0850 saying train @ 10.50 from New St cancelled. Put on 10.30 which is dangerously packed,safety,1,legal_safety,delay_claim
 "@VirginTrains What about compensation for the unacceptable travel conditions? It’s ridiculously packed, I had a reserved seat but had to stand all the way",safety,1,legal_safety,delay_claim
 @121762 @152019 @VirginTrains @496364 @120576 All we want as customers is information - it’s a disgrace especially when we are still stranded!! And they pull a stunt like blocking!!!!!!,safety,1,legal_safety,other_out_of_scope
-@VirginTrains So why just 5 carriages?! I paid full price &amp; couldn't even sit on the FLOOR due to the amount of people crammed into the train (standing),safety,1,legal_safety,other_out_of_scope
+@VirginTrains So why just 5 carriages?! I paid full price &amp; couldn't even sit on the FLOOR due to the amount of people crammed into the train (standing),safety,1,legal_safety,complaint_service
 "@VirginTrains 17:37 Ncle to Edinburgh, packed and red hot, thankfully people have got off at Alnmouth so a little better. Third recent experience (I’ve heard off from family) where you book, cannot reserve a seat and massively overbooked...not looking forward to travelling nxt Sun Ldn o Ncl 😡",safety,1,legal_safety,complaint_service
 Are all trains running up north again @VirginTrains? My friend and her 82-year-old mother stayed at mine last night as stranded at Euston?,safety,1,legal_safety,other_out_of_scope
 "@VirginTrains Hi, this was the 16:09 service from York to London Kings Cross. You can't see your livery on the seats because of the crush of people I was in the middle of.",safety,1,legal_safety,complaint_service
@@ -19,44 +19,45 @@ Thank you @VirginTrains for making up time on the 7:43 from Euston this AM after
 "@VirginTrains (1/2) when forced off trains due to cancellations/ overcrowding, perhaps your staff should try some manners instead of barking",safety,1,legal_safety,complaint_service
 @VirginTrains Can you please advise on what to do- was supposed o be on the train now to Shrewsbury? I am stranded at present?,safety,1,legal_safety,other_out_of_scope
 "@VirginTrains Hope this OAP is a pendalino model, looks like they about to go over on their side.#LondonToEdinburgh #overcrowded #dangerous",safety,1,legal_safety,complaint_service
-@VirginTrains Ok but I have a first ticket so do I get refund on that,money,1,money_review,ticket_change_refund
-@VirginTrains Had two important appts in #Birmingham - both now missed. No useful info available when I needed it earlier. Refund doesn't compensate.,money,1,money_review,ticket_change_refund
-@VirginTrains @660629 She deserves a refund or compensation,money,1,money_review,delay_claim
-@VirginTrains my train from Man Picc to MKC 17.15 has been cancelled (advanced ticket) one after shows as delayed. Can I get full refund?,money,1,money_review,delay_claim
-Hey @VirginTrains I’ve paid £5 for internet on your London - Manchester service so I can work and it’s so slow as to be unusable. How do I get my money back?,money,0,none,howto_guidance
+@VirginTrains not happy that my £10 note was refused as it is legal tender until March.,money,0,none,other_out_of_scope
+@VirginTrains thanks for charging me £100 for a ticket and not providing any food service you robbing cunts,money,0,none,support_access_followup
+"@288539 @VirginTrains Hi Ryan, thanks for the feedback. Our Delay Repay scheme will be going automated in the future. ^MB",money,1,money_review,delay_claim
+Dear @VirginTrains just wondering how you justify a standard one way ticket london to Manchester at £169 one way at 5pm standard class?,money,0,none,other_out_of_scope
+"@VirginTrains Advance tickets aren't an option for all travellers, I have to be flexible with my schedule for work. Which means if I can't pay you over £100 per journey then I can't be home for dinner at the weekend. I think you should reconsider what constitutes peak travel.",money,1,money_review,ticket_change_refund
+@VirginTrains how long does the delay repay usually take? I’ve currently waited 4 weeks??,money,1,money_review,delay_claim
+"@VirginTrains 
+£110 from London to Leeds, and I can’t lean back and rest my head as the seats are so dirty.  Shame on British Train. https://t.co/XBaeOmYfbh",money,0,none,complaint_service
+"@VirginTrains It’s always the same...profit before experience. Sat outside a stinking toilet...absolutely awful, as always.  £200",money,0,none,complaint_service
 @VirginTrains I submitted a refund request on 19th October and haven’t heard yet. How long does this normally take?,money,1,money_review,ticket_change_refund
-@VirginTrains can you tell me what a 'refund fee' is when I'm applying for a refund?,money,1,money_review,ticket_change_refund
-@VirginTrains How do u get a refund as thanks to this crap im not going to make.my appointment so no longer going.,money,0,none,howto_guidance
-@VirginTrains I would like a refund on my ticket price. How do I apply?,money,0,none,howto_guidance
-"@VirginTrains WOW 😮 “sorry, train is on loan from another train company” Perhaps it should have been decommissioned in the 80’s?! #refund",money,1,money_review,ticket_change_refund
-"@VirginTrains get it together, it's been + 2 months and no refund for a 4 hr delay stuck on train like promised. Tried chasing up privately for weeks and everyone says they'll get back to me but they don't. Way to make a shitty experience even worse. It's not rocket science...",money,1,money_review,ticket_change_refund
-"@LondonMidland @VirginTrains 1/2""The apparent issue""with the door wasn't the concern but the attitude of the employee and the fact that the trains are rather full of rubbish. 46£ for being yelled at and sit in a dirty train it's a bit too much. Not really a first class person but Virgin",money,1,legal_safety,complaint_service
-"@VirginTrains I have received email re delay repay for yesterday's 7pm Euston to Manchester service, but it only for half the ticket. I was advised to go via Leeds and was over an hour late arriving, am I not entitled to full refund?",money,1,money_review,delay_claim
-@VirginTrains hello. Could I claim for compensation for the delays from Euston on 5/11 ? It was an open return ticket but had to wait hours,money,1,money_review,delay_claim
-@VirginTrains @120576 Ok thank you. The repay link that you sent me is useful and I will use it. But it's more the point that I have had two very,money,1,unresolvable,support_access_followup
-@VirginTrains Any reason why I’ve not seen any notification of refund? Same last 3 delays also. What’s changed?,money,1,money_review,ticket_change_refund
-@VirginTrains why are there no advance tickets available between Euston and Preston on 29 Dec? £88 for a single is a rip off.,money,1,money_review,ticket_change_refund
-@VirginTrains Will I get a refund due to the delays?,money,1,money_review,ticket_change_refund
-Tried complaining to @VirginTrains about their hopeless time keeping and slow refund service - the online complaint form doesn’t work!!!!,money,1,complaint_review,complaint_service
-@VirginTrains paying £126 for a train ticket no-one checks is galling enough...wouldn't hurt to roll the refreshments trolley out #parched,money,1,legal_safety,other_out_of_scope
-@VirginTrains Yea I’m sure it does but ultimately your compensation policy is a farce,money,1,money_review,delay_claim
-"@VirginTrains Oh trust me, I’m going to submit a complaint and claim the £100 I had to find to get another ticket. If i couldn’t have found the dosh, your colleague was happy to leave a mentallly disabled man stranded in London. A fucking disgrace.",money,1,legal_safety,complaint_service
-@VirginTrains Hi. On the 17th. I know you have 28 days to respond but compensation claims only have 28 days to claim. Barrier staff at Coventry forced me to buy a ticket i didn't need because they didn't acknowledge my valid ticket. both yourselves and @LondonMidland agree I had a valid txt.,money,0,none,other_out_of_scope
-@VirginTrains Just spoke to Brett in your Customer Solutions team who was very helpful in arranging a refund for my delayed journey. Please pass on my thank you’s!,money,1,money_review,delay_claim
-@VirginTrains Paid for 1st RT. Return does not have 1st class car. How do I get a refund of the difference?,money,0,none,howto_guidance
-Just had ultimate snobbery from @VirginTrains staff 'Kathy' who asked me why I was in 1st class!i was buying an upgrade with my £1400 ticket,money,1,money_review,fare_ticketing
-@VirginTrains does your delay repay dept. actually answer the phone or not? Been in the que half an hour after my claim for a failed train was rejected.  #scandalous,money,1,money_review,delay_claim
-@VirginTrains @470781 Can I get a refund? £88 for this X_X,money,1,money_review,ticket_change_refund
-"Love that @VirginTrains tell people to book in advance because tickets are more affordable, yet London to Manchester *next March* is still over £80 return. https://t.co/aonawsHuhl",money,1,money_review,ticket_change_refund
-"@VirginTrains why does it cost me £11.80 for Crewe/Liverpool Return this Saturday, using the Virgin Train App and only £7.55 using the Trainline App for the same journey?",money,0,none,other_out_of_scope
-@120576 @VirginTrains Used the paper Delay Repay form so wherever that gets sent to.,money,1,money_review,delay_claim
-"@VirginTrains @120576 You couldn't have afforded a few extra carriages to help out? For reference, this is what our carriage looks like. This is worth over £100 to you?? I don't see why elderly people and children should have to suffer because of disruption on your network. https://t.co/IXoXWD2r1H",money,0,none,other_out_of_scope
-@VirginTrains hi when will I hear back from my refund request? I had a email confirmation on the 07.11?,money,1,money_review,ticket_change_refund
-"@120576 @759177 @VirginTrains Will we get compensation for the fact journey from
-Edinburgh has taken 2hrs longer than normal?",money,1,money_review,delay_claim
-@VirginTrains once again you cancel a train on 17 September. I apply for a refund and you simply issue a case reference but take no action. 2 letters + 3 emails = no repayment.,money,1,legal_safety,delay_claim
-@VirginTrains hi I've contacted you about a delay repay claim and nobody has got back to me ...dm please,money,1,money_review,delay_claim
-"really impressed with @VirginTrains customer service, refund has already been processed for yesterday’s delay without asking for one",money,1,money_review,ticket_change_refund
-"@VirginTrains Is this what £131 gets you these days? Feel free to check the CCTV, I’ve smiled for the camera! 2/2",money,0,none,other_out_of_scope
-@VirginTrains any updates on refunds for services from Lime Street to London on Sunday 5th Nov? Been 16 days now with no reply.....,money,0,none,other_out_of_scope
-@VirginTrains Took them till after bham international  despite boarding at wolves. They knew from there so why wait so long. You should be refunding.,money,0,none,other_out_of_scope
+"@VirginTrains hi, on the delayed 16:57 from Haymarket and heading to Wolverhampton.Been told train is being diverted away from w/mids.Pls advise on alternate route,eta and also refund details.Purchased ticket online yesterday.",money,1,money_review,delay_claim
+@VirginTrains So spending a combined amount of £60 for a single. For an hour journey? Worst staff and service possible.,money,0,none,other_out_of_scope
+Things to ruin your day - @VirginTrains doing a sale which means 2 journeys I had booked months ago are now both £70 cheaper meaning I could have saved £140. They are refusing to refund difference or let me cancel &amp; rebook. #fundingrichardbransonsretirement @127472,money,1,money_review,delay_claim
+@VirginTrains Which implies you think that £244 is good value for a journey from London to Carlisle?,money,0,none,other_out_of_scope
+@VirginTrains appalling service on the delayed 4.00pm from Birmingham Int. £247 return and I can’t even get to my seat 😡 https://t.co/NmE1VKpzYe,money,0,none,complaint_service
+"@VirginTrains Hi, still no confirmation of refund or any payment made to me for delayed Euston-manchester train 5th Nov, 19:37 service",money,1,money_review,delay_claim
+ridiculous how @VirginTrains are so reluctant to give out a refund for a train that was over an hour delayed🙄,money,1,money_review,delay_claim
+@VirginTrains So I’ve paid over £200 for a first class ticket to London and I get told to go the shop if I want a sandwich? 👍,money,0,none,complaint_service
+@VirginTrains made me pay twice in error and only offer an apology not a refund even after they admit it's the their fault? https://t.co/0hjzCKPPyX,money,1,money_review,ticket_change_refund
+"This LFC game is killing me off. Tickets for the train are now £165 each!!!!
+@VirginTrains you’re taking the piss.Yesterday was £100 cheaper",money,0,none,other_out_of_scope
+@GWRHelp @VirginTrains @nationalrailenq do you deliberately recommend trains to be 25 minutes delayed so you don’t have to refund/compensate people’s journeys?,money,1,money_review,delay_claim
+@VirginTrains as if I’ve just been charged again (£36) when I had paid for a ticket before (£18) as I wasn’t issued with some ‘coupon’ that supposedly came with the ticket.. either virgin trains aren’t running or rob you #poorservice,money,1,legal_safety,other_out_of_scope
+"@VirginTrains I think it's shocking  that if you cancel your ticket you have to buy another as well as pay £10! Ever thought that just paying the cancellation fee is enough, and the reason for cancelling could be pretty important.",money,1,legal_safety,delay_claim
+@VirginTrains Hi. I’ve just seen my 8.20 train to Manchester has been cancelled. What is the alternative route and will you cover refunds?,money,1,money_review,delay_claim
+@VirginTrains Your live chat is not working and I am going round in circles trying to get through to your customer services who are being particularly useless and seem to be unable to assist me with a refund following a recent break in... please assist...,money,1,complaint_review,other_out_of_scope
+@VirginTrains I want a refund on a 1st class ticket for a service that was declassified. Who can organise that for me?,money,1,money_review,ticket_change_refund
+Paid £190 for a 1st class ticket to Darlington with @VirginTrains to be told there are no seats and to stand for over 2 hours. Eh?!?,money,0,none,complaint_service
+When your train gets in at 20:44 but the @VirginTrains  app pretends it got in at 20:00 so no auto refund! #dodgy 😡 https://t.co/dH724rEulP,money,1,unresolvable,other_out_of_scope
+Hi @VirginTrains - paid for WiFi on your London to Manchester service and I can’t even stream a video - how do I get a refund?,money,0,none,howto_guidance
+@525463 @515857 @VirginTrains Always go first class unless its morning rush hour - always book directly with virgin too. If theres refunds you dont have to do anything,money,0,none,complaint_service
+@VirginTrains Not great service. Why should I wait 10-18 days longer if I qualify?If you advertise automatic delay repay then you should uphold it (1of2),money,1,money_review,delay_claim
+@VirginTrains Need your ticket for a refund. Customer service say you do... go back to man on gate who then eventually opens one of the ticket boxes...,money,1,money_review,ticket_change_refund
+@VirginTrains What’s the point.  According to JAMES he’s from the Md office and nothing else can be done. If JAMES who’s from the top what can CR do...? I need my ticket @£27...,money,0,none,other_out_of_scope
+"@VirginTrains @757095 Really sorry to hear this Andy. If you had a reservation, you can claim compensation for this journey. ^JC",money,1,money_review,delay_claim
+Will Ferrell just talked to me through my whole pee on this @VirginTrains I want a refund,money,1,money_review,ticket_change_refund
+@VirginTrains I’ve deleted the receipt by mistake.,money,1,account_security,ticket_change_refund
+@VirginTrains hey. I booked an arriva train through your website which was delayed a couple of hours. Do I go to them or you for a refund?,money,1,money_review,delay_claim
+@VirginTrains Your staff at Manchester Piccadilly are absolutely first class &amp; an asset to you. The SILK process is a disgrace. £195 to get home because credit cards can't be taken over the phone??,money,0,none,complaint_service
+@VirginTrains Thanks. Train late to start with. 1st class service equals to 0. Only snacks and a lukewarm drink and no picnic tray so far. The service assistant Lindsey asked me to walk to coach C to buy myself a coke when I asked for one.could you tell me how I request refund and complaint??,money,0,none,complaint_service
+@VirginTrains ivery informative re new fancy auto repayment prices (which doesn’t work).not clear at all where I apply!,money,0,none,other_out_of_scope
+Not impressed my @VirginTrains journey was delayed. Very impressed I was refunded 50% in less than 24 hours #fantastic #CustomerService,money,1,money_review,delay_claim

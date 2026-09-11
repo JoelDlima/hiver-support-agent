@@ -201,7 +201,7 @@ def decide_escalation(intent: str, conf: float, text: str, passages: List[Dict],
         # Money + explicit money language escalates at ANY confidence: confident
         # money errors (repeat-refund @0.92, F6) cost cash; recall > precision here.
         # Plain delay questions without money words still auto-handle below.
-        if any(p in low for p in ["refund", "repay", "compensation", "chargeback", "charged", "overcharg", "£", "$"]):
+        if any(p in low for p in ["refund", "repay", "compensation", "chargeback", "charged", "overcharg", "reprint", "reissue", "receipt", "£", "$"]):
             decision, reason = "escalate", "money_review"
         elif conf < 0.7:
             decision, reason = "escalate", "money_threshold"
@@ -249,6 +249,19 @@ class AppleAgent:
         try:
             if features_for_escalation(text).get("has_non_english") and pred != other and float(conf) < 0.85:
                 pred, conf = other, min(float(conf), 0.4)
+        except Exception:
+            pass
+        # Crowd remap (virgin F4a fix): curated overcrowding token present but weak-trained
+        # classifier says "other" unsurely -> trust the lexicon. Narrow: other-predictions only.
+        # Substring match, same convention as KEYWORDS weak rules.
+        try:
+            if eff != "apple" and pred == other and float(conf) < 0.6:
+                low_t = (text or "").lower()
+                toks = getattr(importlib.import_module(brands_mod.get_intent_module_name(eff)),
+                                "CROWD_REMAP_TOKENS", [])
+                if any(t and t.lower() in low_t for t in (toks or [])):
+                    if "complaint_service" in intents:
+                        pred, conf = "complaint_service", min(float(conf), 0.55)
         except Exception:
             pass
         t_ret = time.perf_counter()

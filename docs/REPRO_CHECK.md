@@ -12,6 +12,16 @@ Venv `C:\Hiver\.venv` (Python 3.12.10), `PYTHONPATH=C:\Hiver`. No installs outsi
 | TestClient `/healthz` `/readyz` `/predict` virgin+apple | PASS — virgin delay→delay_claim/escalate/money_review; apple battery→battery_power/auto_handle |
 | Exact-text failure re-probe F1–F7 | 7 PASS / 2 PARTIAL / 0 FAIL (F4a/F5/F6 fixed since 09-10; F4a intent + F7 direction + F2 bare-still-running fragility remain) |
 
+## 2026-09-11 post-fix run (keyword fixes + retrain + crowd remap + regression tests)
+| Command | Result |
+|---|---|
+| `scripts/train_virgin.py` | PASS — 30k weak, train-subset acc 0.950 (optimistic, circular) |
+| `scripts/run_virgin_eval.py` | PASS — weak final 0.785/0.786 esc 0.625; human-200 headline final **0.670/0.685** esc 0.558/0.784/0.652; weak simple 0.975 (rules changed post-freeze, disclosed) |
+| `scripts/run_virgin_judge.py` | PASS — safety 1.000 (n=3), money 0.800 (16/20), esc acc 0.845 κ 0.556 |
+| `scripts/mine_safety_slice.py` | PASS — mined safety n=20 escalation rate 1.000; money n=40 → 0.575 (coverage only, unlabelled) |
+| `pytest C:\Hiver\tests -q` | PASS — 21 passed (17 + 4 new `test_virgin_fixes.py`) |
+| Exact-text failure re-probe F1–F7 | **9 PASS / 0 PARTIAL / 0 FAIL** |
+
 | Command | Result |
 |---|---|
 | `C:\Hiver\.venv\Scripts\python.exe -m pytest C:\Hiver\tests -q` | PASS — 10 passed in ~3s (4 `test_agent` + 6 `test_reliability`) |

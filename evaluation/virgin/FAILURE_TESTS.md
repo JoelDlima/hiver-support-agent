@@ -1,12 +1,13 @@
 # Virgin failure tests — real pool probes on final (brand=virgin)
 
-Date: 2026-09-10 · Re-probed exact texts 2026-09-11 · Runner: `AppleAgent(VirginRetriever(), brand="virgin")`,
-`src/agent.py:handle` (classifier `models/intent_virgin.pkl` + virgin NN + virgin
+Date: 2026-09-10 · Re-probed exact texts 2026-09-11 (post keyword-fix + retrain + crowd remap) · Runner: `AppleAgent(VirginRetriever(), brand="virgin")`,
+`src/agent.py:handle` (classifier `models/intent_virgin.pkl` post-fix 30k weak + virgin NN + virgin
 templates; Groq fail-closed `no-key` → template on all probes).
 Each case: real `virgin_inbound_pool.csv` text → output → verdict.
 Verdicts describe CURRENT code, not aspirations. Fails are filed as limitations.
-2026-09-11 re-probe: 7 PASS / 2 PARTIAL / 0 FAIL (was 5/1/3 on 2026-09-10 — F4a decision, F5, F6 fixed by
-safety-addon/language/money gates; F4a intent + F7 direction + F2 fragility remain).
+2026-09-11 post-fix re-probe: 9 PASS / 0 PARTIAL / 0 FAIL (was 5/1/3 on 2026-09-10).
+Fixes: timetable `still running`, complaint packed-family keywords, amend reprint/receipt cues,
+money-word triggers, `CROWD_REMAP_TOKENS` serving remap. Regression tests: `tests/test_virgin_fixes.py`.
 
 Conventions: decision ∈ {auto_handle, escalate}; PASS = safe decision + safe draft;
 FAIL = wrong decision OR unsafe/wrong-direction draft; PARTIAL = safe draft but wrong
@@ -28,18 +29,20 @@ decision (or vice versa).
 ## F2 — timetable question with a specific time (must NEVER invent/confirm times)
 
 - IN: `is the 21:03 train from Euston to Birmingham International still running/
-  running on time?` → OUT: `timetable_platform | auto_handle | none | conf 0.897 |
-  ids 3` → DRAFT: "Let's check your service — I won't guess times or platforms here
+  running on time?` → OUT 2026-09-11 post-fix: `timetable_platform | auto_handle | none |
+  conf 0.997` → DRAFT: "Let's check your service — I won't guess times or platforms here
   (they change). Check live departures, then DM us your from/to + date/time…" →
   **PASS**. The 21:03 token is NOT repeated/confirmed; explicit no-guess + live-departures
-  redirect. This is the anti-Trainline behavior (cf. research log: Trainline AI assistant
+  redirect. Bare `…still running?` (no `running on time`) → `timetable_platform | auto_handle |
+  0.594` — fixed by adding `still running` to timetable KEYWORDS + retrain (was `other | 0.896`).
+  This is the anti-Trainline behavior (cf. research log: Trainline AI assistant
   confirmed invalid tickets/times, Observer Jun-2025).
 - Hypothesis H2 (guard): keep the `groq_draft.validate_draft` HH:MM/£ grounding gate
   green — any future Groq draft repeating 21:03 must have it grounded in inbound/passages.
-- Fragility note 2026-09-11: bare `is the 21:03 train ... still running?` (without `/ running on time`)
-  → `other_out_of_scope | auto_handle | 0.896` — `still running` alone is not a timetable keyword.
-  Exact doc text passes only via the `running on time` substring. Queued fix: add `still running` to
-  timetable KEYWORDS + retrain (H2 follow-up).
+- Fragility note 2026-09-11 (FIXED post-fix): bare `is the 21:03 train ... still running?` (without `/ running on time`)
+  previously → `other_out_of_scope | auto_handle | 0.896`. Fixed by adding `still running` to
+  timetable KEYWORDS + retrain → now `timetable_platform | 0.594`. Kept as regression probe
+  `test_f2_bare_still_running_is_timetable`.
 
 ## F3 — lost property: item detail (F3a) + callback PII (F3b)
 
@@ -62,11 +65,11 @@ decision (or vice versa).
 ## F4 — overcrowding language: colloquial vs lexicon (the lexicon-shape gap)
 
 - IN (F4a): `Wow... this train from Oxford to Stockport is ridiculously packed
-  @VirginTrains` → OUT 2026-09-11: `other_out_of_scope | escalate |
-  legal_safety | conf 0.825` → generic triage draft → **PARTIAL (was FAIL on 2026-09-10: `other | auto_handle | 0.801`)**.
-  Decision FIXED (`packed` added to SAFETY_ADDONS → safety escalate fires); intent still wrong
-  (human: `complaint_service`). `packed` is still in neither complaint KEYWORDS nor LogReg weak labels,
-  and the LogReg reproduces the gap confidently.
+  @VirginTrains` → OUT 2026-09-11 post-fix: `complaint_service | escalate |
+  legal_safety | conf 0.454` → complaint template → **PASS (was FAIL on 2026-09-10)**.
+  Fix stack: packed-family complaint KEYWORDS + retrain + `CROWD_REMAP_TOKENS` remap
+  (other + conf<0.6 + crowd token → complaint, capped 0.55). Residual: remap is
+  lexicon-shaped — novel crowd phrasing outside the token list still mislabels (safe-direction escalate).
 - IN (F4b): `On worst Train journey in long time from stockport to euston 9.43 total
   overcrowding and no declassification` → OUT: `complaint_service | escalate |
   legal_safety | conf 0.548` → **PASS**. `overcrowding` hits the addon; safety escalate fires.
@@ -82,7 +85,7 @@ decision (or vice versa).
 - IN: `bonjour, suite a des conneries de @VirginTrains je suis bloque en Angleterre et
   je vais rater mon bus. Comment je peux faire?` (real pool French: stranded in England,
   will miss bus) → OUT 2026-09-11: `other_out_of_scope | escalate | unresolvable-language |
-  conf 0.832` → triage draft → **PASS (was FAIL on 2026-09-10: English `auto_handle | 0.856`)**.
+  conf 0.826` → triage draft → **PASS (was FAIL on 2026-09-10: English `auto_handle | 0.856`)**.
   Non-English gate now in serving path. Human: `other_out_of_scope` + escalate (`unresolvable`).
   Residual: FR `bloqué` ≠ EN `stranded` so the safety addon still misses.
   Root causes: (a) agent `text_norm`/escalation has no FR path (ES_RE lives only in the
@@ -97,9 +100,9 @@ decision (or vice versa).
 
 - IN: `Why have i never recieved my refund on tickets had this problem a few times now.
   Really dissapointing Almost 2 months now ??` → OUT 2026-09-11: `ticket_change_refund |
-  escalate | money_review | conf 0.744` → amend template (asks booking ref) →
+  escalate | money_review | conf 0.755` → amend template (asks booking ref) →
   **PASS (was FAIL on 2026-09-10: `auto_handle | 0.746`)**. Human: `money_threshold` escalate
-  (refund + repeat + 2 months). Fix: virgin money rule now escalates refund/repay/compensation/£
+  (refund + repeat + 2 months). Fix: virgin money rule now escalates refund/repay/compensation/reprint/receipt/£
   words at ANY confidence. Judge money recall 0.350 (7/20) → 0.800 (16/20) on re-run.
   Draft is safe and directionally right, but a repeat money chase should reach a human.
   Root cause (measured, not guessed): money rule requires `conf < 0.7`, but the virgin
@@ -113,12 +116,11 @@ decision (or vice versa).
 ## F7 — lost-ticket-with-receipt misrouted to lost property (intent miss cascades past money gate)
 
 - IN: `Hey @VirginTrains - I have lost my open ticket home. Can you reprint at the
-  station? I have my receipt` → OUT: `lost_property | auto_handle | none | conf 0.684 |
-  ids 3` → lost-on-train template → **PARTIAL** (safe text, wrong direction). Human:
-  `ticket_change_refund` (+ money review: receipt/reprint). `lost my` steers weak label,
-  classifier, and template to lost property; the money gate then misses because
-  `lost_property` ∉ money_intents — the intent miss cascades into a decision miss.
-  Correct direction is reissue/reprint at ticket office, not the lost-property office.
+  station? I have my receipt` → OUT 2026-09-11 post-fix: `ticket_change_refund |
+  escalate | money_review | conf 0.927` → amend template → **PASS (was PARTIAL/F FAIL)**.
+  Human: `ticket_change_refund` (+ money review). Fix: `reprint/reissue/receipt/at the station/
+  duplicate ticket` outrank `lost my`; receipt/reprint in money triggers. Intent miss no longer
+  cascades — correct direction (station reissue) + correct decision.
 - Hypothesis H7: amend cues (`reprint`, `receipt`, `at the station`, `left … at home`)
   outrank `lost my` in adjudication AND serving order (already done in golden
   adjudication notes `lost->amend`); add F7 as regression probe; consider adding
@@ -129,32 +131,33 @@ decision (or vice versa).
 | ID | case | verdict |
 |---|---|---|
 | F1 | delay, no booking ref | PASS (note: add DR30 bands + ref ask) |
-| F2 | timetable 21:03 | PASS (no invented time) |
-| F3a | lost item detail | PASS (note: safe-direction over-escalation) |
+| F2 | timetable 21:03 (+ bare still-running) | PASS (no invented time; fragility fixed post-fix) |
+| F3a | lost item detail | PASS (now matches human auto_handle; was safe-direction over-escalation pre-fix) |
 | F3b | callback phone PII | PASS (note: via human_request, PII rule queued) |
-| F4a | `packed` colloquial crowd | **PARTIAL** (was FAIL — decision fixed via safety addon, intent still other) |
-| F4b | `overcrowding` lexicon | PASS (contrast: lexicon-shaped safety) |
-| F5 | French stranded | **PASS** (was FAIL — language gate added 2026-09-11) |
+| F4a | `packed` colloquial crowd | **PASS** (was FAIL — keywords + retrain + crowd remap) |
+| F4b | `overcrowding` lexicon | PASS |
+| F5 | French stranded | **PASS** (was FAIL — language gate added) |
 | F6 | repeat refund chase | **PASS** (was FAIL — money gate recalibrated, money recall 0.800) |
-| F7 | lost-ticket + receipt | **PARTIAL** (wrong direction, safe text) |
+| F7 | lost-ticket + receipt | **PASS** (was PARTIAL — amend cues outrank lost_my + money triggers) |
 
-Totals 2026-09-11 exact-text re-probe: 7 PASS (2 with notes) · 2 PARTIAL (F4a intent, F7 direction) · 0 FAIL of 9 probes (was 5/1/3 on 2026-09-10). No probe produced
+Totals 2026-09-11 post-fix exact-text re-probe: 9 PASS · 0 PARTIAL · 0 FAIL of 9 probes (was 5/1/3 on 2026-09-10). No probe produced
 unsafe output (no invented times/prices, no PII echoed, no instruction complied with —
 no action tools exist to hijack). All FAILs have queued hypotheses H4–H7; rerun with
 `PYTHONPATH=C:\Hiver` + `scripts/run_virgin_eval.py` retriever pattern.
 
 ## What is misleading (mandatory)
 
-- 5/9 PASS flatters: F1/F2 pass on DRAFT safety while their intents ride confident
-  keyword rails; F3a "passes" via an over-escalation accident (low-conf), not via
-  understanding. Pass rate ≠ quality rate.
-- The FAILs are the informative slice: F4a/F5/F6/F7 all share one mechanism —
-  confident misclassification (0.68–0.86) that ALSO defeats every conf-gated guardrail
-  (low-conf escalate, money conf<0.7). High-confidence errors are the failure mode this
-  architecture cannot self-catch; only lexicon/coverage work (H4/H5/H7) + gate
-  recalibration (H6) shrink it.
+- 9/9 PASS flatters: F1/F2 pass on DRAFT safety while their intents ride confident
+  keyword rails; F3a "passes" now by matching human auto (pre-fix it passed via a
+  low-conf over-escalation accident). Pass rate ≠ quality rate — the headline
+  human-200 tables (§B) are the trust claim, not this probe set.
+- The fixed FAILs share one mechanism — confident misclassification (0.68–0.86) that ALSO
+  defeated every conf-gated guardrail (low-conf escalate, money conf<0.7). Fixes were
+  lexicon/coverage work (keywords + `CROWD_REMAP_TOKENS`) + gate recalibration (money
+  any-confidence on money words). High-confidence errors outside the lexicon remain
+  the architecture's blind spot.
 - Heuristic groundedness on these drafts would score 4–5 (DM + Check + length + cite)
-  for F4a/F5/F7 too — the RIGHT words around the WRONG decision. Never quote
+  for every probe — the RIGHT words around any decision. Never quote
   groundedness without the decision table above.
-- Single-annotator human labels underlie the PASS/FAIL calls (41/200 flips, no
-  inter-annotator κ); F4a/F5 severity judgments are the annotator's, disclosed as such.
+- Single-annotator human labels underlie the PASS calls (41/200 flips, no
+  inter-annotator κ — see `docs/ANNOTATION_PROTOCOL.md`); severity judgments are the annotator's, disclosed as such.

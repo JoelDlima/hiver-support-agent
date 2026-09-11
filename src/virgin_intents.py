@@ -39,10 +39,10 @@ DESCRIPTIONS = {
 # accessibility_assistance) before generic (complaint_service) so they are not stolen.)
 KEYWORDS = {
     "delay_claim": ["delay repay", "delayed", "delay", "running late", "arrived late", "late arriving", "cancelled", "canceled", "cancel", "compensation", "repay"],
-    "ticket_change_refund": ["refund", "advance ticket", "advance", "amend", "change my ticket", "change my journey", "exchange", "booking ref", "booking reference", "admin fee", "administration fee", "off-peak", "off peak", "super off-peak"],
-    "timetable_platform": ["next train", "when is", "what platform", "which platform", "leaving at", "arriving at", "due to leave", "first train", "last train", "platform", "timetable", "engineering work", "engineering works", "departure", "arrival", "what time", "running on time", "on time", "expected at", "due at", "line closure", "bus replacement"],
+    "ticket_change_refund": ["refund", "advance ticket", "advance", "amend", "change my ticket", "change my journey", "exchange", "booking ref", "booking reference", "admin fee", "administration fee", "off-peak", "off peak", "super off-peak", "reprint", "reissue", "receipt", "at the station", "duplicate ticket"],
+    "timetable_platform": ["next train", "when is", "what platform", "which platform", "leaving at", "arriving at", "due to leave", "first train", "last train", "platform", "timetable", "engineering work", "engineering works", "departure", "arrival", "what time", "running on time", "on time", "still running", "expected at", "due at", "line closure", "bus replacement"],
     "lost_property": ["lost property", "lost my", "lost", "left my", "left on the train", "left on", "luggage", "left my bag", "bag on", "phone on the train"],
-    "complaint_service": ["complaint", "rude", "disgusting", "appalling", "overcrowd", "first class", "seat", "wifi", "toilet", "dirty", "cleanliness", "staff were", "staff was", "no air", "too hot", "too cold", "quiet coach", "quiet carriage"],
+    "complaint_service": ["complaint", "rude", "disgusting", "appalling", "overcrowd", "overcrowded", "overcrowding", "packed", "rammed", "crammed", "crush", "crushed", "standing room only", "first class", "seat", "wifi", "toilet", "dirty", "cleanliness", "staff were", "staff was", "no air", "too hot", "too cold", "quiet coach", "quiet carriage"],
     "fare_ticketing": ["railcard", "penalty fare", "penalty", "season ticket", "season", "anytime", "ticket machine", "ticket office", "collect my ticket", "collect your ticket", "mticket", "m-ticket", "e-ticket", "eticket", "fare", "how much", "price of", "cost of", "upgrade"],
     "accessibility_assistance": ["passenger assist", "assistance", "wheelchair", "disabled", "step-free", "step free", "ramp", "accessible", "accessibility", "priority seat", "assistance dog", "blind", "deaf", "mobility"],
     "howto_guidance": ["how do i", "how to", "how can i", "how do you", "where is", "where do i", "can i use", "do you offer", "how does"],
@@ -70,6 +70,21 @@ SENSITIVE_INTENTS = {
     "complaint_service",
     "accessibility_assistance",
 }
+
+# Overcrowding tokens that force a complaint_service remap when the classifier
+# predicts other_out_of_scope with low confidence (F4a fix, 2026-09-11).
+# Rationale: this lexicon is human-curated ground truth for overcrowding; when the
+# weak-trained LogReg says "other" but is unsure (<0.6) and a crowd token is present,
+# trust the lexicon. Narrow by design: only fires on other-predictions, so it can
+# never steal delay/refund/timetable cases. Stranded/evacuation/injury are NOT here
+# (they escalate via safety addons but are not complaint signals).
+CROWD_REMAP_TOKENS = [
+    "packed",
+    "rammed",
+    "crammed",
+    "crush",
+    "overcrowd",
+]
 
 # Rail safety lexicon add-ons (extend base text_norm escalation lexicon).
 # NOTE: agent._intent_assets reads THIS list (not brands.py). "crammed" covers the

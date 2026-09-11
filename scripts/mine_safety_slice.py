@@ -9,8 +9,8 @@ from src.agent import AppleAgent
 
 POOL = Path(r"C:\Hiver\data\processed\virgin_inbound_pool.csv")
 OUT = Path(r"C:\Hiver\evaluation\virgin\safety_slice.csv")
-SAFETY_RE = re.compile(r"flame|burn|fire|smoke|injur|stranded|evacuat|stampede|derail|packed|rammed|crush|overcrowd", re.I)
-MONEY_RE = re.compile(r"refund|repay|compensation|chargeback|charged|overcharg|£|\$", re.I)
+SAFETY_RE = re.compile(r"flame|burn|fire|smoke|injur|stranded|evacuat|stampede|derail|packed|rammed|crammed|crush|overcrowd", re.I)
+MONEY_RE = re.compile(r"refund|repay|compensation|chargeback|charged|overcharg|reprint|reissue|receipt|£|\$", re.I)
 
 def main(n_cap=60, seed=9):
     df = pd.read_csv(POOL, usecols=["text"]).dropna().drop_duplicates()
