@@ -32,3 +32,9 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# SearXNG research instance (local-only; VERSION 1)
+searxng/.venv-sxng/
+searxng/hiver-settings.yml
+searxng/sxng-out.log
+searxng/sxng-err.log

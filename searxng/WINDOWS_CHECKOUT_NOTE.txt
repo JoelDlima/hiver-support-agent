@@ -1,0 +1,14 @@
+SearXNG shallow clone (--depth 1) for Hiver research infra (2026-09-11).
+
+Windows checkout caveat: 4 template files contain ':' in their names and cannot
+exist on NTFS. They were skipped during extraction; everything else (992 files)
+was restored byte-identical from HEAD via `git show HEAD:<path>`:
+
+SKIPPED (all are unix-socket deploy templates, irrelevant to research use):
+- utils/templates/etc/httpd/sites-available/searxng.conf:socket
+- utils/templates/etc/nginx/default.apps-available/searxng.conf:socket
+- utils/templates/etc/uwsgi/apps-archlinux/searxng.ini:socket
+- utils/templates/etc/uwsgi/apps-available/searxng.ini:socket
+
+Upstream: https://github.com/searxng/searxng
+Disk cost: ~25 MB. To update: `git fetch --depth 1 origin main` then re-run extraction.
