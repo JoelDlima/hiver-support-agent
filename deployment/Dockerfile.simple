@@ -1,0 +1,42 @@
+# Minimal production image for AppleSupport agent (Agent 10)
+# Build: docker build -f deployment/Dockerfile.simple -t hiver-applesupport:simple .
+# Run:   docker run --rm -p 8000:8000 -e WORKERS=2 hiver-applesupport:simple
+# Design: stateless CPU API, joblib + SQLite file-backed, no GPU, no K8s.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    WORKERS=2 \
+    LOG_JSON=1 \
+    KB_PATH=/app/data/kb.sqlite \
+    MODEL_DIR=/app/models
+
+WORKDIR /app
+
+# System deps (build-only kept minimal; sklearn needs no compiler for wheels)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer cache: deps first, code last
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir "uvicorn[standard]>=0.30" fastapi slowapi
+
+# App + baked artifacts (SQLite KB is read-only at runtime)
+COPY src/app ./app
+COPY models ./models
+COPY data/kb.sqlite ./data/kb.sqlite
+
+# Non-root user + read-only friendly perms
+RUN useradd -r -m appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:8000/healthz || exit 1
+
+# Exec-form via sh for $WORKERS expansion; uvicorn manages workers (no gunicorn needed)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${WORKERS:-2} --no-access-log --proxy-headers"]

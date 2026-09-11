@@ -1,0 +1,12 @@
+{
+  "n_docs": 106860,
+  "matrix_shape": [
+    106860,
+    42675
+  ],
+  "load_s": 11.9,
+  "build_s": 2.8,
+  "latency_ms_p50": 34.6,
+  "latency_ms_p95": 38.1,
+  "total_s": 17.1
+}

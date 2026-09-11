@@ -1,0 +1,20 @@
+# Hiver AppleSupport — CPU-only, <15min repro (Python 3.12)
+# Core pins verified via `pip index versions` on 2026-09-10 (py312 win_amd64 wheels available).
+# Install: py -3.12 -m venv .venv & .venv\Scripts\activate & pip install -r requirements.txt
+numpy==1.26.4
+scipy==1.14.1
+pandas==2.2.3
+scikit-learn==1.7.1
+joblib==1.4.2
+fastapi==0.115.12
+uvicorn==0.34.0
+streamlit==1.41.1
+pytest==8.3.5
+httpx==0.28.1
+python-multipart==0.0.20
+
+# ---- Optional (offline-tolerant; uncomment only if network + time allow) ----
+# CPU-only torch: install with:
+#   pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
+# sentence-transformers==3.3.1  # MiniLM all-MiniLM-L6-v2; fallback to TF-IDF if offline
+# faiss-cpu==1.10.0  # only if sklearn NearestNeighbors latency proves too high

@@ -1,0 +1,4 @@
+system,n,intent_acc,intent_macroF1,esc_P,esc_R,esc_F1,ground_mean,ground_ge4_rate
+"trivial (generic canned, never-escalate)",200,0.095,0.017,0.0,0.0,0.0,3.0,0.0
+simple (virgin keyword + top-1),200,1.0,1.0,1.0,0.179,0.303,2.33,0.015
+final (TFIDF-LogReg + virgin NN k=5 + template + rules),200,0.795,0.793,0.5,0.893,0.641,4.21,0.935

@@ -1,0 +1,9 @@
+text,weak_intent,human_intent,human_escalate,human_reason,review_type,note
+@AppleSupport my iPhone X went on fire!!!,other_out_of_scope,hardware_device,1,legal_safety,rulebook-assisted;FLIP-intent,
+@AppleSupport https://t.co/V1za3V6u5Y,support_access_followup,other_out_of_scope,0,none,rulebook-assisted;FLIP-intent,
+@AppleSupport how can you charge over £20 for chargers that won’t last even a month. Put a warranty on them or change to universal chargers like androids. This is ridiculous,purchase_billing_service,purchase_billing_service,1,complaint_review,rulebook-assisted;FLIP-esc,
+@AppleSupport Absolutely fuming!!!! Since update my 7plus won't work correctly. Apps won't load then they crash. The touch won't work on screen. Have restored to factory settings but cannot uninstall latest software... GET IT SORTED!!!!!!!!!!!!!,setup_transfer_restore,setup_transfer_restore,1,complaint_review,rulebook-assisted;FLIP-esc,
+So happy I spent $50 for my battery to almost catch fire @AppleSupport #almostburntdownmyhouse #icouldsmellburning #wasteofmoney https://t.co/nqo8PrCWYS,battery_power,hardware_device,1,legal_safety,rulebook-assisted;FLIP-intent,
+"@AppleSupport High Sierra, latests 15 inch MacBook pro (MacBook Pro (15-inch, 2017)).
+Crash below keeps happening within 10 seconds of starting Safari. https://t.co/7YLMco4age",hardware_device,software_update,0,none,rulebook-assisted;FLIP-intent,
+Shock horror my iPod battery is failing to hold charge. Same old apple products... This is why I switched to having a Samsung phone..  @AppleSupport,battery_power,hardware_device,1,legal_safety,rulebook-assisted;FLIP-intent,

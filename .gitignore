@@ -1,0 +1,34 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Data — large raw dump NOT committed (repro downloads via kagglehub, see README)
+data/raw/twcs.csv
+
+# Models / indexes are small enough to commit (repro without retrain)
+# (uncomment to exclude if repo gets heavy)
+# models/*.pkl
+# data/indexes/
+
+# Frontend
+frontend-next/node_modules/
+frontend-next/.next/
+frontend-next/out/
+frontend-next/.env.local
+frontend-next/.env*.local
+
+# Streamlit / misc
+.streamlit/
+*.log
+.DS_Store
+Thumbs.db
+
+# Secrets — never commit keys
+.env
+.env.*
+!.env.example
