@@ -5,7 +5,7 @@
 - Groq draft tried first (fail-closed to template); path recorded in signals.
 - Apple path preserved exactly for backward compat.
 """
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from typing import List, Dict
 import importlib
 import time
@@ -33,6 +33,7 @@ class AgentResult:
     escalate_signals: Dict
     latency_ms: float
     unsupported_claims: List[str]
+    groq_info: Dict = field(default_factory=dict)
 
 
 TRIVIAL_CANNED = "Thanks for reaching out — please DM us your device + iOS version and detail so we can help."
@@ -240,7 +241,8 @@ class AppleAgent:
             fallback_tpl = templates.get(other, "Please share a brief description so we can help. DM us if it involves personal info.")
             lat0 = (time.perf_counter() - t0) * 1000
             return AgentResult(other, 0.0, fallback_tpl,
-                               [], "escalate", "unresolvable", {"empty": True, "brand": eff, "draft_path": "template"}, 1.0, [])
+                               [], "escalate", "unresolvable", {"empty": True, "brand": eff, "draft_path": "template"}, 1.0, [],
+                               {"reason": "empty", "draft_path": "template"})
         t_clf = time.perf_counter()
         try:
             pred, conf = _predict_for_brand(eff, text)
@@ -310,7 +312,7 @@ class AppleAgent:
             # Keep groq failure reason for audit without secrets
             signals["groq_reason"] = str(groq_info.get("reason"))[:64]
         lat = (time.perf_counter() - t0) * 1000
-        return AgentResult(pred, float(conf), draft, ids, decision, reason, signals, round(lat, 1), unsup)
+        return AgentResult(pred, float(conf), draft, ids, decision, reason, signals, round(lat, 1), unsup, (groq_info if isinstance(groq_info, dict) else {}))
 
 
 def trivial_baseline(text: str) -> AgentResult:

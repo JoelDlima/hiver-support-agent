@@ -2,7 +2,115 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: #0a0e14;
-  color: #e6edf3;
+/* SmartGrey design tokens, adapted for Hiver. Both themes defined here.
+   Dark is the default (next-themes defaultTheme="dark" in app/layout.tsx). */
+:root {
+  --color-paper: #f8f7f4;
+  --color-ink: #0c1a1e;
+  --color-muted: #5b6e71;
+  --color-hairline: #ccd2d2;
+  --color-hairline-soft: #dfe4e4;
+  --color-hairline-strong: #b6bdbd;
+  --color-card: #ffffff;
+  --color-raised: #ffffff;
+  --color-teal: #0d5c5c;
+  --color-aqua: #0891b2;
+
+  /* Compat shims for pre-retheme page code (bg-canvas, bg-surface, border-line,
+     text/bg-accent, text-danger, .glass-panel/.rail-panel). Another agent owns
+     page.tsx; these keep existing sections rendering until it migrates. */
+  --bg: var(--color-paper);
+  --surface: var(--color-card);
+  --glass: rgba(255, 255, 255, 0.6);
+  --border: var(--color-hairline);
+  --text: var(--color-ink);
+  --secondary: var(--color-muted);
+  --accent: var(--color-teal);
+  --success: #3daf7c;
+  --warning: #d9a441;
+  --danger: #d9614f;
+}
+
+.dark {
+  --color-paper: #000000;
+  --color-ink: #f2f4f3;
+  --color-muted: #9aa3a3;
+  --color-hairline: #252a2a;
+  --color-hairline-soft: #202525;
+  --color-hairline-strong: #3a4444;
+  --color-card: #050505;
+  --color-raised: #060606;
+
+  --bg: var(--color-paper);
+  --surface: var(--color-card);
+  --glass: rgba(5, 5, 5, 0.55);
+  --border: var(--color-hairline);
+  --text: var(--color-ink);
+  --secondary: var(--color-muted);
+  --accent: var(--color-teal);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-hairline);
+  }
+
+  ::selection {
+    background-color: var(--color-teal);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 2px;
+  }
+
+  input[type="range"] {
+    accent-color: var(--color-teal);
+  }
+
+  /* Header compact state (toggled on scroll in components/sg/site-header.tsx) */
+  header.site-header.compact {
+    box-shadow: 0 1px 0 var(--color-hairline);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* Dark mode: cards sit on true black — no floating shadows. Scoped to
+   shadow utilities used in app (shadow-sm, shadow, shadow-xl). */
+.dark .shadow-sm,
+.dark .shadow,
+.dark .shadow-xl {
+  box-shadow: none;
+}
+
+/* Compat: pre-retheme panels. Kept until page.tsx migrates to the sg kit. */
+.glass-panel {
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border);
+}
+
+.rail-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
 }

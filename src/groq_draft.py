@@ -92,21 +92,57 @@ def _client():
         return None, "no-client"
 
 
+def _empty_usage():
+    return {"prompt_tokens": None, "completion_tokens": None}
+
+
+def _extract_usage(resp):
+    """Best-effort token usage from Groq/OpenAI response. Never raises, never includes secrets."""
+    try:
+        u = getattr(resp, "usage", None)
+        if u is None:
+            return _empty_usage()
+        if isinstance(u, dict):
+            pt = u.get("prompt_tokens")
+            ct = u.get("completion_tokens")
+        else:
+            pt = getattr(u, "prompt_tokens", None)
+            ct = getattr(u, "completion_tokens", None)
+        try:
+            pt = int(pt) if pt is not None else None
+        except Exception:
+            pt = None
+        try:
+            ct = int(ct) if ct is not None else None
+        except Exception:
+            ct = None
+        return {"prompt_tokens": pt, "completion_tokens": ct}
+    except Exception:
+        return _empty_usage()
+
+
 def draft_with_groq(intent, inbound, passages, brand="virgin"):
     """Non-streaming Groq draft. Returns (text|None, info)."""
     info_base = {"brand": brand, "intent": intent, "model": GROQ_MODEL}
+    # Exact strings that would be sent (computed once so info matches the request).
+    try:
+        _sys_prompt, _user_prompt = _prompts(intent, inbound, passages, brand)
+    except Exception:
+        _sys_prompt, _user_prompt = "", ""
     if not _api_key():
-        return None, {**info_base, "reason": "no-key", "draft_path": "template"}
+        return None, {**info_base, "reason": "no-key", "draft_path": "template",
+                      "sys_prompt": "", "user_prompt": "", "usage": _empty_usage()}
     client, via = _client()
     if client is None:
-        return None, {**info_base, "reason": "no-client", "draft_path": "template"}
+        return None, {**info_base, "reason": "no-client", "draft_path": "template",
+                      "sys_prompt": "", "user_prompt": "", "usage": _empty_usage()}
     for model in (GROQ_MODEL, GROQ_FALLBACK_MODEL):
         try:
             resp = client.chat.completions.create(
                 model=model,
                 messages=[
-                    {"role": "system", "content": _prompts(intent, inbound, passages, brand)[0]},
-                    {"role": "user", "content": _prompts(intent, inbound, passages, brand)[1]},
+                    {"role": "system", "content": _sys_prompt},
+                    {"role": "user", "content": _user_prompt},
                 ],
                 temperature=0.6,
                 max_completion_tokens=256,
@@ -133,12 +169,15 @@ def draft_with_groq(intent, inbound, passages, brand="virgin"):
                 draft = FENCE_RE.sub("", content.strip()).strip()
             ok, reason = validate_draft(draft, inbound, passages)
             if not ok:
-                return None, {**info_base, "model": model, "reason": f"validation-fail:{reason}", "draft_path": "template"}
-            return draft, {**info_base, "model": model, "reason": "ok", "draft_path": "groq", "via": via}
+                return None, {**info_base, "model": model, "reason": f"validation-fail:{reason}", "draft_path": "template",
+                              "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _extract_usage(resp)}
+            return draft, {**info_base, "model": model, "reason": "ok", "draft_path": "groq", "via": via,
+                           "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _extract_usage(resp)}
         except Exception as e:
             last = f"{type(e).__name__}"
             continue
-    return None, {**info_base, "reason": "error", "error_type": last, "draft_path": "template"}
+    return None, {**info_base, "reason": "error", "error_type": last, "draft_path": "template",
+                  "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _empty_usage()}
 
 
 def stream_groq_draft(intent, inbound, passages, brand="virgin"):

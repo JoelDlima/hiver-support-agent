@@ -3,8 +3,11 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional
+import collections
+import datetime
 import json
 import logging
+import re
 import threading
 import time, uuid
 from pathlib import Path
@@ -40,6 +43,186 @@ def _record_latency(brand: str, latency_ms: float, decision: str):
 
 _metrics_per_brand = {b: _fresh_counters() for b in brands_mod.list_brands()}
 _metrics_lock = threading.Lock()
+
+# ---- Live-proof: inspect store (thread-safe, cap 200, evict oldest) ----
+_INSPECT_MAX = 200
+_inspect_store: dict = {}
+_inspect_lock = threading.Lock()
+
+
+def _store_inspect(record: dict):
+    rid = (record or {}).get("request_id")
+    if not rid:
+        return
+    with _inspect_lock:
+        if rid in _inspect_store:
+            _inspect_store.pop(rid, None)
+        else:
+            while len(_inspect_store) >= _INSPECT_MAX:
+                try:
+                    oldest = next(iter(_inspect_store))
+                except StopIteration:
+                    break
+                _inspect_store.pop(oldest, None)
+        _inspect_store[rid] = record
+
+
+def _get_inspect(rid: str):
+    with _inspect_lock:
+        return _inspect_store.get(rid)
+
+
+# ---- Live-proof: log tail (deque maxlen 300, thread-safe append) ----
+_log_tail: collections.deque = collections.deque(maxlen=300)
+_log_lock = threading.Lock()
+_log_seq = 0
+
+
+class _TailHandler(logging.Handler):
+    def emit(self, record):
+        global _log_seq
+        try:
+            msg = self.format(record)
+            if "gsk_" in msg:
+                msg = re.sub(r"gsk_[A-Za-z0-9_\-]+", "[REDACTED]", msg)
+            with _log_lock:
+                _log_tail.append(msg)
+                _log_seq += 1
+        except Exception:
+            pass
+
+
+_tail_handler = _TailHandler()
+_tail_handler.setFormatter(logging.Formatter("%(message)s"))
+_hiver_log = logging.getLogger("hiver")
+if not any(isinstance(h, _TailHandler) for h in _hiver_log.handlers):
+    _hiver_log.addHandler(_tail_handler)
+try:
+    _hiver_log.setLevel(logging.INFO)
+except Exception:
+    pass
+
+
+def _collect_passages(agent, text, k=5):
+    try:
+        retr = getattr(agent, "retriever", None)
+        if retr is None:
+            return []
+        res = retr.query(text or "", k=k)
+        out = []
+        for p in (res or [])[:k]:
+            try:
+                out.append({
+                    "tweet_id": str(p.get("tweet_id", "")),
+                    "score": round(float(p.get("score", 0.0)), 4),
+                    "text": (p.get("text") or "")[:200],
+                })
+            except Exception:
+                continue
+        return out
+    except Exception:
+        return []
+
+
+def _build_llm_block(result, sig):
+    try:
+        ginfo = getattr(result, "groq_info", {}) or {}
+    except Exception:
+        ginfo = {}
+    if not isinstance(ginfo, dict):
+        ginfo = {}
+    if not isinstance(sig, dict):
+        sig = {}
+    draft_path = str(sig.get("draft_path") or ginfo.get("draft_path") or "template")
+    groq_reason = ""
+    try:
+        if sig.get("groq_reason"):
+            groq_reason = str(sig.get("groq_reason"))[:64]
+        elif ginfo.get("reason") and ginfo.get("reason") != "ok":
+            groq_reason = str(ginfo.get("reason"))[:64]
+    except Exception:
+        groq_reason = ""
+    try:
+        model = str(ginfo.get("model") or "qwen/qwen3.8-27b")
+    except Exception:
+        model = "qwen/qwen3.8-27b"
+    if draft_path == "groq":
+        try:
+            system = str(ginfo.get("sys_prompt") or "")
+        except Exception:
+            system = ""
+        try:
+            user = str(ginfo.get("user_prompt") or "")[:2000]
+        except Exception:
+            user = ""
+        completion = result.draft_reply
+        usage = ginfo.get("usage") if isinstance(ginfo.get("usage"), dict) else {}
+        pt = usage.get("prompt_tokens")
+        ct = usage.get("completion_tokens")
+        try:
+            pt = int(pt) if pt is not None else None
+        except Exception:
+            pt = None
+        try:
+            ct = int(ct) if ct is not None else None
+        except Exception:
+            ct = None
+        template_note = ""
+    else:
+        system = ""
+        user = ""
+        completion = None
+        pt = None
+        ct = None
+        template_note = f"template fallback ({groq_reason or 'no groq'})"
+    return {
+        "model": model,
+        "system": system,
+        "user": user,
+        "completion": completion,
+        "template_note": template_note,
+        "prompt_tokens": pt,
+        "completion_tokens": ct,
+        "draft_path": draft_path,
+        "groq_reason": groq_reason,
+    }
+
+
+def _build_inspect_record(rid, brand, raw_text, result, sig, latency_ms, passages):
+    try:
+        ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    except Exception:
+        ts = datetime.datetime.utcnow().isoformat() + "+00:00"
+    try:
+        classify_ms = float((sig or {}).get("classify_ms")) if (sig or {}).get("classify_ms") is not None else 0.0
+    except Exception:
+        classify_ms = 0.0
+    try:
+        retrieve_ms = float((sig or {}).get("retrieve_ms")) if (sig or {}).get("retrieve_ms") is not None else 0.0
+    except Exception:
+        retrieve_ms = 0.0
+    try:
+        draft_ms = float((sig or {}).get("draft_ms")) if (sig or {}).get("draft_ms") is not None else 0.0
+    except Exception:
+        draft_ms = 0.0
+    return {
+        "request_id": rid,
+        "timestamp": ts,
+        "brand": brand,
+        "text": (raw_text or "")[:500],
+        "intent": result.intent,
+        "intent_confidence": float(result.intent_confidence),
+        "decision": result.decision,
+        "escalate_reason": result.escalate_reason,
+        "timings": {
+            "classify_ms": classify_ms,
+            "retrieve_ms": retrieve_ms,
+            "draft_ms": draft_ms,
+            "latency_ms": float(latency_ms),
+        },
+        "passages": passages,
+        "llm": _build_llm_block(result, sig),
+    }
 
 app = FastAPI(title="Hiver Support Agent (VirginTrains primary, Apple kept)", version="2.0.0")
 
@@ -219,6 +402,11 @@ def predict(inp: PredictIn, request: Request):
     logger.info(log_line)
     sig = r.escalate_signals or {}
     groq_reason = sig.get("groq_reason", "") if isinstance(sig, dict) else ""
+    try:
+        _store_inspect(_build_inspect_record(
+            rid, brand, raw, r, sig, latency_ms, _collect_passages(agent, text, k=5)))
+    except Exception:
+        pass
     return {
         "request_id": rid,
         "brand": brand,
@@ -278,6 +466,21 @@ def predict_stream(inp: PredictIn, request: Request):
                 yield f"data: {json.dumps({'event': 'token', 'text': r.draft_reply})}\n\n"
         latency_ms = round((time.perf_counter() - t0) * 1000, 1)
         _record_latency(brand, latency_ms, r.decision)
+        try:
+            _store_inspect(_build_inspect_record(
+                rid, brand, raw, r, (r.escalate_signals or {}), latency_ms,
+                _collect_passages(agent, text, k=5)))
+        except Exception:
+            pass
+        try:
+            log_line = json.dumps({"request_id": rid, "brand": brand, "intent": r.intent,
+                                   "decision": r.decision, "latency_ms": latency_ms,
+                                   "truncated": truncated,
+                                   "draft_path": (r.escalate_signals or {}).get("draft_path", "template")})
+            print(log_line, flush=True)
+            logger.info(log_line)
+        except Exception:
+            pass
         final = {"event": "final", "request_id": rid, "brand": brand, "intent": r.intent,
                  "intent_confidence": r.intent_confidence, "draft_reply": r.draft_reply,
                  "grounding_passage_ids": r.grounding_passage_ids, "decision": r.decision,
@@ -289,6 +492,254 @@ def predict_stream(inp: PredictIn, request: Request):
 
     return StreamingResponse(gen(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+class EvalRunIn(BaseModel):
+    n: Optional[int] = 20
+    seed: Optional[int] = 11
+    brand: Optional[str] = "virgin"
+
+
+@app.get("/inspect/{request_id}")
+def inspect_one(request_id: str):
+    rec = _get_inspect(request_id)
+    if rec is None:
+        return JSONResponse({"detail": "unknown request"}, status_code=404)
+    # Resolve missing passage texts via the brand retriever at read time.
+    try:
+        passages = rec.get("passages") or []
+        if any(not ((p or {}).get("text") or "").strip() for p in passages):
+            brand = rec.get("brand") or brands_mod.DEFAULT_BRAND
+            try:
+                agent = get_agent(brand)
+                retr = getattr(agent, "retriever", None)
+                fresh_by_id = {}
+                try:
+                    if retr is not None:
+                        fresh_res = retr.query(rec.get("text") or "", k=5)
+                        fresh_by_id = {str(p.get("tweet_id")): p for p in (fresh_res or [])}
+                except Exception:
+                    fresh_by_id = {}
+                try:
+                    lookup = getattr(retr, "lookup", {}) or {}
+                except Exception:
+                    lookup = {}
+                for p in passages:
+                    try:
+                        if not (p.get("text") or "").strip():
+                            tid = str(p.get("tweet_id", ""))
+                            if tid in fresh_by_id and (fresh_by_id[tid].get("text") or "").strip():
+                                p["text"] = (fresh_by_id[tid].get("text") or "")[:200]
+                            elif tid in lookup:
+                                v = lookup[tid]
+                                if isinstance(v, (list, tuple)) and len(v) > 0:
+                                    p["text"] = (v[0] or "")[:200]
+                                elif isinstance(v, str):
+                                    p["text"] = v[:200]
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+    except Exception:
+        pass
+    return rec
+
+
+@app.get("/logs/stream")
+def logs_stream():
+    def gen():
+        # Snapshot backlog + sequence atomically so lines arriving mid-replay are not lost.
+        try:
+            with _log_lock:
+                backlog = list(_log_tail)
+                last_seq = _log_seq
+        except Exception:
+            backlog, last_seq = [], 0
+        for line in backlog:
+            yield f"data: {line}\n\n"
+        last_beat = time.time()
+        while True:
+            time.sleep(0.5)
+            try:
+                with _log_lock:
+                    seq = _log_seq
+                    if seq > last_seq:
+                        cur = list(_log_tail)
+                        new_count = min(seq - last_seq, len(cur))
+                        new_lines = cur[len(cur) - new_count:] if new_count else []
+                        last_seq = seq
+                    else:
+                        new_lines = []
+            except Exception:
+                new_lines = []
+            try:
+                for line in new_lines:
+                    yield f"data: {line}\n\n"
+                now = time.time()
+                if now - last_beat >= 15:
+                    yield ":\n\n"
+                    last_beat = now
+            except GeneratorExit:
+                break
+            except Exception:
+                continue
+    return StreamingResponse(gen(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+@app.post("/eval/run")
+def eval_run(inp: EvalRunIn):
+    try:
+        n = int(inp.n) if inp.n is not None else 20
+    except Exception:
+        n = 20
+    n = max(1, min(n, 50))
+    try:
+        seed = int(inp.seed) if inp.seed is not None else 11
+    except Exception:
+        seed = 11
+    brand = _normalize_brand(inp.brand if inp.brand else brands_mod.DEFAULT_BRAND)
+
+    def gen():
+        try:
+            import pandas as pd
+        except Exception as e:
+            yield f"data: {json.dumps({'event': 'error', 'detail': f'pandas unavailable: {e}'[:200]})}\n\n"
+            yield "data: [DONE]\n\n"
+            return
+        try:
+            from src.agent import _predict_for_brand, draft_grounded, decide_escalation
+        except Exception as e:
+            yield f"data: {json.dumps({'event': 'error', 'detail': f'agent import failed: {e}'[:200]})}\n\n"
+            yield "data: [DONE]\n\n"
+            return
+        csv_path = Path(__file__).resolve().parent.parent / "evaluation" / "virgin" / "golden_human_200.csv"
+        try:
+            df = pd.read_csv(csv_path)
+        except Exception as e:
+            yield f"data: {json.dumps({'event': 'error', 'detail': str(e)[:200]})}\n\n"
+            yield "data: [DONE]\n\n"
+            return
+        try:
+            n_eff = min(n, len(df))
+            sample = df.sample(n=n_eff, random_state=seed).reset_index(drop=True)
+        except Exception as e:
+            yield f"data: {json.dumps({'event': 'error', 'detail': str(e)[:200]})}\n\n"
+            yield "data: [DONE]\n\n"
+            return
+        try:
+            proto = get_agent(brand)
+            retr = getattr(proto, "retriever", None)
+        except Exception:
+            retr = None
+        total = len(sample)
+        intent_ok = 0
+        esc_ok_cnt = 0
+        for idx, row in enumerate(sample.itertuples()):
+            try:
+                text = getattr(row, "text", "") or ""
+                human_intent = str(getattr(row, "human_intent", "") or "")
+                try:
+                    human_esc = int(getattr(row, "human_escalate", 0))
+                except Exception:
+                    human_esc = 0
+                try:
+                    pred, conf = _predict_for_brand(brand, text)
+                except Exception:
+                    pred, conf = "other_out_of_scope", 0.35
+                try:
+                    passages = retr.query(text, k=5) if retr is not None else []
+                except Exception:
+                    passages = []
+                try:
+                    _draft, _ids, _unsup = draft_grounded(pred, passages, brand)
+                except Exception:
+                    pass
+                try:
+                    decision, _reason, _signals = decide_escalation(pred, float(conf), text, passages, brand)
+                except Exception:
+                    decision = "escalate"
+                pred_esc = 1 if decision == "escalate" else 0
+                ok = bool(str(pred) == human_intent)
+                esc_ok = bool(pred_esc == human_esc)
+                if ok:
+                    intent_ok += 1
+                if esc_ok:
+                    esc_ok_cnt += 1
+                item = {"event": "item", "i": idx, "n": total,
+                        "text": (text or "")[:120],
+                        "human_intent": human_intent, "pred_intent": str(pred), "ok": ok,
+                        "human_esc": int(human_esc), "pred_esc": int(pred_esc), "esc_ok": esc_ok}
+                yield f"data: {json.dumps(item)}\n\n"
+            except Exception:
+                continue
+        intent_acc = round(intent_ok / total, 4) if total else 0.0
+        esc_acc = round(esc_ok_cnt / total, 4) if total else 0.0
+        yield f"data: {json.dumps({'event': 'done', 'n': total, 'intent_acc': intent_acc, 'esc_acc': esc_acc})}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(gen(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+@app.get("/embed2d")
+def embed2d(brand: Optional[str] = "virgin", q: str = ""):
+    b = _normalize_brand(brand)
+    query_text = (q or "")[:500]
+    try:
+        agent = get_agent(b)
+        retr = getattr(agent, "retriever", None)
+        if retr is None or getattr(retr, "vec", None) is None:
+            return {"points": [], "query": {"x": 0.0, "y": 0.0}}
+        try:
+            passages = retr.query(query_text, k=5)
+        except Exception:
+            passages = []
+        if not passages:
+            return {"points": [], "query": {"x": 0.0, "y": 0.0}}
+        corpus = [(query_text or "").lower()]
+        for p in passages[:5]:
+            try:
+                c = (p.get("clean") or p.get("text") or "")
+                corpus.append((c or "").lower())
+            except Exception:
+                corpus.append("")
+        try:
+            X = retr.vec.transform(corpus)
+        except Exception:
+            return {"points": [], "query": {"x": 0.0, "y": 0.0}}
+        try:
+            from sklearn.decomposition import TruncatedSVD
+            import numpy as np
+            svd = TruncatedSVD(n_components=2, random_state=7)
+            coords = np.asarray(svd.fit_transform(X), dtype=float)
+            normed = np.zeros_like(coords)
+            for ax in range(2):
+                col = coords[:, ax]
+                mn = float(col.min())
+                mx = float(col.max())
+                if mx > mn:
+                    normed[:, ax] = 2 * (col - mn) / (mx - mn) - 1
+                else:
+                    normed[:, ax] = 0.0
+            normed = np.round(normed, 4)
+            qx, qy = float(normed[0, 0]), float(normed[0, 1])
+            points = []
+            for i, p in enumerate(passages[:5]):
+                try:
+                    points.append({
+                        "tweet_id": str(p.get("tweet_id", "")),
+                        "x": float(normed[i + 1, 0]),
+                        "y": float(normed[i + 1, 1]),
+                        "score": round(float(p.get("score", 0.0)), 4),
+                    })
+                except Exception:
+                    continue
+            return {"points": points, "query": {"x": qx, "y": qy}}
+        except Exception:
+            return {"points": [], "query": {"x": 0.0, "y": 0.0}}
+    except Exception:
+        return {"points": [], "query": {"x": 0.0, "y": 0.0}}
 
 
 def _pct(sorted_vals, q):

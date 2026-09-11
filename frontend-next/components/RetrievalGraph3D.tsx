@@ -15,7 +15,7 @@ function Graph({ passages }: { passages: Passage[] }) {
     const n = Math.max(passages.length, 1);
     const positions = new Float32Array((n + 1) * 3);
     const colors = new Float32Array((n + 1) * 3);
-    // center (query): bright cyan
+    // center (query) node
     positions[0] = 0; positions[1] = 0; positions[2] = 0;
     colors[0] = 0.2; colors[1] = 0.9; colors[2] = 1.0;
     const linePositions = new Float32Array(n * 6);
