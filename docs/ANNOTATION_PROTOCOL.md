@@ -1,7 +1,9 @@
-# Annotation + LLM-Judge Run Protocol (keyless state, 2026-09-11)
+# Annotation + LLM-Judge Run Protocol (keyed n=30 study done 2026-09-11)
 
-Status: heuristic judge only (no `GROQ_API_KEY` / `OPENAI_API_KEY` in env).
-LLM path is implemented + fail-closed verified (`groq_smoke.py` no-key → 5/5 template).
+Status 2026-09-11: first keyed run complete — Groq `qwen/qwen3.8-27b`, temp 0, n=30 spotcheck
+(`evaluation/virgin/LLM_JUDGE_30.md`): verdict κ=0.253 (fair), groundedness wκ=0.060 →
+gate holds, advisory-only. Key via `GROQ_API_KEY` env only (never in code/logs/outputs — verified by grep).
+LLM path is implemented + fail-closed verified (`groq_smoke.py` keyed → 5/5 groq path).
 This doc is the exact procedure to finish the "proof" once a key exists. Nothing here is claimed as done.
 
 ## 1. Second annotator (inter-annotator κ, currently missing)
@@ -19,12 +21,11 @@ This doc is the exact procedure to finish the "proof" once a key exists. Nothing
   print('esc κ=', round(cohen_kappa_score(a.human_escalate,b.human_escalate),3))"`
 - Ship bar: intent κ ≥ 0.60 AND esc κ ≥ 0.60; else revise rulebook, not the metrics.
 
-## 2. LLM-judge run (blocked on key)
+## 2. LLM-judge run (first keyed run DONE 2026-09-11 — see `evaluation/virgin/LLM_JUDGE_30.md`)
 
-- With key: `$env:GROQ_API_KEY="gsk_..."; $env:PYTHONPATH="C:\Hiver";
-  C:\Hiver\.venv\Scripts\python.exe C:\Hiver\scripts\groq_smoke.py` (expect 5/5 groq path),
-  then run judge hook on the 50-item set above (rubric `evaluation/rubric.md`,
-  model pinned `gpt-4o-mini-2026-07-01`, temp 0, double-run for self-consistency).
+- Ran: `$env:GROQ_API_KEY` (env only) + `scripts/run_llm_judge_30.py --drafts / --judge / --agree`
+  on spotcheck_30 (30/30 scored, qwen/qwen3.8-27b temp 0, paced 2.5s). Re-runnable any time a key is set.
+- Re-run after: `relevance ≤ 2 → FAIL` gate fix + passing retrieved passage texts (span faithfulness).
 - Report: per-dimension weighted κ + PASS/FAIL Cohen κ + safety-FAIL recall.
 - Ship gate (unchanged): groundedness wκ ≥ 0.60 AND safety-recall ≥ 0.90, else advisory-only.
 - Cost guard: never bulk LLM on critical path; free tier ~30 RPM; template is default.

@@ -85,7 +85,7 @@ def main():
         "It measures template-shape, not span-attributed faithfulness. Never report as reply quality.",
         f"- Safety recall on n={len(saf)} cannot pass a >=0.90 ship gate with confidence; report the count, "
         "not just the rate. Money recall (n=20) is the better-powered escalation signal here.",
-        "- LLM judge unrun (no key) — zero LLM-judge scores claimed; hook verified fail-closed (no-key note logged).",
+        "- LLM judge: keyed n=30 study in evaluation/virgin/LLM_JUDGE_30.md (qwen temp 0: verdict κ=0.253, wκ=0.060 → gate holds, advisory-only).",
     ]
     OUT_MD.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {OUT_CSV} + {OUT_MD}")

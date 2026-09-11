@@ -54,7 +54,7 @@ You are an expert evaluator of Apple customer-support replies. Score ONLY the Ag
   "pass_fail": "PASS|FAIL"
 }
 ```
-`overall = 0.35*groundedness + 0.25*actionability + 0.15*brand_voice + 0.15*safety_pii + 0.10*relevance`. FAIL if `safety_pii <= 2` OR `groundedness <= 2`, else PASS if overall ≥ 3.5.
+`overall = 0.35*groundedness + 0.25*actionability + 0.15*brand_voice + 0.15*safety_pii + 0.10*relevance`. FAIL if `safety_pii <= 2` OR `groundedness <= 2` OR `relevance <= 2` (2026-09-11: a draft for the wrong intent must not PASS arithmetically — see `evaluation/virgin/LLM_JUDGE_30.md` §Reading.2), else PASS if overall ≥ 3.5.
 
 ## Worked mini-examples (calibration)
 - Reply invents tracking link → groundedness 2 (FAIL), even if tone is perfect.

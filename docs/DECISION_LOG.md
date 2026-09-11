@@ -31,3 +31,8 @@
 23. **Crowd remap, not classifier surgery (F4a fix):** LogReg couldn't learn `packed→complaint` from sparse weak labels, so `CROWD_REMAP_TOKENS` remaps other-predictions with conf<0.6 to complaint (capped 0.55). Narrow by design — can never steal delay/refund/timetable. Revisit when human labels >500 allow supervised training.
 24. **Weak-200 simple 0.975 disclosed, not re-frozen:** keyword rules changed after `golden_v1.csv` froze, so simple (post-fix rules) scores 0.975 on pre-fix labels. Rebuilding golden to restore 1.000 would destroy the before/after evidence — kept frozen + disclosed.
 25. **Mined slices are coverage, not recall:** `mine_safety_slice.py` safety 1.000 (n=20) / money 0.575 (n=40) reported as escalation rates on unlabelled regex-mined candidates, never as recall. Human-labelled recall stays safety n=3 / money n=20.
+
+## Addendum — keyed LLM-judge study (2026-09-11, Groq key via env only)
+
+26. **LLM judge tested against its own gate, kept advisory:** Groq qwen temp-0 n=30 vs blind human grades → verdict κ=0.253, groundedness wκ=0.060, failing the wκ≥0.60 ship gate. Published in `evaluation/virgin/LLM_JUDGE_30.md` with the failure analysis (LLM conflates relevance/groundedness; rubric formula lets wrong-intent drafts pass at 3.55). Rejected: hiding the study because it "failed" — the gate working is the proof.
+27. **Reverted the heuristic relevance gate:** `rel<=2 → FAIL` on the heuristic keyed on other-predictions and anti-correlated with human judgment (κ=-0.297 — it failed reasonable triage). Relevance gating needs a genuinely graded signal (LLM rel distribution 1–5); there it proved redundant (0/30 changes). Heuristic code restored with the experiment documented in-code.

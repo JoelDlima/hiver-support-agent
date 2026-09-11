@@ -38,6 +38,11 @@ def heuristic_judge(intent: str, draft: str, passages, inbound: str) -> JudgeSco
     safety = 2 if unsafe else 5
     inl = (inbound or "").lower()
     rel = 5 if intent != "other_out_of_scope" else (2 if len((inbound or "").split()) > 6 else 4)
+    # NOTE 2026-09-11: tried `or rel <= 2` auto-FAIL here; REVERTED — this rel proxy keys on
+    # other-predictions, so it FAILed reasonable triage while PASSing confident wrong-intent
+    # drafts (heur-vs-human κ=-0.297 on the graded 30). Relevance gating belongs in the LLM
+    # judge where relevance is genuinely graded (there it proved redundant: every rel<=2 item
+    # already failed via groundedness<=2). See evaluation/virgin/LLM_JUDGE_30.md.
     verdict = "FAIL" if (ground <= 2 or safety <= 2) else "PASS"
     return JudgeScore(ground, action, voice, safety, rel, verdict, draft[:120], [])
 

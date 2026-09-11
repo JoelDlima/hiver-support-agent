@@ -1,0 +1,31 @@
+idx,human_ground,human_verdict,note
+0,4,FAIL,wrong intent timetable vs delay-complaint crowd chaos
+1,4,FAIL,wrong intent timetable vs 1hr delay
+2,4,FAIL,fare template for app-upgrade question
+3,4,PASS,generic triage acceptable for unclear dispute
+4,4,PASS,weak triage but safe DM redirect
+5,4,PASS,correct complaint template
+6,3,FAIL,lost-property routing for ticket-acceptance ask
+7,4,PASS,correct direction safe triage
+8,3,FAIL,claims receipt of unseen link-only content
+9,4,PASS,triage acceptable
+10,4,PASS,triage acceptable
+11,4,PASS,howto guidance fits
+12,4,PASS,nothing better possible on fragment
+13,4,FAIL,howto template for stranded-crowd complaint
+14,4,PASS,triage acceptable
+15,4,PASS,delay half answered misses rudeness note
+16,4,PASS,correct fare template
+17,4,FAIL,complaint template for refund-procedure ask
+18,4,PASS,correct lost template
+19,4,FAIL,followup-thanks reply to angry complaint tone-deaf
+20,4,PASS,followup fits thanks-ack
+21,4,PASS,correct assist direction
+22,4,PASS,howto fits validity question
+23,4,FAIL,complaint template for seat-reservation assist ask
+24,3,FAIL,lost-property routing for missing-train ask
+25,4,PASS,benign greeting ack
+26,4,FAIL,complaint template for menu question
+27,4,PASS,refund guidance plausible for fragment
+28,4,PASS,delay half answered misses amendment question note
+29,4,PASS,correct amend template
