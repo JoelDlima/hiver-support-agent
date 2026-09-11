@@ -44,3 +44,28 @@ def test_f7_receipt_routes_to_refund_and_escalates():
                  "station? I have my receipt", brand="virgin")
     assert o.intent == "ticket_change_refund", o.intent
     assert o.decision == "escalate", (o.decision, o.escalate_reason)
+
+
+def test_pii_without_human_request_escalates_pii_review():
+    a = _agent()
+    o = a.handle("my email is jane.doe@example.com, please help with my ticket",
+                 brand="virgin")
+    assert o.decision == "escalate" and o.escalate_reason == "pii_review", \
+        (o.decision, o.escalate_reason)
+    assert "jane.doe@example.com" not in o.draft_reply  # templates never echo PII
+
+
+def test_f3b_callback_number_escalates_pii_review():
+    a = _agent()
+    o = a.handle("Why dont you call them and get them to call me. Save me some money and time. "
+                 "My number is 07403630041", brand="virgin")
+    assert o.decision == "escalate" and o.escalate_reason == "pii_review", \
+        (o.decision, o.escalate_reason)
+    assert "07403630041" not in o.draft_reply
+
+
+def test_delay_template_states_dr_bands_and_fits_280():
+    from src.virgin_intents import TEMPLATES
+    t = TEMPLATES["delay_claim"]
+    assert "30-59" in t and "booking ref" in t
+    assert len(t) <= 280, len(t)

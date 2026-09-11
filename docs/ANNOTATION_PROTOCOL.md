@@ -6,10 +6,11 @@ gate holds, advisory-only. Key via `GROQ_API_KEY` env only (never in code/logs/o
 LLM path is implemented + fail-closed verified (`groq_smoke.py` keyed → 5/5 groq path).
 This doc is the exact procedure to finish the "proof" once a key exists. Nothing here is claimed as done.
 
-## 1. Second annotator (inter-annotator κ, currently missing)
+## 1. Second annotator (inter-annotator κ — PACK READY, needs a human)
 
-- Sample: `evaluation/virgin/spotcheck_30.csv` (30, already human-labelled by annotator 1)
-  + 20 fresh draws from `data/processed/virgin_inbound_pool.csv` (seed 11, exclude golden IDs) → n=50.
+- Pack: `evaluation/virgin/annotation_pack_50.csv` (built by `scripts/build_annotation_pack.py`:
+  30 spotcheck_30 with annotator-1 labels stripped to empty columns + 20 fresh draws seed-11
+  excluding golden/spotcheck texts). Annotator 2 fills `human_intent` / `human_escalate` / `human_reason`.
 - Schema per item: `human_intent` (10 Virgin intents), `human_escalate` (0/1), `human_reason`
   (legal_safety | money_threshold | money_review | human_request | unresolvable | complaint_review | none).
 - Adjudication: disagreements resolved by rulebook (`src/virgin_intents.py` DESCRIPTIONS + money/safety

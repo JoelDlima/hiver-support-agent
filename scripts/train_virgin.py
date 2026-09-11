@@ -26,7 +26,9 @@ MODEL_PATH = Path(r"C:\Hiver\models\intent_virgin.pkl")
 def build_pipeline() -> Pipeline:
     vec = TfidfVectorizer(preprocessor=normalize, lowercase=False,
                           ngram_range=(1, 2), min_df=3, max_features=30000, sublinear_tf=True)
-    clf = LogisticRegression(max_iter=1000, C=2.0)
+    # balanced: accessibility has 167/30000 weak hits; without weights the LogReg
+    # buries the tail (accessibility F1 0.500 pre-fix). Revisit with human labels >500.
+    clf = LogisticRegression(max_iter=1000, C=2.0, class_weight="balanced")
     return Pipeline([("tfidf", vec), ("clf", clf)])
 
 

@@ -30,6 +30,11 @@ def normalize(text: str, keep_case: bool = False) -> str:
 
 def features_for_escalation(text: str) -> dict:
     low = (text or "").lower()
+    raw = text or ""
+    # PII on RAW text (normalize() masks @mentions, so emails must be caught here).
+    # Phone: UK 0-leading 10-11 digits / 5+6 split; email: standard addr (mentions lack .tld).
+    has_pii = bool(re.search(r"\b0\d{9,10}\b|\b\d{5}[\s-]?\d{6}\b", raw)
+                   or re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", raw))
     return {
         "has_human_request": any(p in low for p in ["human", "real person", "someone real", "call me", "talk to", "manager", "supervisor"]),
         "has_legal_safety": any(p in low for p in ["sue", "lawyer", "court", "hurt", "injured", "injur", "fire", "flame", "burn", "smoke", "smok", "explod", "explode", "shock", "electrocut", "bleed", "blood", "self harm", "kill myself", "suicid"]),
@@ -39,6 +44,7 @@ def features_for_escalation(text: str) -> dict:
         "has_money": any(p in low for p in ["refund", "repay", "compensation", "chargeback", "claim", "charged twice", "overcharged", "warranty", "applecare", "$", "£", "receipt", "billing", "delay repay"]),
         "has_non_english": bool(re.search(r"\b(para|gracias|donde|está|merci|pour|avec|guten|danke|waar|dank|grazie|perch[eé]|je|suis|mon|ma|mes|nous|vous|sont|bonjour|annule|bloque|retard|billet|retraso|horario|estaci[oó]n)\b", low)) or (sum(1 for ch in (text or "") if ord(ch) > 127) / max(len(text or ""), 1) > 0.25),
         "has_injection": any(p in low for p in ["ignore previous", "ignore all previous", "reveal password", "reveal system", "system prompt", "jailbreak", "dan mode", "do anything now"]),
+        "has_pii": has_pii,
         "is_link_only": bool(text and "<URL>" in normalize(text) and len(normalize(text).split()) <= 4),
         "is_very_short": len((text or "").split()) <= 2,
         "is_huge": len(text or "") > 500,

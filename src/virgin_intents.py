@@ -51,7 +51,7 @@ KEYWORDS = {
 }
 
 TEMPLATES = {
-    "delay_claim": "Sorry your train was delayed. You may be eligible for Delay Repay — keep your ticket. DM us your journey + date + ticket type and we'll guide your claim. <BRAND-KB:delay>",
+    "delay_claim": "Sorry your train was delayed. Delay Repay is typically 50% of a single ticket for 30-59 mins, 100% for 60+ (full return for 120+) — keep your ticket. DM us your journey + date + booking ref and we'll guide your claim. <BRAND-KB:delay>",
     "ticket_change_refund": "We can help with your amendment/refund. Check your ticket terms (Advance is restricted). DM us your booking ref + journey and we'll advise next steps. <BRAND-KB:amend>",
     "timetable_platform": "Let's check your service — I won't guess times or platforms here (they change). Check live departures, then DM us your from/to + date/time and we'll look it up. <BRAND-KB:timetable>",
     "lost_property": "Sorry you left something behind. Note the service + car/spot if you can. DM us your journey + item description and we'll point you to lost property. <BRAND-KB:lost>",

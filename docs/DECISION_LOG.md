@@ -36,3 +36,10 @@
 
 26. **LLM judge tested against its own gate, kept advisory:** Groq qwen temp-0 n=30 vs blind human grades → verdict κ=0.253, groundedness wκ=0.060, failing the wκ≥0.60 ship gate. Published in `evaluation/virgin/LLM_JUDGE_30.md` with the failure analysis (LLM conflates relevance/groundedness; rubric formula lets wrong-intent drafts pass at 3.55). Rejected: hiding the study because it "failed" — the gate working is the proof.
 27. **Reverted the heuristic relevance gate:** `rel<=2 → FAIL` on the heuristic keyed on other-predictions and anti-correlated with human judgment (κ=-0.297 — it failed reasonable triage). Relevance gating needs a genuinely graded signal (LLM rel distribution 1–5); there it proved redundant (0/30 changes). Heuristic code restored with the experiment documented in-code.
+
+## Addendum — balanced retrain + PII/DR30 + judge v2 (2026-09-11, keyed)
+
+28. **`class_weight=balanced` instead of oversampling code:** accessibility had 167/30000 weak hits and F1 0.500. One sklearn arg → tail F1 0.848 (matches simple), headline 0.795/0.803 beating simple on intent too. Rejected: hand-rolled duplication (same effect, more code, seed-sensitive).
+29. **PII gate before human_request + DR30 bands in delay template:** `has_pii` (UK phone/email regex on raw text — normalize masks mentions) → `pii_review`; F3b now fires on the number itself. Delay template states DR30 bands hedged ("typically") + booking-ref ask, ≤280 chars. Both were queued H1/H3 — done, tested, 9/9 probes green.
+30. **Judge v2 + Groq A/B, both reported against the gate:** passages + double-run gave self-consistency 1.000 but κ=-0.005 (passages rationalize rather than verify) — gate holds twice. A/B 29/30 live drafts: specificity upgrade only, template stays default. Rejected: claiming either as a win.
+31. **Annotator-2 pack generated, not graded:** `annotation_pack_50.csv` (30 spotcheck + 20 fresh seed-11) + builder script. The biggest trust upgrade left is human-hours, correctly left to humans.

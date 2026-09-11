@@ -177,6 +177,7 @@ def decide_escalation(intent: str, conf: float, text: str, passages: List[Dict],
         "intent": intent, "confidence": round(float(conf), 3),
         "policy_hit": bool(feats["has_legal_safety"] or feats["has_account_security"] or addon_hit),
         "human_request": feats["has_human_request"],
+        "pii_present": feats.get("has_pii", False),
         "frustration": feats["has_frustration"],
         "data_loss": feats["has_data_loss"],
         "link_only": feats["is_link_only"],
@@ -193,6 +194,10 @@ def decide_escalation(intent: str, conf: float, text: str, passages: List[Dict],
         decision, reason = "escalate", "unresolvable"
     elif feats["has_account_security"] or feats["has_data_loss"]:
         decision, reason = "escalate", "account_security"
+    elif feats.get("has_pii"):
+        # PII before human_request: F3b-class cases now escalate as pii_review even
+        # without "call me" phrasing (H3 fix). Templates never echo PII (no slots).
+        decision, reason = "escalate", "pii_review"
     elif feats["has_human_request"]:
         decision, reason = "escalate", "human_request"
     elif b == "apple" and feats["has_money"] and intent == "purchase_billing_service" and conf < 0.7:

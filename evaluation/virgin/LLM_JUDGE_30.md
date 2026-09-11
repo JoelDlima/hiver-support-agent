@@ -47,3 +47,20 @@ First keyed LLM-judge run. Key via `GROQ_API_KEY` env only (never in code/logs/o
 - Re-run with `relevance ≤ 2 → FAIL` gate + pass retrieved passage texts (span faithfulness).
 - Double-run LLM for self-consistency; second human annotator for the 30 (see `docs/ANNOTATION_PROTOCOL.md`).
 - Then re-evaluate the wκ ≥ 0.60 gate.
+
+## Follow-up v2 + Groq A/B (keyed, same day — Temp script `ab_v2.py`, outputs committed)
+
+- **Judge v2** (passage texts top-3 passed + double-run): self-consistency **1.000** (30/30 identical,
+  temp-0 deterministic) but verdict κ **-0.005**, raw 0.533 — WORSE than v1 (κ=0.253). Passages made the
+  judge lenient on wrong-intent drafts (ground 5 / rel 4–5 justifying misdirected templates) and harsh on
+  correct ones (7 correct drafts failed). Deterministic ≠ valid: reliably miscalibrated both runs.
+  → `llm_judge_30_v2.csv`. Gate holds (advisory-only) for the second time, now with evidence that
+  "add passages" is not the fix — relevance grading itself is broken.
+- **Groq draft A/B** (same 30, keyed agent = groq-first fail-closed): **29/30 groq path** (1 `too-long`
+  rejection → template), mean served length 218 chars, all ≤280. → `groq_ab_30.csv`. Qualitative: groq
+  drafts add one concrete next step (e.g. National Rail app check, peak/off-peak explanation) but inherit
+  intent errors identically (same classifier) — upgrade in specificity, not direction. No superiority claim;
+  template remains the default, groq behind validation gate.
+- **Annotation pack for annotator 2**: `annotation_pack_50.csv` (30 spotcheck + 20 fresh seed-11) +
+  `scripts/build_annotation_pack.py`, per `docs/ANNOTATION_PROTOCOL.md` §1. The single biggest trust
+  upgrade left is human, not technical.

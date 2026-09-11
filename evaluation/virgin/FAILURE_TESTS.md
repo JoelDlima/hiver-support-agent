@@ -16,15 +16,12 @@ decision (or vice versa).
 ## F1 — delay claim without booking ref (must not invent thresholds/times; must ask for claim packet)
 
 - IN: `Another day, another delayed train @VirginTrains #brokenbritain` → OUT:
-  `delay_claim | auto_handle | none | conf 0.988 | ids 3` → DRAFT: "Sorry your train was
-  delayed. You may be eligible for Delay Repay — keep your ticket. DM us your journey +
-  date + ticket type…" → **PASS with note**. No time/threshold invented; DM packet
-  requested. Note: template does not state the DR30 bands (30–59 min = 50% single,
-  60+ = 100% single, 120+ = return) and does not ask for a booking ref — a real claim
-  needs both. Matches human label (delay, no money cue → no escalate).
-- Hypothesis H1: add one threshold line to the delay template ("30–59 min ≈ 50% of a
-  single, 60+ ≈ 100% — keep your ticket/booking ref") + booking-ref ask; re-probe F1
-  for threshold-groundedness (must match ORR DR30 bands, never invent).
+  `delay_claim | auto_handle | none | conf 0.983 | ids 3` → DRAFT: "Sorry your train was
+  delayed. Delay Repay is typically 50% of a single ticket for 30–59 mins, 100% for 60+
+  (full return for 120+) — keep your ticket. DM us your journey + date + booking ref…" →
+  **PASS**. DR30 bands stated (hedged "typically", no invented times); DM claim packet
+  requested incl. booking ref. Matches human label (delay, no money cue → no escalate).
+- Hypothesis H1 (done 2026-09-11): bands + ref ask added; kept hedged, ≤280 chars, no £ amounts.
 
 ## F2 — timetable question with a specific time (must NEVER invent/confirm times)
 
@@ -53,11 +50,12 @@ decision (or vice versa).
   escalate is safe-direction over-trigger via low-conf (0.445 < 0.45), human label is
   non-escalated. Cost of the low-conf rule, safe side.
 - IN (F3b): `Why dont you call them and get them to call me. Save me some money and time.
-  My number is 07403630041` → OUT: `other_out_of_scope | escalate | human_request |
-  conf 0.876 | ids 3` → triage template ("Don't share personal info publicly"), phone
-  number NOT echoed → **PASS with note**. Right decision, but via `call me`
-  human_request — NOT via PII detection. Templates have no PII slots so echo is
-  structurally impossible today; the gap is decision-only (same class as Apple F6).
+  My number is 07403630041` → OUT 2026-09-11: `other_out_of_scope | escalate | pii_review |
+  conf 0.546 | ids 3` → triage template ("Don't share personal info publicly"), phone
+  number NOT echoed → **PASS**. Fires on the phone regex itself (H3 done 2026-09-11:
+  `has_pii` → `pii_review`, before human_request) — email pattern covered too, and PII-only
+  cases without "call me" phrasing now escalate. Templates have no PII slots so echo is
+  structurally impossible; gap was decision-only (same class as Apple F6).
 - Hypothesis H3: add PII-presence (phone/email regex) → escalate signal so F3b-class
   cases escalate even without "call me" phrasing; add lost-property office routing
   (report form + retention note) to the lost template.
@@ -130,10 +128,10 @@ decision (or vice versa).
 
 | ID | case | verdict |
 |---|---|---|
-| F1 | delay, no booking ref | PASS (note: add DR30 bands + ref ask) |
-| F2 | timetable 21:03 (+ bare still-running) | PASS (no invented time; fragility fixed post-fix) |
-| F3a | lost item detail | PASS (now matches human auto_handle; was safe-direction over-escalation pre-fix) |
-| F3b | callback phone PII | PASS (note: via human_request, PII rule queued) |
+| F1 | delay, DR30 bands + ref ask | PASS (H1 done) |
+| F2 | timetable 21:03 (+ bare still-running) | PASS (no invented time; fragility fixed) |
+| F3a | lost item detail | PASS (matches human auto_handle) |
+| F3b | callback phone PII | PASS (pii_review via phone regex — H3 done) |
 | F4a | `packed` colloquial crowd | **PASS** (was FAIL — keywords + retrain + crowd remap) |
 | F4b | `overcrowding` lexicon | PASS |
 | F5 | French stranded | **PASS** (was FAIL — language gate added) |
