@@ -1,0 +1,17 @@
+# Graphify scope: project source + docs only (research artifact, 2026-09-12).
+# Respected automatically unless --no-gitignore is passed.
+searxng/
+data/
+models/
+*.pkl
+*.parquet
+*.npz
+graphify-out/
+.git/
+.venv/
+frontend-next/node_modules/
+frontend-next/.next/
+frontend-next/out/
+__pycache__/
+.pytest_cache/
+*.log

@@ -1,0 +1,112 @@
+{
+ "doc:readme": [
+  "backend/main.py",
+  "docs/DECISION_LOG.md",
+  "docs/REPORT_VIRGIN_6PAGE.md",
+  "evaluation/virgin/",
+  "evaluation/virgin/BASELINE_VS_FINAL.md",
+  "evaluation/virgin/FAILURE_TESTS.md",
+  "evaluation/virgin/JUDGE_AGREEMENT.md",
+  "evaluation/virgin/LLM_JUDGE_30.md",
+  "evaluation/virgin/SAMPLING_NOTE.md",
+  "evaluation/virgin/annotation_pack_50.csv",
+  "evaluation/virgin/golden_human_200.csv",
+  "evaluation/virgin/results_human200.csv",
+  "frontend-next/package.json",
+  "models/intent_virgin.pkl",
+  "research/research_log.md",
+  "src/groq_draft.py",
+  "src/virgin_intents.py",
+  "tests/test_virgin_fixes.py"
+ ],
+ "doc:report_virgin_6page": [
+  "docs/ANNOTATION_PROTOCOL.md",
+  "docs/DECISION_LOG.md",
+  "docs/REPORT_6PAGE.md",
+  "evaluation/judge.py",
+  "evaluation/virgin/BASELINE_VS_FINAL.md",
+  "evaluation/virgin/FAILURE_TESTS.md",
+  "evaluation/virgin/JUDGE_AGREEMENT.md",
+  "evaluation/virgin/LLM_JUDGE_30.md",
+  "evaluation/virgin/SAMPLING_NOTE.md",
+  "evaluation/virgin/annotation_pack_50.csv",
+  "evaluation/virgin/golden_human_200.csv",
+  "models/intent_virgin.pkl",
+  "research/datasets/virgin_data_quality.md",
+  "research/research_log.md",
+  "scripts/run_eval.py",
+  "src/virgin_intents.py",
+  "tests/test_virgin_fixes.py"
+ ],
+ "doc:decision_log": [
+  "evaluation/virgin/LLM_JUDGE_30.md",
+  "src/brands.py",
+  "src/groq_draft.py"
+ ],
+ "doc:uniqueness": [
+  "evaluation/virgin/FAILURE_TESTS.md",
+  "evaluation/virgin/JUDGE_AGREEMENT.md",
+  "evaluation/virgin/golden_v1.csv",
+  "src/groq_draft.py",
+  "tests/test_virgin_fixes.py"
+ ],
+ "doc:annotation_protocol": [
+  "evaluation/virgin/LLM_JUDGE_30.md",
+  "evaluation/virgin/annotation_pack_50.csv",
+  "evaluation/virgin/safety_slice.csv",
+  "scripts/build_annotation_pack.py",
+  "scripts/mine_safety_slice.py",
+  "src/virgin_intents.py"
+ ],
+ "doc:baseline_vs_final": [
+  "evaluation/virgin/golden_human_200.csv",
+  "evaluation/virgin/golden_v1.csv",
+  "models/intent_virgin.pkl"
+ ],
+ "doc:judge_agreement": [
+  "evaluation/judge.py",
+  "evaluation/virgin/LLM_JUDGE_30.md"
+ ],
+ "doc:llm_judge_30": [
+  "docs/ANNOTATION_PROTOCOL.md",
+  "evaluation/virgin/spotcheck_30.csv",
+  "scripts/build_annotation_pack.py"
+ ],
+ "doc:sampling_note": [
+  "scripts/build_virgin_golden.py"
+ ],
+ "doc:failure_tests": [
+  "docs/ANNOTATION_PROTOCOL.md",
+  "models/intent_virgin.pkl",
+  "scripts/run_virgin_eval.py",
+  "tests/test_virgin_fixes.py"
+ ],
+ "doc:ledger": [],
+ "doc:ledger_wave2": [],
+ "doc:plan_v2": [
+  "evaluation/virgin/BASELINE_VS_FINAL.md",
+  "evaluation/virgin/confusion_human200.csv",
+  "evaluation/virgin/kb_manifest.json",
+  "scripts/build_virgin_manifest.py",
+  "scripts/confusion_virgin.py",
+  "scripts/run_virgin_eval.py",
+  "src/agent.py",
+  "src/brands.py",
+  "src/groq_draft.py",
+  "src/hybrid_retrieval.py",
+  "tests/test_brand_groq.py",
+  "tests/test_hybrid_retrieval.py"
+ ],
+ "doc:autonomy_matrix": [
+  "evaluation/virgin/thresholds.json",
+  "src/agent.py"
+ ],
+ "doc:promptfooconfig": [
+  "evaluation/virgin/golden_human_200.csv"
+ ],
+ "doc:graph_report": [
+  "src/agent.py",
+  "tests/test_agent.py",
+  "tests/test_brand_groq.py"
+ ]
+}

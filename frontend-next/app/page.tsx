@@ -647,6 +647,12 @@ export default function Page() {
           <p className="mt-1 text-sm text-muted">
             Test a customer request and inspect exactly how the agent reached its decision.
           </p>
+          <p className="mt-1 text-xs text-muted">
+            <a className="underline hover:opacity-75" href="/review">Review inbox</a>
+            {" · "}
+            <a className="underline hover:opacity-75" href="/api/graph" target="_blank" rel="noreferrer">Repository knowledge graph</a>
+            <span> (1017 nodes, built offline — see graphify-out/)</span>
+          </p>
         </div>
 
         {/* 2. Tabs */}

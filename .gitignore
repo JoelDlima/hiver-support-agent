@@ -45,3 +45,6 @@ searxng/sxng-err.log
 # Phase 4 runtime artifacts
 data/traces.jsonl
 data/processed/golden_candidate.jsonl
+
+# Graphify rebuild cache (regenerates via graphify update .)
+graphify-out/cache/
