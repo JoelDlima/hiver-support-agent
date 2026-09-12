@@ -19,11 +19,21 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
 
+try:
+    from scipy.stats import binomtest as _binomtest
+except ImportError:  # pragma: no cover - scipy ships with sklearn
+    _binomtest = None
+
 from src.agent import AppleAgent, _weak_label_generic
 from src.virgin_intents import KEYWORDS, TEMPLATES
+
+# Phase 1 (Impl-B) uncertainty settings: fixed seed -> deterministic CIs.
+BOOTSTRAP_RESAMPLES = 2000
+BOOTSTRAP_SEED = 20260912
 
 VIRGIN_DIR = Path(r"C:\Hiver\evaluation\virgin")
 GOLDEN_WEAK = VIRGIN_DIR / "golden_v1.csv"
@@ -122,16 +132,73 @@ def evaluate(system_name, fn, texts, y_int, y_esc):
     macro = f1_score(y_int, p_int, average="macro", zero_division=0)
     pe, re_, fe, _ = precision_recall_fscore_support(y_esc, p_esc, average="binary", zero_division=0)
     grounds = [groundedness_heuristic(o.draft_reply, o.grounding_passage_ids) for o in outs]
-    return {"system": system_name, "n": len(texts),
-            "intent_acc": round(acc, 3), "intent_macroF1": round(macro, 3),
-            "esc_P": round(float(pe), 3), "esc_R": round(float(re_), 3), "esc_F1": round(float(fe), 3),
-            "ground_mean": round(sum(grounds) / len(grounds), 2),
-            "ground_ge4_rate": round(sum(g >= 4 for g in grounds) / len(grounds), 3)}
+    row = {"system": system_name, "n": len(texts),
+           "intent_acc": round(acc, 3), "intent_macroF1": round(macro, 3),
+           "esc_P": round(float(pe), 3), "esc_R": round(float(re_), 3), "esc_F1": round(float(fe), 3),
+           "ground_mean": round(sum(grounds) / len(grounds), 2),
+           "ground_ge4_rate": round(sum(g >= 4 for g in grounds) / len(grounds), 3)}
+    # NOTE: evaluate returns per-example preds alongside the row so Phase-1
+    # bootstrap/McNemar reuse the exact same predictions (no recompute drift).
+    return row, p_int, p_esc
 
 
 def per_intent_f1(y_true, y_pred, labels):
     _, _, f, sup = precision_recall_fscore_support(y_true, y_pred, labels=labels, zero_division=0)
     return {l: (round(float(x), 3), int(s)) for l, x, s in zip(labels, f, sup)}
+
+
+def _metric_triplet(y_int, p_int, y_esc, p_esc):
+    """(intent_acc, intent_macroF1, esc_F1) — same estimators as evaluate()."""
+    acc = accuracy_score(y_int, p_int)
+    macro = f1_score(y_int, p_int, average="macro", zero_division=0)
+    _, _, fe, _ = precision_recall_fscore_support(y_esc, p_esc, average="binary", zero_division=0)
+    return acc, macro, float(fe)
+
+
+def bootstrap_delta_cis(y_int, y_esc, pA_int, pA_esc, pB_int, pB_esc,
+                        n_resamples=BOOTSTRAP_RESAMPLES, seed=BOOTSTRAP_SEED):
+    """Percentile 95% CIs for (B-A) deltas on acc/macroF1/escF1. Deterministic (seeded)."""
+    rng = np.random.default_rng(seed)
+    n = len(y_int)
+    yi = np.array(y_int, dtype=object)
+    ye = np.array(y_esc, dtype=int)
+    aI = np.array(pA_int, dtype=object)
+    aE = np.array(pA_esc, dtype=int)
+    bI = np.array(pB_int, dtype=object)
+    bE = np.array(pB_esc, dtype=int)
+    deltas = {"acc": [], "macroF1": [], "escF1": []}
+    for _ in range(n_resamples):
+        idx = rng.integers(0, n, n)
+        mA = _metric_triplet(yi[idx].tolist(), aI[idx].tolist(), ye[idx].tolist(), aE[idx].tolist())
+        mB = _metric_triplet(yi[idx].tolist(), bI[idx].tolist(), ye[idx].tolist(), bE[idx].tolist())
+        deltas["acc"].append(mB[0] - mA[0])
+        deltas["macroF1"].append(mB[1] - mA[1])
+        deltas["escF1"].append(mB[2] - mA[2])
+    return {k: (round(float(np.percentile(v, 2.5)), 3),
+                round(float(np.percentile(v, 97.5)), 3)) for k, v in deltas.items()}
+
+
+def mcnemar_exact(y_true, pA, pB):
+    """McNemar on correctness (A vs B). Returns dict(b=A-only, c=B-only, p=exact two-sided).
+
+    Uses scipy exact binomial when available, else chi-square with continuity
+    correction. b+c == 0 -> p = 1.0 (no discordant pairs).
+    """
+    a_ok = [a == y for a, y in zip(pA, y_true)]
+    b_ok = [b == y for b, y in zip(pB, y_true)]
+    b = sum(1 for a, c in zip(a_ok, b_ok) if a and not c)
+    c = sum(1 for a, d in zip(a_ok, b_ok) if not a and d)
+    n = b + c
+    if n == 0:
+        return {"b": 0, "c": 0, "p": 1.0}
+    if _binomtest is not None:
+        p = float(_binomtest(min(b, c), n, 0.5, alternative="two-sided").pvalue)
+    else:  # fallback: chi-square with continuity correction
+        from math import erf, sqrt
+        chi2 = (abs(b - c) - 1.0) ** 2 / n
+        z = sqrt(chi2)
+        p = float(1.0 - erf(z / sqrt(2.0)))
+    return {"b": b, "c": c, "p": round(p, 4)}
 
 
 def main():
@@ -155,8 +222,12 @@ def main():
 
     # A. weak-200 (circular: weak labels ARE the keyword output — headline warning)
     gw = pd.read_csv(GOLDEN_WEAK)
-    rows_w = [evaluate(name, fn, gw.text.tolist(), gw.intent.tolist(), gw.escalate.astype(int).tolist())
-              for name, fn in systems]
+    yw_int, yw_esc = gw.intent.tolist(), gw.escalate.astype(int).tolist()
+    rows_w, preds_w = [], {}
+    for name, fn in systems:
+        row, p_int, p_esc = evaluate(name, fn, gw.text.tolist(), yw_int, yw_esc)
+        rows_w.append(row)
+        preds_w[name] = (p_int, p_esc)
     dfw = pd.DataFrame(rows_w)
     print("\n== A. weak-200 (CIRCULAR, not headline) ==")
     print(dfw.to_string(index=False))
@@ -166,7 +237,11 @@ def main():
     gh = pd.read_csv(GOLDEN_HUMAN)
     yt = gh.human_intent.tolist()
     ye = gh.human_escalate.astype(int).tolist()
-    rows_h = [evaluate(name, fn, gh.text.tolist(), yt, ye) for name, fn in systems]
+    rows_h, preds_h = [], {}
+    for name, fn in systems:
+        row, p_int, p_esc = evaluate(name, fn, gh.text.tolist(), yt, ye)
+        rows_h.append(row)
+        preds_h[name] = (p_int, p_esc)
     dfh = pd.DataFrame(rows_h)
     print("\n== B. human-200 (HEADLINE) ==")
     print(dfh.to_string(index=False))
@@ -183,6 +258,28 @@ def main():
 
     d = dfh.set_index("system")
     s_triv, s_simp, s_fin = d.index[0], d.index[1], d.index[2]
+
+    # --- Phase 1 (Impl-B): uncertainty on final−simple deltas + McNemar pairs.
+    # Reuses the exact predictions above (no model change, no recompute drift).
+    ci_h = bootstrap_delta_cis(yt, ye, *preds_h[s_simp], *preds_h[s_fin])
+    ci_w = bootstrap_delta_cis(yw_int, yw_esc, *preds_w[s_simp], *preds_w[s_fin])
+    mc_h_sf = mcnemar_exact(yt, preds_h[s_simp][0], preds_h[s_fin][0])
+    mc_h_tf = mcnemar_exact(yt, preds_h[s_triv][0], preds_h[s_fin][0])
+    mc_w_sf = mcnemar_exact(yw_int, preds_w[s_simp][0], preds_w[s_fin][0])
+    mc_w_tf = mcnemar_exact(yw_int, preds_w[s_triv][0], preds_w[s_fin][0])
+
+    def _fmt_ci(ci):
+        return "[%+.3f, %+.3f]" % ci
+
+    print("\n== C. Bootstrap 95%% CIs, final-simple deltas (%d resamples, seed %d) =="
+          % (BOOTSTRAP_RESAMPLES, BOOTSTRAP_SEED))
+    for tag, ci in (("human-200", ci_h), ("weak-200 ", ci_w)):
+        print("%s acc %s  macroF1 %s  escF1 %s"
+              % (tag, _fmt_ci(ci["acc"]), _fmt_ci(ci["macroF1"]), _fmt_ci(ci["escF1"])))
+    print("== D. McNemar exact (intent correctness; b=A-only, c=B-only) ==")
+    for tag, m in (("human simple-vs-final ", mc_h_sf), ("human trivial-vs-final", mc_h_tf),
+                   ("weak  simple-vs-final ", mc_w_sf), ("weak  trivial-vs-final", mc_w_tf)):
+        print("%s b=%d c=%d p=%.4f" % (tag, m["b"], m["c"], m["p"]))
     md = []
     md.append("# Virgin baseline vs final — formal tables (brand=virgin)")
     md.append("")
@@ -234,6 +331,33 @@ def main():
     md.append("- Human-200 is single-annotator AI-assisted (60 manual-style + 140 rulebook-assisted, 41 flips); "
               "no inter-annotator κ yet; n=200 → CIs ≈±0.07 on acc. Safety slice is tiny (3 legal_safety) — "
               "see JUDGE_AGREEMENT.md. Do not claim launch on these numbers.")
+    md.append("")
+    md.append("## D. Uncertainty: bootstrap 95% CIs + McNemar (Phase 1, Impl-B)")
+    md.append(f"Method: {BOOTSTRAP_RESAMPLES} bootstrap resamples (seed {BOOTSTRAP_SEED}, percentile "
+              "CIs) on final-simple deltas; McNemar exact binomial two-sided on intent "
+              "correctness for simple-vs-final and trivial-vs-final. Same predictions as §§A–C (no model change).")
+    md.append("")
+    md.append("| Dataset | Metric | final-simple Δ | 95% CI |")
+    md.append("|---|---|---|---|")
+    for tag, ci, rows in (("human-200", ci_h, rows_h), ("weak-200", ci_w, rows_w)):
+        dlt = {k: rows[2][m] - rows[1][m] for k, m in
+               (("acc", "intent_acc"), ("macroF1", "intent_macroF1"), ("escF1", "esc_F1"))}
+        for k in ("acc", "macroF1", "escF1"):
+            md.append(f"| {tag} | {k} | {dlt[k]:+.3f} | {_fmt_ci(ci[k])} |")
+    md.append("")
+    md.append("| Dataset | McNemar pair (intent) | A-only (b) | B-only (c) | exact p |")
+    md.append("|---|---|---|---|---|")
+    md.append(f"| human-200 | simple vs final | {mc_h_sf['b']} | {mc_h_sf['c']} | {mc_h_sf['p']:.4f} |")
+    md.append(f"| human-200 | trivial vs final | {mc_h_tf['b']} | {mc_h_tf['c']} | {mc_h_tf['p']:.4f} |")
+    md.append(f"| weak-200 | simple vs final | {mc_w_sf['b']} | {mc_w_sf['c']} | {mc_w_sf['p']:.4f} |")
+    md.append(f"| weak-200 | trivial vs final | {mc_w_tf['b']} | {mc_w_tf['c']} | {mc_w_tf['p']:.4f} |")
+    md.append("")
+    md.append("Reading rule (significance-gated): CIs gate interpretation of FLIPS, not absolutes. "
+              "A delta whose CI includes 0 is noise — do not claim a win or a loss on it "
+              "(the human-200 intent lead is of this kind: small-n, SE≈0.028). "
+              "The promptfoo harness (`promptfooconfig.yaml`) blocks merges on pass-rate FLIPS "
+              "vs this baseline, not on absolute scores; a flip is actionable only when its CI "
+              "excludes 0 (or McNemar p < 0.05 on the paired comparison).")
     (VIRGIN_DIR / "BASELINE_VS_FINAL.md").write_text("\n".join(md) + "\n", encoding="utf-8")
     print("\nwrote results_weak200.csv, results_human200.csv, BASELINE_VS_FINAL.md")
     print(f"weak-vs-human intent acc={wva:.3f} kappa={wvk:.3f}")

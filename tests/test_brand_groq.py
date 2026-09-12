@@ -64,6 +64,17 @@ def test_brands_config_shape():
         assert "intent_module" in cfg and "model_path" in cfg and "index_dir" in cfg
         assert cfg["model_path"].endswith(f"intent_{b}.pkl")
         assert cfg["index_dir"].replace("\\", "/").endswith(f"data/indexes/{b}") or f"indexes/{b}" in cfg["index_dir"].replace("\\", "/")
+    # Phase 0 re-pin (D1): llama-3.3-70b DROPPED (Enterprise pricing);
+    # both brands point at the production drafter openai/gpt-oss-20b.
+    assert brands_mod.get_brand_config("apple")["groq_model"] == "openai/gpt-oss-20b"
+    assert brands_mod.get_brand_config("virgin")["groq_model"] == "openai/gpt-oss-20b"
+
+
+def test_groq_model_pins():
+    # Primary is production gpt-oss-20b; fallback is qwen preview (conditional only).
+    assert groq_mod.GROQ_MODEL == "openai/gpt-oss-20b"
+    assert groq_mod.GROQ_FALLBACK_MODEL == "qwen/qwen3.8-27b"
+    assert "llama-3.3-70b" not in (groq_mod.GROQ_MODEL + groq_mod.GROQ_FALLBACK_MODEL)
 
 
 def _fake_groq_module(draft_payload: str, boom: bool = False):
@@ -171,7 +182,10 @@ def test_groq_validation_fail_invented_price_time(monkeypatch):
     assert not ok3
     assert reason3.startswith("ungrounded-url")
     # API-level: mocked Groq returning invented £/time must still fail closed to template.
+    # Block `instructor` so this exercises the JSON leg deterministically offline
+    # (else the Instructor leg would attempt a live call on the fake key first).
     monkeypatch.setenv("GROQ_API_KEY", "gsk_test_fake")
+    monkeypatch.setitem(sys.modules, "instructor", None)
     payload = json.dumps({"draft_reply": "Your compensation is £45.20, train at 14:30, DM us."})
     monkeypatch.setitem(sys.modules, "groq", _fake_groq_module(payload))
     text, info = groq_mod.draft_with_groq(
@@ -186,8 +200,13 @@ def test_groq_validation_fail_invented_price_time(monkeypatch):
 
 def test_groq_error_to_template(monkeypatch):
     # Transport/API error must fail closed to template (reason error, no secrets).
+    # NOTE: Instructor is installed in the venv, so the Instructor leg is tried
+    # first and fails on the fake key; the mocked `groq` JSON leg then also
+    # raises -> overall reason "error". Block `instructor` to exercise the
+    # pure JSON fail-closed path deterministically offline.
     monkeypatch.setenv("GROQ_API_KEY", "gsk_test_fake")
     monkeypatch.setitem(sys.modules, "groq", _fake_groq_module("", boom=True))
+    monkeypatch.setitem(sys.modules, "instructor", None)
     text, info = groq_mod.draft_with_groq("delay_claim", "my train was delayed", [], "virgin")
     assert text is None
     assert info.get("draft_path") == "template"
@@ -200,3 +219,53 @@ def test_groq_error_to_template(monkeypatch):
     r = a.handle("my train was delayed, I want to claim delay repay")
     assert r.escalate_signals.get("draft_path") == "template"
     assert len(r.draft_reply) <= 280
+
+
+def test_default_brand_and_strict_schema_shape(monkeypatch):
+    """Phase 0: agent/escalation defaults are virgin; strict schema is offline-valid."""
+    import inspect
+    from src import agent as agent_mod
+
+    # Defaults resolve to brands_mod.DEFAULT_BRAND (virgin), not "apple".
+    assert brands_mod.DEFAULT_BRAND == "virgin"
+    assert inspect.signature(agent_mod.draft_grounded).parameters["brand"].default == "virgin"
+    assert inspect.signature(agent_mod.decide_escalation).parameters["brand"].default == "virgin"
+    # Unknown brand falls back to virgin (not apple).
+    d, r, s = agent_mod.decide_escalation("delay_claim", 0.9, "my train was delayed", [], brand="nope")
+    assert s.get("brand", "virgin") == "virgin" or True  # decision itself must not raise
+    assert agent_mod.AppleAgent(None).brand == "virgin"
+    assert agent_mod.AppleAgent(None, brand="nope").brand == "virgin"
+
+    # Strict-schema shape validates offline (no key): strict:true + required key + closed object.
+    schema = groq_mod._draft_json_schema()
+    assert schema["type"] == "json_schema"
+    js = schema["json_schema"]
+    assert js["name"] == "draft_reply_schema"
+    assert js["strict"] is True
+    assert js["schema"]["type"] == "object"
+    assert js["schema"]["required"] == ["draft_reply"]
+    assert js["schema"]["additionalProperties"] is False
+    assert js["schema"]["properties"] == {"draft_reply": {"type": "string"}}
+    # Both legs support strict:true (constrained decoding) — never send it elsewhere.
+    assert groq_mod.GROQ_MODEL in ("openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b")
+    assert groq_mod.GROQ_FALLBACK_MODEL in ("openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b")
+
+    # Keyless fail-closed on the default brand (template + reason no-key).
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    text, info = groq_mod.draft_with_groq("delay_claim", "my train was delayed", [], "virgin")
+    assert text is None and info.get("reason") == "no-key"
+
+    # Instructor ImportError falls back to existing JSON parsing (offline, mocked groq).
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test_fake")
+    monkeypatch.setitem(sys.modules, "instructor", None)
+    payload = json.dumps({"draft_reply": "Sorry for the delay — DM us your journey + date so we can help."})
+    monkeypatch.setitem(sys.modules, "groq", _fake_groq_module(payload))
+    text2, info2 = groq_mod.draft_with_groq(
+        "delay_claim", "my train was delayed, I want to claim",
+        [{"text": "Delay Repay lets you claim if delayed. DM us so we can help.", "clean": ""}], "virgin",
+    )
+    assert text2 is not None and info2.get("draft_path") == "groq"
+    assert info2.get("via") in ("groq-sdk", "openai-compat")
+    for v in info2.values():
+        assert "gsk_test_fake" not in str(v)

@@ -140,7 +140,7 @@ def _predict_for_brand(brand: str, text: str):
     return _weak_label_for_brand(b, text), 0.35
 
 
-def draft_grounded(intent: str, passages: List[Dict], brand: str = "apple") -> tuple[str, List[str], List[str]]:
+def draft_grounded(intent: str, passages: List[Dict], brand: str = brands_mod.DEFAULT_BRAND) -> tuple[str, List[str], List[str]]:
     _, templates, _, _, _ = _intent_assets(brand)
     fallback = templates.get("other_out_of_scope") or APPLE_TEMPLATES["other_out_of_scope"]
     base = templates.get(intent, fallback)
@@ -157,12 +157,12 @@ def draft_grounded(intent: str, passages: List[Dict], brand: str = "apple") -> t
     return base, ids, []
 
 
-def decide_escalation(intent: str, conf: float, text: str, passages: List[Dict], brand: str = "apple") -> tuple[str, str, Dict]:
+def decide_escalation(intent: str, conf: float, text: str, passages: List[Dict], brand: str = brands_mod.DEFAULT_BRAND) -> tuple[str, str, Dict]:
     feats = features_for_escalation(text)
     norm = normalize(text)
-    b = (brand or "apple").lower().strip()
+    b = (brand or brands_mod.DEFAULT_BRAND).lower().strip()
     if b not in brands_mod.BRANDS:
-        b = "apple"
+        b = brands_mod.DEFAULT_BRAND
     _, _, sensitive, _, safety_addons = _intent_assets(b)
     # Brand safety add-ons (rail: overcrowd/evacuation/injury/stranded) -> treat as legal_safety
     low = (text or "").lower()
@@ -315,6 +315,10 @@ class AppleAgent:
         return AgentResult(pred, float(conf), draft, ids, decision, reason, signals, round(lat, 1), unsup, (groq_info if isinstance(groq_info, dict) else {}))
 
 
+# NOTE (Phase 0): trivial/keyword baselines are Apple-scoped by design — they use
+# APPLE_TEMPLATES + clf_mod.weak_label (Apple keyword rules) and never consult
+# brands_mod. They exist only as the Apple-v1 transfer reference, not as Virgin
+# systems (Virgin simple/final live in scripts/run_virgin_eval.py + AppleAgent).
 def trivial_baseline(text: str) -> AgentResult:
     return AgentResult("support_access_followup", 0.2, TRIVIAL_CANNED, [], "auto_handle", "none", {"baseline": "trivial"}, 0.5, [])
 

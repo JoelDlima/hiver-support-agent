@@ -37,4 +37,4 @@ This doc is the exact procedure to finish the "proof" once a key exists. Nothing
   money regex-mined n=40 → **0.575**. Raw slice: `evaluation/virgin/safety_slice.csv`.
 - Honesty: these are NOT human-labelled recall — they measure trigger coverage on lexicon-mined
   candidates (money slice includes non-escalatable mentions like "save me money").
-  Human-labelled recall stays: safety 1.000 (n=3, tiny) + money 0.800 (n=20).
+  Human-labelled recall stays: safety 1.000 (n=3, tiny) + money 0.850 (17/20).

@@ -1,0 +1,206 @@
+{
+  "model": "models/intent_virgin.pkl (FROZEN \u2014 read-only predict_proba; headline acc 0.795 untouched)",
+  "source": "evaluation/virgin/judge_scores_200.csv (n=200; text+human_intent)",
+  "n": 200,
+  "msp_floor": {
+    "value": 0.45,
+    "rationale": "aligns with production low_conf gate (src/agent.py conf<0.45); measured coverage 0.970, covered argmax acc 0.799",
+    "coverage": 0.97,
+    "covered_argmax_acc": 0.799,
+    "grid": {
+      "0.30": {
+        "coverage": 0.995,
+        "covered_acc": 0.794,
+        "n_abstain": 1
+      },
+      "0.35": {
+        "coverage": 0.99,
+        "covered_acc": 0.793,
+        "n_abstain": 2
+      },
+      "0.40": {
+        "coverage": 0.985,
+        "covered_acc": 0.792,
+        "n_abstain": 3
+      },
+      "0.45": {
+        "coverage": 0.97,
+        "covered_acc": 0.799,
+        "n_abstain": 6
+      },
+      "0.50": {
+        "coverage": 0.945,
+        "covered_acc": 0.804,
+        "n_abstain": 11
+      },
+      "0.55": {
+        "coverage": 0.9,
+        "covered_acc": 0.8,
+        "n_abstain": 20
+      },
+      "0.60": {
+        "coverage": 0.855,
+        "covered_acc": 0.801,
+        "n_abstain": 29
+      },
+      "0.65": {
+        "coverage": 0.81,
+        "covered_acc": 0.802,
+        "n_abstain": 38
+      },
+      "0.70": {
+        "coverage": 0.745,
+        "covered_acc": 0.812,
+        "n_abstain": 51
+      }
+    }
+  },
+  "money_intents": [
+    "delay_claim",
+    "fare_ticketing",
+    "ticket_change_refund"
+  ],
+  "recall_guard": 0.5,
+  "per_intent": {
+    "accessibility_assistance": {
+      "threshold": 0.8345,
+      "precision": 0.778,
+      "recall": 1.0,
+      "f1": 0.875,
+      "support": 14,
+      "tp": 14,
+      "fp": 4,
+      "fn": 0,
+      "roc_auc": 0.988,
+      "average_precision": 0.752,
+      "rule": "F1-optimal on PR curve (ties -> smallest threshold)",
+      "money_tuned": false
+    },
+    "complaint_service": {
+      "threshold": 0.2754,
+      "precision": 0.773,
+      "recall": 0.739,
+      "f1": 0.756,
+      "support": 23,
+      "tp": 17,
+      "fp": 5,
+      "fn": 6,
+      "roc_auc": 0.925,
+      "average_precision": 0.762,
+      "rule": "F1-optimal on PR curve (ties -> smallest threshold)",
+      "money_tuned": false
+    },
+    "delay_claim": {
+      "threshold": 0.4771,
+      "precision": 0.947,
+      "recall": 0.75,
+      "f1": 0.837,
+      "support": 24,
+      "tp": 18,
+      "fp": 1,
+      "fn": 6,
+      "roc_auc": 0.973,
+      "average_precision": 0.92,
+      "rule": "max-precision s.t. recall>=0.5 (guarded; pure-P>=0.90 collapses refund recall)",
+      "money_tuned": true
+    },
+    "fare_ticketing": {
+      "threshold": 0.6945,
+      "precision": 0.941,
+      "recall": 0.889,
+      "f1": 0.914,
+      "support": 18,
+      "tp": 16,
+      "fp": 1,
+      "fn": 2,
+      "roc_auc": 0.996,
+      "average_precision": 0.949,
+      "rule": "max-precision s.t. recall>=0.5 (guarded; pure-P>=0.90 collapses refund recall)",
+      "money_tuned": true
+    },
+    "howto_guidance": {
+      "threshold": 0.5324,
+      "precision": 0.65,
+      "recall": 0.765,
+      "f1": 0.703,
+      "support": 17,
+      "tp": 13,
+      "fp": 7,
+      "fn": 4,
+      "roc_auc": 0.857,
+      "average_precision": 0.62,
+      "rule": "F1-optimal on PR curve (ties -> smallest threshold)",
+      "money_tuned": false
+    },
+    "lost_property": {
+      "threshold": 0.1474,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.889,
+      "support": 16,
+      "tp": 16,
+      "fp": 4,
+      "fn": 0,
+      "roc_auc": 0.988,
+      "average_precision": 0.826,
+      "rule": "F1-optimal on PR curve (ties -> smallest threshold)",
+      "money_tuned": false
+    },
+    "other_out_of_scope": {
+      "threshold": 0.3371,
+      "precision": 0.8,
+      "recall": 0.552,
+      "f1": 0.653,
+      "support": 29,
+      "tp": 16,
+      "fp": 4,
+      "fn": 13,
+      "roc_auc": 0.736,
+      "average_precision": 0.622,
+      "rule": "F1-optimal on PR curve (ties -> smallest threshold)",
+      "money_tuned": false
+    },
+    "support_access_followup": {
+      "threshold": 0.5854,
+      "precision": 0.789,
+      "recall": 1.0,
+      "f1": 0.882,
+      "support": 15,
+      "tp": 15,
+      "fp": 4,
+      "fn": 0,
+      "roc_auc": 0.985,
+      "average_precision": 0.761,
+      "rule": "F1-optimal on PR curve (ties -> smallest threshold)",
+      "money_tuned": false
+    },
+    "ticket_change_refund": {
+      "threshold": 0.7083,
+      "precision": 0.867,
+      "recall": 0.565,
+      "f1": 0.684,
+      "support": 23,
+      "tp": 13,
+      "fp": 2,
+      "fn": 10,
+      "roc_auc": 0.941,
+      "average_precision": 0.776,
+      "rule": "max-precision s.t. recall>=0.5 (guarded; pure-P>=0.90 collapses refund recall)",
+      "money_tuned": true
+    },
+    "timetable_platform": {
+      "threshold": 0.6979,
+      "precision": 0.81,
+      "recall": 0.81,
+      "f1": 0.81,
+      "support": 21,
+      "tp": 17,
+      "fp": 4,
+      "fn": 4,
+      "roc_auc": 0.885,
+      "average_precision": 0.662,
+      "rule": "F1-optimal on PR curve (ties -> smallest threshold)",
+      "money_tuned": false
+    }
+  }
+}

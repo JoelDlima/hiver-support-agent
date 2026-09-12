@@ -1,7 +1,15 @@
-"""Groq live drafter (qwen/qwen3.8-27b per user) + fallback + validation gate.
+"""Groq live drafter (openai/gpt-oss-20b primary + qwen/qwen3.8-27b conditional fallback) + validation gate.
 
 Fail-closed to template: (None, info) on no-key / no-client / error / validation-fail.
 Key via GROQ_API_KEY env only — never committed (see .env.example).
+Strict constrained decoding (`strict:true`) is supported ONLY on
+openai/gpt-oss-20b, openai/gpt-oss-120b and qwen/qwen3.8-27b
+(console.groq.com/docs/structured-outputs, verified 2026-09-12) — both legs
+below are in that set, so strict:true is always valid here. Streaming +
+tool-use are NOT supported with Structured Outputs (plain-text stream path only).
+Instructor path: `instructor.from_provider("groq/<model>")` (instructor==1.17.0)
+with graceful ImportError fallback to the existing JSON-schema parsing
+(no hard dependency at import time).
 Research: research/models/groq_qwen_integration.md (stream+response_format=400 -> two paths;
 reasoning_effort default; max_completion_tokens; £/HH:MM grounding).
 """
@@ -10,8 +18,12 @@ import os
 import re
 
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
-GROQ_MODEL = "qwen/qwen3.8-27b"
-GROQ_FALLBACK_MODEL = "openai/gpt-oss-120b"
+# D1 (PLAN_V2, locked 2026-09-12): primary = openai/gpt-oss-20b (production,
+# $0.075/$0.30 per M, ~1000 t/s, strict:true); fallback = qwen/qwen3.8-27b
+# (preview, conditional arm only — may be discontinued without notice).
+# llama-3.3-70b-versatile DROPPED (Enterprise/ContactSales pricing).
+GROQ_MODEL = "openai/gpt-oss-20b"
+GROQ_FALLBACK_MODEL = "qwen/qwen3.8-27b"
 MAX_DRAFT_CHARS = 280
 
 PRICE_RE = re.compile(r"£")
@@ -92,6 +104,69 @@ def _client():
         return None, "no-client"
 
 
+def _draft_json_schema():
+    """Strict JSON-schema shape for {"draft_reply": str} (offline-validatable).
+
+    Valid ONLY with strict:true on openai/gpt-oss-20b, openai/gpt-oss-120b and
+    qwen/qwen3.8-27b (constrained decoding). Both GROQ_MODEL legs are in that
+    set — never send strict:true to any other model.
+    """
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "draft_reply_schema",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "properties": {"draft_reply": {"type": "string"}},
+                "required": ["draft_reply"],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
+def _try_instructor_draft(model, sys_prompt, user_prompt):
+    """Instructor from_provider draft for one model.
+
+    Returns (draft|None, via|None, usage). ImportError (or missing pydantic) ->
+    (None, None, None) so the caller falls back to the existing JSON parsing.
+    Any other exception -> (None, "error:<Type>", empty-usage) and the caller
+    still tries the JSON path for the same model before the next fallback leg.
+    No hard dependency at import time; no secrets in outputs.
+    """
+    try:
+        import instructor  # noqa: F401  (optional dep, instructor==1.17.0)
+    except ImportError:
+        return None, None, None
+    try:
+        from pydantic import BaseModel
+
+        class _DraftReply(BaseModel):
+            draft_reply: str
+
+        client = instructor.from_provider(f"groq/{model}")
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": sys_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.6,
+            max_completion_tokens=256,
+            top_p=0.95,
+            response_model=_DraftReply,
+            strict=True,
+            max_retries=1,
+        )
+        draft = (getattr(resp, "draft_reply", "") or "").strip()
+        return draft, "instructor", _empty_usage()
+    except ImportError:
+        return None, None, None
+    except Exception as e:
+        return None, f"error:{type(e).__name__}", _empty_usage()
+
+
 def _empty_usage():
     return {"prompt_tokens": None, "completion_tokens": None}
 
@@ -137,6 +212,19 @@ def draft_with_groq(intent, inbound, passages, brand="virgin"):
         return None, {**info_base, "reason": "no-client", "draft_path": "template",
                       "sys_prompt": "", "user_prompt": "", "usage": _empty_usage()}
     for model in (GROQ_MODEL, GROQ_FALLBACK_MODEL):
+        # 1) Instructor structured path (optional dep; ImportError -> JSON below).
+        try:
+            _ins_draft, _ins_via, _ins_usage = _try_instructor_draft(model, _sys_prompt, _user_prompt)
+        except Exception:
+            _ins_draft, _ins_via, _ins_usage = None, None, None
+        if _ins_draft:
+            ok, reason = validate_draft(_ins_draft, inbound, passages)
+            if not ok:
+                return None, {**info_base, "model": model, "reason": f"validation-fail:{reason}", "draft_path": "template",
+                              "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _ins_usage or _empty_usage()}
+            return _ins_draft, {**info_base, "model": model, "reason": "ok", "draft_path": "groq", "via": _ins_via or "instructor",
+                                "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _ins_usage or _empty_usage()}
+        # 2) Existing JSON-schema path (fallback when Instructor is absent or errored).
         try:
             resp = client.chat.completions.create(
                 model=model,
@@ -147,19 +235,7 @@ def draft_with_groq(intent, inbound, passages, brand="virgin"):
                 temperature=0.6,
                 max_completion_tokens=256,
                 top_p=0.95,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "draft_reply_schema",
-                        "strict": True,
-                        "schema": {
-                            "type": "object",
-                            "properties": {"draft_reply": {"type": "string"}},
-                            "required": ["draft_reply"],
-                            "additionalProperties": False,
-                        },
-                    },
-                },
+                response_format=_draft_json_schema(),
                 stop=None,
             )
             content = resp.choices[0].message.content or ""

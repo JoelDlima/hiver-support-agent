@@ -1,17 +1,23 @@
 # Hiver AppleSupport — CPU-only, <15min repro (Python 3.12)
-# Core pins verified via `pip index versions` on 2026-09-10 (py312 win_amd64 wheels available).
+# Frozen to venv-tested versions 2026-09-12 (py3.12 win_amd64; pytest 33 green + virgin eval bit-identical).
 # Install: py -3.12 -m venv .venv & .venv\Scripts\activate & pip install -r requirements.txt
-numpy==1.26.4
-scipy==1.14.1
-pandas==2.2.3
-scikit-learn==1.7.1
-joblib==1.4.2
-fastapi==0.115.12
-uvicorn==0.34.0
-streamlit==1.41.1
-pytest==8.3.5
+numpy==2.5.3
+scipy==1.18.1
+pandas==3.0.5
+scikit-learn==1.9.0
+joblib==1.6.0
+fastapi==0.141.1
+uvicorn==0.52.4
+streamlit==1.63.0
+pytest==9.1.1
 httpx==0.28.1
-python-multipart==0.0.20
+python-multipart==0.0.32
+# Phase 0 Groq ladder (venv-tested 2026-09-12, py3.12 win_amd64):
+# groq 1.7.0 pre-present; instructor 1.17.0 via `C:\Hiver\.venv\Scripts\python.exe -m pip install "instructor==1.17.0"`;
+# rank-bm25 0.2.2 pre-present (Phase 1b retrieval, flag-gated OFF by default).
+groq==1.7.0
+instructor==1.17.0
+rank-bm25==0.2.2
 
 # ---- Optional (offline-tolerant; uncomment only if network + time allow) ----
 # CPU-only torch: install with:

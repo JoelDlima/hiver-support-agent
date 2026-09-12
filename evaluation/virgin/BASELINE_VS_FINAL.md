@@ -42,3 +42,24 @@ Deltas final−simple: acc +0.005, macroF1 +0.007, esc_F1 +0.529.
 - Weak-200 numbers (§A) flatter simple (0.975 post-fix; 1.000 pre-fix) and punish final for generalizing — never quote §A without the circularity warning. Train-subset acc 0.969 (vs weak) is equally circular.
 - Groundedness ≥4 rate for final (~1.0) is heuristic-shaped (template contains the scored tokens), not span-attributed faithfulness; pair with correctness + retrieval before any quality claim.
 - Human-200 is single-annotator AI-assisted (60 manual-style + 140 rulebook-assisted, 41 flips); no inter-annotator κ yet; n=200 → CIs ≈±0.07 on acc. Safety slice is tiny (3 legal_safety) — see JUDGE_AGREEMENT.md. Do not claim launch on these numbers.
+
+## D. Uncertainty: bootstrap 95% CIs + McNemar (Phase 1, Impl-B)
+Method: 2000 bootstrap resamples (seed 20260912, percentile CIs) on final-simple deltas; McNemar exact binomial two-sided on intent correctness for simple-vs-final and trivial-vs-final. Same predictions as §§A–C (no model change).
+
+| Dataset | Metric | final-simple Δ | 95% CI |
+|---|---|---|---|
+| human-200 | acc | +0.005 | [-0.015, +0.025] |
+| human-200 | macroF1 | +0.007 | [-0.014, +0.028] |
+| human-200 | escF1 | +0.529 | [+0.344, +0.709] |
+| weak-200 | acc | -0.005 | [-0.025, +0.015] |
+| weak-200 | macroF1 | -0.004 | [-0.026, +0.017] |
+| weak-200 | escF1 | +0.478 | [+0.254, +0.699] |
+
+| Dataset | McNemar pair (intent) | A-only (b) | B-only (c) | exact p |
+|---|---|---|---|---|
+| human-200 | simple vs final | 2 | 3 | 1.0000 |
+| human-200 | trivial vs final | 0 | 144 | 0.0000 |
+| weak-200 | simple vs final | 3 | 2 | 1.0000 |
+| weak-200 | trivial vs final | 0 | 175 | 0.0000 |
+
+Reading rule (significance-gated): CIs gate interpretation of FLIPS, not absolutes. A delta whose CI includes 0 is noise — do not claim a win or a loss on it (the human-200 intent lead is of this kind: small-n, SE≈0.028). The promptfoo harness (`promptfooconfig.yaml`) blocks merges on pass-rate FLIPS vs this baseline, not on absolute scores; a flip is actionable only when its CI excludes 0 (or McNemar p < 0.05 on the paired comparison).

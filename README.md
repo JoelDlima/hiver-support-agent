@@ -73,7 +73,7 @@ Circular reference — weak-200 (source: `BASELINE_VS_FINAL.md` §A, do not cite
 
 Baselines: **trivial** = majority + canned, never-escalate; **simple** = virgin keyword rules (post-fix) + virgin NN top-1 copy; **final** = TF-IDF LogReg (`models/intent_virgin.pkl`, 30k weak post-fix, `class_weight=balanced`) + virgin NN k=5 + virgin templates (delay with DR30 bands) + brand-aware triggers (rail SAFETY_ADDONS, money intents, crowd remap, PII gate) (source: `BASELINE_VS_FINAL.md` header).
 
-Judge gate (source: `evaluation/virgin/JUDGE_AGREEMENT.md`): heuristic offline + LLM hook, ship gate `wκ ≥ 0.60 + safety-recall ≥ 0.90`, currently **advisory-only**. Esc-vs-human: acc 0.915 κ 0.715 (P 0.778 R 0.757 F1 0.767). Safety recall 1.000 on n=3 human `legal_safety` (tiny — CI ~0.4–1.0, gate NOT claimable); money recall 0.850 on n=20 human `money_threshold`. Groundedness judge-harness heuristic: mean 4.32, ≥4 rate 1.000 (template-shaped, circular by design); eval-harness heuristic on the same 200: mean 4.21, ≥4 rate 0.900 (source: `results_human200.csv`). Keyed LLM-judge studies (Groq `qwen/qwen3.8-27b`, temp 0, n=30, source: `evaluation/virgin/LLM_JUDGE_30.md`): v1 (no passages) verdict κ 0.253, groundedness wκ 0.060 → gate holds, advisory-only; v2 (passage texts + double-run, self-consistency 1.000) verdict κ −0.005 → gate holds twice. Groq draft A/B on same 30: 29/30 live drafts, 1 too-long rejected by gate, specificity upgrade only — template stays default.
+Judge gate (source: `evaluation/virgin/JUDGE_AGREEMENT.md`): heuristic offline + LLM hook, ship gate `wκ ≥ 0.60 + safety-recall ≥ 0.90`, currently **advisory-only**. Esc-vs-human: acc 0.915 κ 0.715 (P 0.778 R 0.757 F1 0.767). Safety recall 1.000 on n=3 human `legal_safety` (tiny — CI ~0.4–1.0, gate NOT claimable); money recall 0.850 on n=20 human `money_threshold`. Groundedness judge-harness heuristic: mean 4.32, ≥4 rate 1.000 (template-shaped, circular by design); eval-harness heuristic on the same 200: mean 4.21, ≥4 rate 0.900 (source: `results_human200.csv`). Keyed LLM-judge studies (run on Groq `qwen/qwen3.8-27b`, temp 0, n=30, source: `evaluation/virgin/LLM_JUDGE_30.md`; live drafter now `openai/gpt-oss-20b` + conditional `qwen/qwen3.8-27b` preview fallback): v1 (no passages) verdict κ 0.253, groundedness wκ 0.060 → gate holds, advisory-only; v2 (passage texts + double-run, self-consistency 1.000) verdict κ −0.005 → gate holds twice. Groq draft A/B on same 30: 29/30 live drafts, 1 too-long rejected by gate, specificity upgrade only — template stays default.
 
 Failure probes (source: `evaluation/virgin/FAILURE_TESTS.md`): exact-text re-probe 2026-09-11 post-fix F1–F7, 9 probes: **9 PASS / 0 PARTIAL / 0 FAIL** (was 5/1/3 on 2026-09-10). Regression tests: `tests/test_virgin_fixes.py`. F1 draft states DR30 bands; F3b fires `pii_review` on the phone regex itself (number NOT echoed).
 
@@ -81,11 +81,11 @@ Failure probes (source: `evaluation/virgin/FAILURE_TESTS.md`): exact-text re-pro
 
 ### Built With
 
-* Python 3.12 (source: `requirements.txt` header) — `numpy==1.26.4`, `pandas==2.2.3`, `scikit-learn==1.7.1` (TF-IDF + LogReg intent, NN retrieval), `scipy==1.14.1`, `joblib==1.4.2`
-* FastAPI `0.115.12` + `uvicorn==0.34.0` — `backend/main.py` (`/predict` brand-aware, `/healthz`, `/readyz`, `/metrics` per-brand)
+* Python 3.12 (source: `requirements.txt` header) — `numpy==2.5.3`, `pandas==3.0.5`, `scikit-learn==1.9.0` (TF-IDF + LogReg intent, NN retrieval), `scipy==1.18.1`, `joblib==1.6.0`
+* FastAPI `0.141.1` + `uvicorn==0.52.4` — `backend/main.py` (`/predict` brand-aware, `/healthz`, `/readyz`, `/metrics` per-brand)
 * Next.js 14 (`next ^14.2.18` in `frontend-next/package.json`) + React 18.3.1 + three.js / `@react-three/fiber` + `framer-motion` + `tailwindcss` — demo UI on `:3000`
-* Streamlit `1.41.1` — legacy demo `frontend/app.py` (no server)
-* pytest `8.3.5` + `httpx==0.28.1` — `tests/` incl. `test_virgin_fixes.py`
+* Streamlit `1.63.0` — legacy demo `frontend/app.py` (no server)
+* pytest `9.1.1` + `httpx==0.28.1` — `tests/` (33 passed) incl. `test_virgin_fixes.py` + `test_brand_groq.py`
 * Groq optional drafter behind gate (`src/groq_draft.py`, key via env only, fail-closed to template)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -177,7 +177,7 @@ Groq key (optional live drafter; keyless default; fail-closed to template):
 $env:GROQ_API_KEY="gsk_..."  # unset = template path (reason no-key)
 # fail-closed: no-key / no-client / error / validation-fail (too-long, ungrounded £/HH:MM/URL) -> template.
 # UI/API show draft_path (template|groq) + groq_reason (no-key|no-client|validation-fail:*|error|ok).
-# Keyed study model: qwen/qwen3.8-27b temp 0 (source: evaluation/virgin/LLM_JUDGE_30.md). Free tier ~30 RPM — never on critical path, never bulk in eval gates.
+# Live drafter: openai/gpt-oss-20b temp 0 (fallback qwen/qwen3.8-27b conditional preview; prior n=30 study ran on qwen/qwen3.8-27b, source: evaluation/virgin/LLM_JUDGE_30.md). Free tier ~30 RPM — never on critical path, never bulk in eval gates.
 ```
 
 _For more examples, please refer to the [Virgin 6-page report](docs/REPORT_VIRGIN_6PAGE.md) and [BASELINE_VS_FINAL](evaluation/virgin/BASELINE_VS_FINAL.md)._

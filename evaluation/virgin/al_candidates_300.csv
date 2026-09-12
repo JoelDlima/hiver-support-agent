@@ -1,0 +1,313 @@
+tweet_id,text,pred_intent,margin,query_strategy
+1119697,@VirginTrains is considerably cheaper online. Really unfair to be honest since I've already paid for a train ticket I couldn't use.,fare_ticketing,0.0,margin
+2451389,@120576 @VirginTrains Sounds like this line has frequent issues ..was also delayed for an hour on the way upto Edinburgh Friday. How do I formalize my complaint?,complaint_service,0.0001,margin
+1614087,My mum is having a hellish journey from Kings X to Leeds thanks to @VirginTrains - left behind in Peterborough because the coach she was supposed to get on was too full to take all passengers.,complaint_service,0.0001,margin
+2249297,@VirginTrains Christmas spirit,other_out_of_scope,0.0001,margin
+1759108,@virgintrains the 5 train to Newcastle (peak) had tons of space the 6 (off) is booked out. All wrong,ticket_change_refund,0.0002,margin
+851055,@VirginTrains because of this reservation idea I was late for my train and had to wait an hour because no one told me this anywhere 🖒2/2,delay_claim,0.0002,margin
+121159,@VirginTrains why do your tickets cost so much when your Wi-Fi doesn't even work?,other_out_of_scope,0.0007,margin
+1664242,@VirginTrains Top drawer ^HP,support_access_followup,0.0007,margin
+912638,"@VirginTrains good to see the app updates on expired tickets, but you should admit the buying is wrong. Go back to old. 😕",other_out_of_scope,0.0011,margin
+2437846,"@699293 @VirginTrains I think what the lady is implying. You should let on  enough for seated booked. Quota for non seated. That's all, not weight tested.",complaint_service,0.0011,margin
+796211,@309841 @VirginTrains Cheers! https://t.co/csaQs2XY9g,other_out_of_scope,0.0012,margin
+621622,@VirginTrains Yes you can. My father booked some London train tickets the wrong way round and now no offer to help or refund the tickets! Disgusting! My father is a pensioner!!,complaint_service,0.0015,margin
+1640406,@VirginTrains can I use off peak ticket on peak train tomorrow as trains cancelled today?,howto_guidance,0.0017,margin
+1894759,@VirginTrains Will try!,other_out_of_scope,0.0017,margin
+1860928,@VirginTrains help! I'm on the 9.10am train to Chester tomorrow and my printer has just ran out of black ink. The ticket is very faint. Will I be ok using the faint ticket and the pdf on my phone? 🙏,fare_ticketing,0.0018,margin
+413873,@VirginTrains I've reported on there thanks for the link. 90 mins standing already and 30 mins to continue standing. Entirely due to virgin trains. I'm so angry.,delay_claim,0.0018,margin
+1329565,@VirginTrains My son is stuck at Euston - his train to Lancaster was meant to leave 45 mins ago.  Should he come home or will any train be leaving Euston for Lancaster today?,other_out_of_scope,0.002,margin
+2394112,@VirginTrains Use the app for booking but also logged into the main site too; my number used to be auto stored and since you upgraded the app it isn’t!,fare_ticketing,0.002,margin
+163758,@VirginTrains waiting for the 8pm to manchester piccadilly from euston and it says the train is delayed.. can you tell me if the train is going to be on time?,delay_claim,0.002,margin
+2878416,Announcement on @VirginTrains NE “we advise passengers in coach H to move carriages as heating is broken &amp; it won’t be getting warmer” 🙄,complaint_service,0.0021,margin
+2812036,"@VirginTrains As a member of the Traveller Club I expect my journeys, especially at this time of the morning, to be free of existential angst. Install a more agreeable disembodied voice in the loo for my return journey.",complaint_service,0.0023,margin
+1879672,"@VirginTrains So, on 18:42 out of Coventry to GLC.  Advertised as dinner service train, and confirmed by yourselves as hot meal before Woverhampton. Can you guess the frustrating, and disappointing reality? #Hangry",other_out_of_scope,0.0023,margin
+602050,@VirginTrains What’s that supposed to mean??!! This is a scheduled train so is it not reasonable to expect that water will be allocated to the train?? #appallingresponse,complaint_service,0.0023,margin
+747308,@VirginTrains It would be but no staff have seen us in the entire journey and the train is now too full to move up and down the carriage,other_out_of_scope,0.0023,margin
+2960918,@706765 @VirginTrains @124107 You will need to speak to one of their employees on arrival. ^SH,timetable_platform,0.0027,margin
+492999,Brilliant. Train broken down just outside Euston.  No idea how long till towed back to Euston. Would be quicker to walk back if let us out! They’ve turned electricity off &amp; below a snapshot in carriage. Worrying they handing out hand warmers &amp; blankets...  @VirginTrains 😡👎🏿 https://t.co/L7M7bljYJu,other_out_of_scope,0.0027,margin
+550283,@VirginTrains Any answer??????,support_access_followup,0.0027,margin
+1790209,"@GWRHelp @VirginTrains &amp; sure, I'll email. When the train is 'being prepared' u would think that includes toilets. Seems not #ungreatwestern",complaint_service,0.0028,margin
+2703916,"😡 after travel from Edin to Kingx. Train cancelled, meaning we spent 4 hrs in aisle with baby. If the alternative train was this busy we should have been informed. We wouldn't have got on! BF baby in toilet #notgoodenoughvirgintrains @VirginTrains #howmuchspace£250buysyou https://t.co/KIkZyLA7xe",delay_claim,0.0028,margin
+1611324,@VirginTrains Hi is the 12.15 train to Liverpool from Euston due to run,timetable_platform,0.0029,margin
+2556448,@VirginTrains Ok cheers,support_access_followup,0.0031,margin
+2299334,"My Week Ahead:
+Monday: Packing, GP appt, @667395 Public Meeting 🌈, Packing
+Tuesday: Packing, Nurse appt, @667396 work, Worrying if I've packed ok,
+Wednesday: 🚆@VirginTrains &amp; @120576 to COV-ABD
+Thursday: ????
+Friday: ✈️ @3129 &amp; @AmericanAir ABZ-GRR!",other_out_of_scope,0.0032,margin
+478375,@VirginTrains on the EC train to London Kings Cross due in at 1.49pm.. coach E has no power for anyone to use the sockets. Pretty rubbish for people who have been travelling since early morning #deadbattery,complaint_service,0.0034,margin
+41097,@VirginTrains Just sent it,support_access_followup,0.0036,margin
+1652569,@VirginTrains how can your on-train reservations show a seat booked from rugby to London but then someone turn up with a ticket from wolves?,howto_guidance,0.0039,margin
+1184858,@VirginTrains Any idea when the 15:47 from Liverpool will be allowed to leave?,timetable_platform,0.004,margin
+1327085,@VirginTrains Services?,other_out_of_scope,0.0041,margin
+489336,"@VirginTrains @127472 which numbers haven't I called. It's amazing you do such a great job hiding all UK landline numbers, well done - way to avoid calls from very angry customers unable to get assistance from your call centre staff. If I could never use your services again, I would happily boycott..",accessibility_assistance,0.0042,margin
+815760,@VirginTrains How is it fair for you to ask people to pay £150+ for a ticket and then offer such an informed knowledge of mishaps? An utter disgrace.,other_out_of_scope,0.0042,margin
+2725667,"Hi @VirginTrains , trying to take advantage of your 50% off tickets deal for Jan-March but when I try to book for Feb I'm told it's too early - anything you can do? Thanks!",ticket_change_refund,0.0043,margin
+939956,So many adults/ children with tickets standing throughout carriages and doorways of @VirginTrains London Euston - Glasgow 13.30.,other_out_of_scope,0.0046,margin
+2734516,@VirginTrains is the 17.07 going right to Liverpool or will it be canceled?  At runcorn,delay_claim,0.0047,margin
+2134029,@VirginTrains 19:00 from Euston to Manchester Piccadilly. Carl couldn't have done enough for us #impressive #CustomerService #thankyou,other_out_of_scope,0.0047,margin
+983186,@VirginTrains I am booked on the 7:36 euston to mcr Piccadilly train this evening. Any chance I can come back on an earlier train.,support_access_followup,0.0047,margin
+2351510,@VirginTrains some dinner?,other_out_of_scope,0.0048,margin
+1271531,@VirginTrains @VirginTrains do you know when the iOS app will be fixed? I am unable to download any of my m-tickets.,other_out_of_scope,0.0048,margin
+1249151,@VirginTrains I had 4 tickets as travelling as family do I fill claim form for each ticket or 1 form to cover us all,other_out_of_scope,0.0049,margin
+2819570,@VirginTrains I’m awake Joel!,other_out_of_scope,0.005,margin
+2570547,Can’t remember the last time all went smoothly on my @VirginTrains #Euston - #BirminghamNewStreet train https://t.co/d0ZqvK0MVm,timetable_platform,0.005,margin
+1996816,@VirginTrains how much would it be for a first class upgrade today Milton Keynes to Chester on the 15.42?,complaint_service,0.0051,margin
+606963,@VirginTrains What’s the delay with the 1120 from bham int?  Also how much time can be made up into Euston? #latemeeting,fare_ticketing,0.0051,margin
+1438848,@LondonMidland @VirginTrains Help!,other_out_of_scope,0.0051,margin
+2605538,@VirginTrains how am I meant to use the mobile ticket when your app doesn't work? Can't login? Due to travel tomorrow - can i get this changed to printed ticket. Really annoyed by this shoddy experience #Shambles,howto_guidance,0.0052,margin
+1210426,@VirginTrains @122784 And Haywards Heath,other_out_of_scope,0.0055,margin
+834694,Nice #firstclass start to the day @VirginTrains https://t.co/UB3NGO1asw,other_out_of_scope,0.0057,margin
+2628610,@VirginTrains @LondonMidland Hi. Brought the ticket on train in Longbridge (conductor on @LondonMidland great) got to Cov told rudely by barrier staff that ticket wasn't valid frogmarched to buy another ticket.The reason I bought this ticket is I'm visiting cov hospital and required a bus connection. Thanks,complaint_service,0.0058,margin
+1204635,@virgintrains I've paid for wifi but its keeps dropping out. Hardly worth paying for when I can't use it.  Already tried forgetting network and reconnecting.,howto_guidance,0.0062,margin
+2785846,@VirginTrains Glasgow 15.40.,other_out_of_scope,0.0062,margin
+2224561,@VirginTrains train wasn’t displayed on the boards at Euston (9.40 to Crewe) - missed my train and now going to be half an hour late for an important meeting. Not happy.,other_out_of_scope,0.0062,margin
+112200,"@VirginTrains You don't get it, we've had no tilt from Euston, he would have known we would be late with reduced speed. Nothing to do with other disruption. Not one single announcement to inform we were running late because of no tilt.The TM on the train needs retraining.",other_out_of_scope,0.0062,margin
+2188629,@VirginTrains They explained that with this arrangement the ticket would be £88 plus booking fee if someone else bought it for me. I don’t have anyone.,other_out_of_scope,0.0063,margin
+2416006,"13:15 Manchester to London @VirginTrains onboard manager ""welcome aboard, you're more than welcome to get off the train"" why thank you",other_out_of_scope,0.0063,margin
+1215881,"@VirginTrains I’m due to get a train at 21:07 from Euston to Liverpool, any idea what I should do? I’ve checked out of my hotel already",timetable_platform,0.0064,margin
+1259796,@VirginTrains do I really need 3 people to check my ticket at euston leaving? A couple less might mean cheaper tickets? #justsayin,fare_ticketing,0.0065,margin
+1506216,@VirginTrains I absolutely hate the sight of the A380 I love the b747s  the Queen of the skys and the vt pendilono  and eurostar class 373 tmst,complaint_service,0.0065,margin
+479172,"@VirginTrains Yes but nobody is taking responsibility of helping proactively get hold of the iPad. The only answer I’ve had is that it may show up in the next 72 hours, the next week or the next month. You’ll understand why I’m reluctant to resign to that...",other_out_of_scope,0.0066,margin
+1336623,"Happy to sit on floor, but there's no room. And if u want to check my word for it on CCTV @VirginTrains - I'm in the carriage at the front!",complaint_service,0.0067,margin
+2724918,"@virgintrains staff fab! 1st journey w baby &amp; so much help. Seated next to retired midwifes, incredible!",complaint_service,0.0069,margin
+147507,Wow... this train from Oxford to Stockport is ridiculously packed @VirginTrains 😳,other_out_of_scope,0.007,margin
+784831,"@VirginTrains @306725 Morning Phil, If you speak with the station team on arrival they will do their best to assist and get you on your booked train. ^SH",ticket_change_refund,0.007,margin
+985437,@VirginTrains my train from Euston was due to BHam New St at 10:45- if I miss my connection at 11:05 will I be able to take another train?,delay_claim,0.007,margin
+472720,"@VirginTrains need to collect some tickets this eve but have a new card since booking online, can you help?",other_out_of_scope,0.0072,margin
+995798,@VirginTrains Preston to London Euston,other_out_of_scope,0.0072,margin
+602955,@VirginTrains : I booked a ticket on the tube going to the wrong station... i want to go to old street but the ticket i booked goes to fenchurch. does it matter? if i have to pick up a ticket at a fastticket macine for the tube can't i go to any station as long as it's paid for?,ticket_change_refund,0.0073,margin
+2878437,"@VirginTrains Can’t see how they can help, it’s the reservations on the train that need to be fixed. We use 1st class to work being asked to move when you have sat in a unreserved is not helpful.",complaint_service,0.0075,margin
+676692,I’m in the #Firstclasslounge @VirginTrains  #Euston thank u 4 my bowl if water🐾🐾😊 #GuideDog  #workingdog  #relaxing #homewardbound #trains https://t.co/nB65VKwBjF,other_out_of_scope,0.0077,margin
+762880,Paid £87 instead of £26 for my ticket to Manchester on @VirginTrains - if I'd taken the £26 later train I'd have arrived at the same time!,ticket_change_refund,0.0077,margin
+864141,"Big thanks to @VirginTrains for great service today as Claire, George &amp; I enjoyed a festive trip to the Manchester Xmas Markets on George’s fav Pendolino. @325220 @325221 it was fast, efficient, clean with an abundance of seats at a great price.",complaint_service,0.0077,margin
+1719576,@120576 @VirginTrains He received £7.50. Half the cost.,other_out_of_scope,0.0078,margin
+1512455,@VirginTrains Great. Only a 40 min wait,other_out_of_scope,0.0078,margin
+1632620,@VirginTrains But It wasn't and I want to know why! Anything to do with preferential treatment for football fans at all? Didn't see many of them waiting in the station as I was for hours!!,ticket_change_refund,0.0078,margin
+2939914,"@VirginTrains app now has a screen that asks you to wait for it to create tickets I paid for in July. Nothing happens. (Yes, I reinstalled) Forced to buy £80.60 new ticket to get through barrier. Furious. https://t.co/f7UP7cGDcQ",other_out_of_scope,0.0079,margin
+2267957,@VirginTrains once again you fail to deliver service. It's amazing how often you fail to don't what you promise Refund thnx 07:05 to London,ticket_change_refund,0.0082,margin
+2776988,"@VirginTrains Yeah, maybe another time!",other_out_of_scope,0.0083,margin
+1430447,@VirginTrains The train was 6.53 and there is no one at the station at that time. Just think it’s a bit poor you can’t process railcards on the train.,other_out_of_scope,0.0084,margin
+845668,"@VirginTrains do it again! Late into Euston, not enough time to get the tube to get to liverpool street for connecting train to Norwich. Had to resort to £17.80 taxi ride, the greatest driver ever thank god and a nice run getting there with about 2 seconds to go. #useless",timetable_platform,0.0084,margin
+2953158,"@131137 @815383 Oh god I would have made super sarcastic remarks first... just like I did on @VirginTrains yesterday with someone face timing with no headphones about their diner! 
+Thanks mate - glad to know your missus is doing green beans! 👊🏻👊🏻👊🏻😂",other_out_of_scope,0.0086,margin
+1596159,@VirginTrains do you know which are the unallocated seating carriages on the 1900 London euston to Manchester? Thanks,complaint_service,0.0088,margin
+2515071,@VirginTrains Maybe if your resources were better deployed we’d also have a full 1st class service to go with extortionate price Service is diminishing,complaint_service,0.009,margin
+2173961,"London to Leeds on Sunday - 5 hour delay @149229 
+London to York currently - 75 minutes and counting... @VirginTrains 
+
+Where is my money plz...",howto_guidance,0.009,margin
+1579164,@VirginTrains after lengthy delays yesterday I wish I could say thanks for the taxi from the station but that was the worst part. Shambles.,delay_claim,0.0091,margin
+2614719,@VirginTrains Sure will do,support_access_followup,0.0092,margin
+2017632,@VirginTrains where u from BH,other_out_of_scope,0.0094,margin
+1139694,"@VirginTrains Sadly running late for London Euston train due to the issues at Oxford Circus last night, so didn't have time to speak with anyone at Euston station, otherwise would have missed train",timetable_platform,0.0094,margin
+2453708,@VirginTrains Evacuation at Euston prevented people from using the station. We arrived at the train to be told we were too late to board and had to run.,ticket_change_refund,0.0094,margin
+1928080,@VirginTrains Made myself known to the guard there were no staff around when I got off the train and the station my connection departs from is locked,other_out_of_scope,0.0095,margin
+2879169,@VirginTrains Nope as the vestibules are all busy and I'm not waking through them as people are standing there. Not really up to me to go looking for someone. Please take this feedback onboard.,other_out_of_scope,0.0095,margin
+1497555,@VirginTrains really poor show no food 12.07 Euston to Liverpool 1st class and no contingency #starving #expectmore #poorcustomerservice,other_out_of_scope,0.0095,margin
+1340124,@VirginTrains Don’t worry I know today has been hectic given the disruption so not a problem. I have a huge G&amp;T packed for the journey so I’ll be fine! 👌🏼,other_out_of_scope,0.0096,margin
+1637305,@VirginTrains I am stuck on the 2021 train from Manchester Piccadilly to London Euston. Is this train definitely going to leave?,timetable_platform,0.0096,margin
+2669197,@VirginTrains Bit tricky when all the corridors are full of people sitting and standing. @127472 https://t.co/9U3H2TMBK6,other_out_of_scope,0.0098,margin
+962441,@VirginTrains He’s just thanked me by farting!,other_out_of_scope,0.0101,margin
+1368521,@VirginTrains To MK,support_access_followup,0.0101,margin
+2228128,@VirginTrains bought tickets online but wasnt able to download so have had to buy the tickets AGAIN the virgin staff said tweet for help!!!!,other_out_of_scope,0.0101,margin
+115423,"@VirginTrains Your bye-laws require A NOTICE INDICATING IT IS RESERVED. If no notice, not reserved and reservation ticket invalid. Your rules.",complaint_service,0.0101,margin
+995802,"@VirginTrains When booking tickets your site says any card OK for machine collection, but confirmation email says payment card. Which is it?",fare_ticketing,0.0102,margin
+1507972,@VirginTrains Roughly 9/9.30pm,other_out_of_scope,0.0103,margin
+983669,"@VirginTrains @127472 I'm on the train now, I felt the need to share the experience with everyone, it's fantastic, great staff, smooth journey, comfy 😉 thank u",other_out_of_scope,0.0103,margin
+100822,@VirginTrains 15:30 from Euston to GLC terminating @ Preston. due to get on at Preston. Can I get on later train if running at no charge? And what about prebooked seats? I'm not standing for 3.5hrs to GLC,complaint_service,0.0105,margin
+2768120,Tickets for the away game at Birmingham City only a tenner?! Tremendous. Now if only @VirginTrains could do the same for a return ticket from Glesga... #qpr,ticket_change_refund,0.0106,margin
+2534613,@VirginTrains That's what you said the last time I tweeted at you!,other_out_of_scope,0.0108,margin
+690191,Train 1 hour late into London. Good delayrepay announcement on board @VirginTrains. Many around me didn’t know so v.helpful @125861,other_out_of_scope,0.011,margin
+686236,"@VirginTrains No, not at all. Really annoyed. Sabrina was rude at Euston and apparently only option is to buy another ticket? But we have ALL other elements?! Spoiling a nice mother/daughter day! https://t.co/nytzpxszHc",other_out_of_scope,0.0112,margin
+2181182,"@VirginTrains Yes, I was advised to purchase it on Friday at 16:00 in Manchester Piccadilly and told I could travel any time before 15:57 today. I have to be home before 18:45 to look after a child.",other_out_of_scope,0.0112,margin
+2173982,Incredibly helpful team at Coventry and Rugby helping some wally (😏) who left their bag on the train.  Thanks @VirginTrains,support_access_followup,0.0113,margin
+470513,"@VirginTrains Ok thankyou for getting back to be me really appreciate this,is this every train service. Not running Christmas and Boxing Day",support_access_followup,0.0115,margin
+1496159,@VirginTrains it doesn't give any info just says trains be running later than usual in a revised timetable. Any idea when works are over?,timetable_platform,0.0115,margin
+2117095,"Terrible service from @VirginTrains, charged me double the price for 2 tickets without a single confirmation email and been on hold for 30 minutes on 2 separate occasions #sortitout",other_out_of_scope,0.0116,margin
+1494969,Disappointed with the view from my #windowseat on today's @VirginTrains https://t.co/TAFWRTh2XS,other_out_of_scope,0.0116,margin
+2538818,@VirginTrains I would of expected some lenience in these sort of circumstances. When I booked the ticket the phone option wasn’t available.,other_out_of_scope,0.0118,margin
+2241890,Not sure why the @VirginTrains I'm on is at a standstill while other virgin trains are going passed. #40minutedelay #whatajoke,other_out_of_scope,0.0119,margin
+1845264,@120576 @VirginTrains Yes I did. As did many of the others standing in the aisles. Can you either DM me or get somebody to email me on __email__ please,support_access_followup,0.012,margin
+948339,@VirginTrains Cool 😎. Wuu2 now OL?,support_access_followup,0.012,margin
+2507059,Thanks to staff at Rugby station for being accommodating tonight after a little stumble off the train earlier this evening. Couldn't get assistance and conductor didn't show during the journey so had to go with the flow of ignorant people! @VirginTrains 👍🏼,support_access_followup,0.0121,margin
+1354679,@VirginTrains Will my ticket but valid for an earlier service?,ticket_change_refund,0.0123,margin
+597606,"Cosy floor, loving having to move every two minutes for people stepping over me  @123241 @VirginTrains @120576 #noseatsonthetrain https://t.co/dcWRQIsB34",other_out_of_scope,0.0123,margin
+1328085,@VirginTrains Sorry,other_out_of_scope,0.0124,margin
+2569824,@VirginTrains Sorry A,other_out_of_scope,0.0124,margin
+981626,"Morning @VirginTrains ! Going to Wembley Stadium from Bournemouth to watch the Cherries today and used your site to plan a possible railtrip. Not going to take up it's suggestion of travelling up to Banbury to transfer on to Chiltern to go south to Wembley! Odd, don't you think?",other_out_of_scope,0.0125,margin
+1759114,@VirginTrains currently on the train at Bletchley (that's been involved in an incident) the staff have been brilliant and kept everyone updated. Hope the driver is as well as can be expected...,other_out_of_scope,0.0125,margin
+2669147,@120576 @VirginTrains Just sent a screenshot pal,other_out_of_scope,0.0125,margin
+1384578,@VirginTrains Any excuse!!,other_out_of_scope,0.0126,margin
+875355,What year are we in when @VirginTrains still can’t upgrade heightened WiFi and phone signal #poor 👎👎,complaint_service,0.0127,margin
+2732620,@VirginTrains Stu DM'ed you but you haven't responded. What is going on? https://t.co/v5fHzDezfy,support_access_followup,0.0128,margin
+2703897,@VirginTrains Also how can you be experiencing high call volumes at 22:00?,other_out_of_scope,0.0129,margin
+1331408,"@VirginTrains Understood. We were last at Warrington but I don't know where we are now, and how easy it'd be to intercept an EC train. Any advice?",timetable_platform,0.013,margin
+1867716,They see me rollin' @VirginTrains https://t.co/y26g7z0rQV,other_out_of_scope,0.0134,margin
+1276500,@VirginTrains @418789 *you’re,other_out_of_scope,0.0135,margin
+2768820,@VirginTrains 1140 GLC/EUS,support_access_followup,0.0135,margin
+485926,"@VirginTrains @123775 Virgin emailed me re RMT https://t.co/scH4QIynJi says no trains running Euston to Chester on 22nd. Customer services won't confirm this, so want to charge me £10 if I want a refund. They then offer me a ticket for 21st that is twice the price of my original ticket. Disgusting.",fare_ticketing,0.0136,margin
+675811,@VirginTrains What’s the point.  According to JAMES he’s from the Md office and nothing else can be done. If JAMES who’s from the top what can CR do...? I need my ticket @£27...,fare_ticketing,0.0136,margin
+747205,@VirginTrains So glad you can use ticket on virgin EC - no help to me getting to Wolverhampton though 😂😂😂,howto_guidance,0.0138,margin
+2678735,"@120576 @VirginTrains No, but what else are you supposed to do with an open return ticket if you need to return on a particular day?",other_out_of_scope,0.0138,margin
+2906041,"@VirginTrains, I arrive Euston 18:31 for the 18:33 train and you dont allow boarding so I miss my train and have to spend £64 on a new one. Not good customer service #RipOffBritain #badcustomerservice",other_out_of_scope,0.0139,margin
+2228193,@VirginTrains London Euston to Crewe. A simple journey that I’ve done many of times without any hassle. I need the e tickets because I don’t have time to get them from the station due to being on a strict timescale.,other_out_of_scope,0.0139,margin
+171157,@VirginTrains 30 minute delay due to @VirginTrains coach so definitely a @10079 issue. #fullrefundneeded #takeresponsibility,ticket_change_refund,0.014,margin
+799197,@310505 @VirginTrains I’m glad my daily commute is with  @131370 who deal with issues promptly! How can @VirginTrains not connect with a TM in this day &amp; age!,other_out_of_scope,0.0141,margin
+2400229,"@VirginTrains Great! Lots of apologies but as usual no resolution , preventive measures or explanations. It's not the first time and won't be the last.",timetable_platform,0.0142,margin
+1996788,@VirginTrains 👍😀 https://t.co/Xtl4OzUlNP,support_access_followup,0.0142,margin
+1759113,@VirginTrains @138294 Pity same can't be said for other trains - no communication as per usual. Oh well refunds all round again! Don't think I've ever paid yet!,ticket_change_refund,0.0143,margin
+1475105,@VirginTrains am not going to travel with you anymore.45 mins delay this morning and stood up most of return journey. Appalling service!,delay_claim,0.1353,diversity
+1550729,@VirginTrains On the train from London to Liverpool 😭,other_out_of_scope,0.6146,diversity
+2696953,"@VirginTrains your service is so packed that I can’t get to my seat, this isn’t the experience I paid for 😭😡 https://t.co/cK4ZvZMKUo",complaint_service,0.9704,diversity
+1550690,@VirginTrains I've not got the card i used for my booking paid £351 they're saying can't issue the tickets,other_out_of_scope,0.2116,diversity
+1353047,@VirginTrains we are trying to get to manchester this evening from london euston - will trains be running later this evening?,support_access_followup,0.1641,diversity
+677476,@VirginTrains @121516 Ok thank you,support_access_followup,0.9971,diversity
+503112,.@VirginTrains please can I get a refund for my 1 hr 8 min delayed train journey this evening?,delay_claim,0.6611,diversity
+2273129,@VirginTrains can I ask a question please? When will you start running trains back from Manchester to mk after like 9pm? It’s not helpful,other_out_of_scope,0.6422,diversity
+574845,"Supposed to get a @VirginTrains from Euston to Manchester this morning. As Euston is shut will ticket be accepted on @GWRHelp from Paddington to Reading and then @121428 from Reading to the north, please?",support_access_followup,0.1259,diversity
+886319,@VirginTrains Yes and why would that really matter since I   Paid my fare,fare_ticketing,0.8048,diversity
+762888,@VirginTrains is delayed even further . .. We have been trying to get home since half 5 🖕😪😪😪😪,delay_claim,0.9088,diversity
+798125,"@VirginTrains Nope, reservations weren’t an option when I booked",other_out_of_scope,0.2326,diversity
+705031,@VirginTrains 17.03 from EUS,other_out_of_scope,0.5005,diversity
+2609660,@VirginTrains Really? https://t.co/DmOjM2hXt9,other_out_of_scope,0.3187,diversity
+1440480,@VirginTrains 20:58 from Preston to London Euston delayed. Any update?,delay_claim,0.9129,diversity
+1054950,@VirginTrains Absolute lack of connection!,other_out_of_scope,0.4857,diversity
+316755,@VirginTrains It's all booked through virgin and it's the virgin service I'll miss. So you are the operator. I'm missing it due to delays. Not my fault,delay_claim,0.751,diversity
+684428,@VirginTrains to Euston on Dec 29,other_out_of_scope,0.3484,diversity
+883690,@VirginTrains how’s your day today,other_out_of_scope,0.1702,diversity
+789924,@VirginTrains great trip today from #Glasgow to #London working as we go. On time great service #makeitworksmart #FitOutTop500 #Quality https://t.co/gY13xUj7L5,timetable_platform,0.6849,diversity
+1620021,@VirginTrains Wifi,complaint_service,0.9995,diversity
+2395374,"@VirginTrains But I haven't heard a response from my email, I couldn't do the claim through my account it had to be by email so I would have expected a reply by now as I haven't heard of it's been accepted",other_out_of_scope,0.4205,diversity
+998267,@356378 @VirginTrains @13044 Hi Matt. Sorry to hear this. We do our best to reserve seats where possible. It may be that reservations weren't available for the -,complaint_service,0.4282,diversity
+531187,@VirginTrains Is this train cancelled??,delay_claim,0.9938,diversity
+1478722,@VirginTrains everyone appreciates things go wrong from time to time but your customer service to resolve is appalling #useless,complaint_service,0.5749,diversity
+748360,@VirginTrains @298901 @121513 Yeah but we’ve got @45338 💪,other_out_of_scope,0.6941,diversity
+1760574,@VirginTrains My ticket will be accepted on a later train?,other_out_of_scope,0.1758,diversity
+2487965,@710562 @VirginTrains See you soon! @96767  will get the drinks in,other_out_of_scope,0.7078,diversity
+1620858,@496735 @VirginTrains Not sure they can do much about someone being hit by a train. Sorry you’re hung over and inconvenienced. At least you’re alive. #perspective,other_out_of_scope,0.4401,diversity
+646184,@155542 @VirginTrains @242596 @121516 I will - thanks. I was under the impression @VirginTrains ran the station here in Lancaster.,support_access_followup,0.4523,diversity
+621598,@VirginTrains Not worth risking my seat as I was stood up from Bham to Euston this morning and seat reservations aren't showing on here atm.,complaint_service,0.8986,diversity
+598724,"@261985 That's not one of our trains, you may need @VirginTrains for this. ^JW",other_out_of_scope,0.5798,diversity
+1961866,"@VirginTrains I've just been advised to write to customer services to complain. Not terribly helpful, really.",other_out_of_scope,0.5068,diversity
+981623,£19 for a ticket that doesn’t even get me to my destination? @VirginTrains seems a bit pricey to me,other_out_of_scope,0.1057,diversity
+1908730,"@VirginTrains Advance ticket. I didn’t have the second part of my ticket (probably left in the ticket collection machine), even though the ticket I did...",ticket_change_refund,0.7492,diversity
+2896820,@virgintrains really should do more to make quiet coaches quiet. People yapping left and right and on their phones,complaint_service,0.69,diversity
+2559537,"@VirginTrains @127472 Oh well that’s good... I’m sure 1st class is mostly free, people should go sit there",other_out_of_scope,0.5289,diversity
+1610810,@VirginTrains Is the 14:37 Euston to Manchester expected to still run?,other_out_of_scope,0.43,diversity
+1951759,@VirginTrains 10.30am Birmingham to London Euston,other_out_of_scope,0.6581,diversity
+1326551,"@VirginTrains for those of us actually stuck on a Euston to Manchester train, any update please?",other_out_of_scope,0.5479,diversity
+131865,@VirginTrains Morning,support_access_followup,0.9999,diversity
+469668,"@VirginTrains @226832 Great, thanks!",support_access_followup,0.9984,diversity
+747332,@VirginTrains @nationalrailenq Probably need to let people on the train know!,other_out_of_scope,0.5259,diversity
+932929,@VirginTrains .@virgintrains I think that is unlikely don't you? Lots of hot and unhappy customers on this #train there will be more than me complaining,other_out_of_scope,0.4213,diversity
+870261,@VirginTrains how come the 1615 from Birmingham to Edinburgh only has a late evening menu in 1st class - unhealthy sandwiches not dinner?,support_access_followup,0.2908,diversity
+2411737,"@VirginTrains @693360 Sorry to hear that, have you managed to find another seat? ^MS",complaint_service,0.5402,diversity
+42888,@VirginTrains  https://t.co/DbNny9VO3F,support_access_followup,0.9536,diversity
+75078,@VirginTrains Thank you,support_access_followup,0.9999,diversity
+1457590,@458302 @VirginTrains,support_access_followup,0.1906,diversity
+2607460,@VirginTrains I submitted a delay repay request on 7th of November but have heard nothing back yet,delay_claim,0.948,diversity
+1638957,@VirginTrains Would my ticket be available tomorrow to use instead?,other_out_of_scope,0.1832,diversity
+679527,"@VirginTrains There are too many passengers for the carriages you provide on your train. I purchase a daily ticket, end up cramped and standing",accessibility_assistance,0.8783,diversity
+1295290,"@VirginTrains so funny🤣 ""the trains are delayed, but running."" WRONG😡 Thanks to a @LondonMidland guy for getting me on the train home.",delay_claim,0.6186,diversity
+1612183,"@VirginTrains Yes, all food thanks",support_access_followup,0.9922,diversity
+593112,@VirginTrains @260407 Great. 22nd december when everyone is trying to get home for Christmas!,other_out_of_scope,0.3664,diversity
+1750693,@VirginTrains @122155 What time does this depart at?,timetable_platform,0.9896,diversity
+891571,@LondonMidland and @VirginTrains what the hell is going on with your London trains today?,other_out_of_scope,0.6035,diversity
+2836248,@VirginTrains @789439 Oh my god this is the worst idea ever for a toilet.,complaint_service,0.5572,diversity
+1429937,@VirginTrains Please,support_access_followup,0.1137,diversity
+1146366,@VirginTrains I know it's not your fault. The train manager is keeping us informed. Just a tad inconvenient.,other_out_of_scope,0.5792,diversity
+1863471,@VirginTrains No response to this @120576? Can I get a refund on my tickets?,ticket_change_refund,0.9503,diversity
+883737,@VirginTrains @329859 @120576 Virgins,other_out_of_scope,0.6582,diversity
+2630344,@VirginTrains for the £ you ask from your customers at least give us a good WIFI just wasted £5 and getting no service,complaint_service,0.5876,diversity
+1340461,What a cheerful Crewe on the  @virgintrains 13.40 Glasgow to Euston! Train manager is hilarious with his Peter Kaye style announcements!,other_out_of_scope,0.6011,diversity
+1622420,@VirginTrains on the delayed lime street service to Euston please please just get us to Crewe problem is so far away! Just Crewe!?,delay_claim,0.6783,diversity
+583250,"Thank you @VirginTrains #LondonEuston for what should have been a 2 and a half hour journey to #Manchester in 1st class but ended up being nearly 5 hours!! Cancelled trains at #Euston 
+Been shouted at!! And spoken to like utter rubbish!! Not happy! Very disappointed 😤😤😤😤😡😡",delay_claim,0.6695,diversity
+1609708,@VirginTrains Any idea when?,other_out_of_scope,0.4813,diversity
+498185,@VirginTrains any trains from Birmingham new street to Coventry tonight?,other_out_of_scope,0.5666,diversity
+1325226,@VirginTrains I have an advance ticket for 12.40 cancelled London to Manchester. Can I just get on any later train?,ticket_change_refund,0.9222,diversity
+1380448,@VirginTrains VT-270917-0752,support_access_followup,0.7914,diversity
+1532415,@VirginTrains what’s the problem with the London to Edinburgh service this evening pls? Customers had no announcement or explanation!,support_access_followup,0.1483,diversity
+1722579,@VirginTrains London to Leeds,other_out_of_scope,0.6067,diversity
+1035335,@364898 @VirginTrains Yay! Good luck with it :) xxx,other_out_of_scope,0.6975,diversity
+1271455,@VirginTrains @123241 Then all I can say is that I’m bitterly disappointed,other_out_of_scope,0.6767,diversity
+624231,£244 to travel from Leeds to London with @VirginTrains is just ludicrous- for the same money I could ... https://t.co/OgtkUSFcyQ,other_out_of_scope,0.7535,diversity
+1665378,@VirginTrains Delayed by over 200 minutes,delay_claim,0.9872,diversity
+2173978,@VirginTrains please turn the heating off and the air con on on the 12.30 London Euston to Glasgow train. I am melting,other_out_of_scope,0.443,diversity
+2934060,"@VirginTrains I was told by your staff that I hadn't left enough time for connection, despite my incoming train being delayed. I don't drive the trains! Fortunately @126035 saved the day.",delay_claim,0.7163,diversity
+1184869,@VirginTrains What about trains heading to london from Birmingham? Currently sat at new st - no info being given!,other_out_of_scope,0.6173,diversity
+2460595,@VirginTrains When you have to pay £75.90 for a ticket you expect the train to actually exists!,other_out_of_scope,0.0815,diversity
+2626496,"I long for the day I can have a private chauffeur/jet, not even to be a flash twat, just so I never have to use @VirginTrains ever again!",other_out_of_scope,0.5245,diversity
+1610802,@VirginTrains @127472 Please just arrange refund ASAP,ticket_change_refund,0.9687,diversity
+2425660,The voice of Will Ferrell now greets you in the toilet on @VirginTrains..... Genius!,complaint_service,0.9612,diversity
+2669850,@120576 @VirginTrains @751916 Doesn’t happen anymore !!!,other_out_of_scope,0.6355,diversity
+1620868,@VirginTrains Aren't you the staff?,other_out_of_scope,0.3516,diversity
+2735593,@VirginTrains i have tried this number and have been on the phone for 1 hr 45 mins with no answer. What else can I do? Can you have them call me? https://t.co/nGWnuHZOUv,other_out_of_scope,0.5105,diversity
+1109031,@120576 @VirginTrains @3509 I thought not,other_out_of_scope,0.6029,diversity
+2173894,"@363753 Hi, have you tweeted @VirginTrains or @120576 about this? Thanks, V",support_access_followup,0.7326,diversity
+1628179,@120576 @VirginTrains 14:30 from Edinburgh to London Kings Cross,other_out_of_scope,0.6803,diversity
+677504,@VirginTrains Thanks 👍🏽,support_access_followup,0.9997,diversity
+1040423,@VirginTrains I've sent a dm now,support_access_followup,0.8998,diversity
+640892,@VirginTrains To Glasgow?,support_access_followup,0.0275,diversity
+165062,@VirginTrains The 8:35 to Manchester,other_out_of_scope,0.6376,diversity
+150735,"@VirginTrains @120576 Oops, sorry, I don't travel on the train often and I didn't realise there were different bits of Virgin Trains!",other_out_of_scope,0.6321,diversity
+646298,Preston station filling up with passengers not going north. Presumably some busses might arrive in a while. Would be nice to get an update @VirginTrains @120870,other_out_of_scope,0.5236,diversity
+1001387,@VirginTrains which is the unreserved coach on 18.43 Liverpool South Parkway to Euston? No staff around to ask!,other_out_of_scope,0.4548,diversity
+1264439,@VirginTrains Hi! When do Advance tickets for December 28th/29th/30th go on sale?,ticket_change_refund,0.9824,diversity
+1089114,@VirginTrains Food and booze has arrived....👍🏼,other_out_of_scope,0.4985,diversity
+985430,@VirginTrains on the 10:50 Peterborough to Leeds! How much to upgrade to first class?,complaint_service,0.0743,diversity
+1434565,@virgintrains your App is useless. It does not give full ticket options. Can’t by open return tickets.... Can’t use it!!!,howto_guidance,0.7002,diversity
+863008,@VirginTrains 10cars reduced to 5 between Birmingham &amp; Preston resulting in standing room only. Pregnant &amp; elderly stood with no assistance😡,accessibility_assistance,0.0897,rare_intent
+2683324,"Forget that @VirginTrains. I saw a photo on FB on 12/11 of a blind man on the floor of a train &amp; ""This is how Richard Branson transports registered blind people and guide dogs on his trains. Forced to sit on the floor because the guard would not clear the suitable seating."" https://t.co/aWGQLpke7i",accessibility_assistance,0.1549,rare_intent
+2022929,It's difficult to get any help from @VirginTrains customer services unless you are prepared to part with another £400 to get home with a disabled wife without changing trains,accessibility_assistance,0.1809,rare_intent
+720415,"@VirginTrains Needed disabled help, wasn't given at booking, on concourse or @ ticketing, bought new tkt. Spoke to manager told to complain online = AFib!",accessibility_assistance,0.2228,rare_intent
+1262036,"@415618 @VirginTrains Coach H toilet is fully working, but sadly it's not disabled one. Sadly things do happen while the train is in service #wontflush",accessibility_assistance,0.2238,rare_intent
+1612135,@VirginTrains am I meant to understand these emails? Have booked ‘assistance’ for my mum when she travels - useless 😬😬🙄🤔 https://t.co/WZeG5wzf6F,accessibility_assistance,0.2962,rare_intent
+719323,@VirginTrains can you remind train managers to always check for discount cards. I'm never asked for my disabled persons card at all,accessibility_assistance,0.3322,rare_intent
+1067601,"@120576 @VirginTrains Given the suitcases in the aisles, it was not easy to anywhere, especially as I am disabled.",accessibility_assistance,0.3614,rare_intent
+875566,@VirginTrains disgusting disability assistance services today at London Euston to Liverpool Southpark Way,accessibility_assistance,0.3864,rare_intent
+1257864,@VirginTrains Was On Oxenholme station earlier about to catch 7.24 to London and like to thank David K for kind help and assistance.,accessibility_assistance,0.4096,rare_intent
+526870,"@VirginTrains the crew, especially Jeanine, of the 05:25 Manc to Stafford were absolutely lovely. Very helpful at sorting my assistance and getting me off the train, and just very friendly. Big thanks from me! :)",accessibility_assistance,0.4527,rare_intent
+2689178,"@VirginTrains disorganised, stressed staff, over crowded, not safe, health and safety nightmare, disabled persons standing",accessibility_assistance,0.4663,rare_intent
+895346,Thank you @VirginTrains for your kind assistance with the mini me's at Kings cross. #grateful #amazingstaff #customerservice https://t.co/r4EqsVLdRZ,accessibility_assistance,0.5069,rare_intent
+1647907,"@VirginTrains Due to today, please can I reserve 2 seats from Runcorn to Euston at 6.21 tomorrow, I am travelling with a disabled passenger",accessibility_assistance,0.5455,rare_intent
+1633384,@VirginTrains You could have tweeted that 3 days ago when I contacted you. Oh and some assistance on the evening would have been nice too! Whatever happened to customer service,accessibility_assistance,0.5499,rare_intent
+2022931,@VirginTrains Today at 13.37. My wife is in a wheelchair,accessibility_assistance,0.5643,rare_intent
+1344934,@VirginTrains i used your journeycare website on tuesday to book assistance but i've heard nothing yet and i travel in a few days!,accessibility_assistance,0.5802,rare_intent
+1387464,"@VirginTrains disorganisation,bad train management, health and safety laws not abided by, public safety put at risk,disabled people standing",accessibility_assistance,0.5948,rare_intent
+1725435,Is Travelling First Class on @VirginTrains #Wheelchair #Accessible https://t.co/b1RPYxgjGw via @521844 #travel #virgintrains #disabled,accessibility_assistance,0.6071,rare_intent
+809820,@VirginTrains @1685. No staff to help our group and wheelchair student apparently #virgintrains https://t.co/0GbmjmDgo1,accessibility_assistance,0.6187,rare_intent
+2689131,"@120576 @VirginTrains Filmed the whole thing, the lies from the guard, the intimidation. Two disabled passengers, thrown off the train",accessibility_assistance,0.6786,rare_intent
+660998,@VirginTrains Thank you for all your assistance you've been amazing JH !!! Someone get this man a medal !!!! Xxx,accessibility_assistance,0.7449,rare_intent
+1756542,Epic trip to station from @156271 conference. Legs gave out and had to get taxi to Kx. @VirginTrains assistance crew super helpful,accessibility_assistance,0.7478,rare_intent
+2314668,@671169 @VirginTrains @120576 We can both work a trampoline too....,accessibility_assistance,0.7636,rare_intent
+809827,@VirginTrains @1685 They need to be spoken too and I will be taking further action. If assistance is tequired it should be sorted.,accessibility_assistance,0.7665,rare_intent
+163809,@153905 @VirginTrains No. I remember your last trip to Brum where the heating was ramped up on @VirginTrains.,accessibility_assistance,0.769,rare_intent
+1342066,@VirginTrains #deafenedbytheresponse #disappointed,accessibility_assistance,0.7741,rare_intent
+677479,"@281602 @VirginTrains Hi Judith, sorry about that, I'm afraid the 0843 will now be starting from Workington as it is cancelled between Carlisle and Flimby. If you phone passenger assist they will be able to help you ^TW",accessibility_assistance,0.7908,rare_intent
+1106294,@VirginTrains Why is my reservation a Priority seat? Shouldn't they be left unreserved? There are other unreserved seats in the carriage. https://t.co/apLs1A2JcM,accessibility_assistance,0.7961,rare_intent
+2503257,The @VirginTrains  is running slow n late do they not realise its #peakyblinders night,accessibility_assistance,0.7997,rare_intent
+737591,@VirginTrains on the 12:10 from New Street to London Euston your train manager repeatedly teased a partially blind man who got his (cont),accessibility_assistance,0.7999,rare_intent
+621652,"@VirginTrains @120576 The silence is deafening, probably counting all the money made from this overpriced and underfunded route. £60 to sit on the floor!",accessibility_assistance,0.8005,rare_intent
+1320180,"@VirginTrains I am travelling on ur East Coast Train &amp; sun is streaming in
+Lovely, but can’t see my mac screen 
+Could you not fit blinds?",accessibility_assistance,0.8011,rare_intent
+2535777,@VirginTrains do you have any carriages where accessible seats don’t get reserved on your Birmingham-Euston line? 🤔,accessibility_assistance,0.8032,rare_intent
+1047516,"@VirginTrains I get cramps in my legs, I could do with a G &amp; T.",accessibility_assistance,0.8052,rare_intent
+813596,@VirginTrains had the most horrendous experience on oxford-bham train today with my baby. Terrible accessibility &amp; rude unhelpful staff 👎🏻,accessibility_assistance,0.8111,rare_intent
+2721239,"Dear @VirginTrains what's with Will Ferrell yelling at me in the ""washroom"" that he can see me (""Only joking!"") &amp; that ""I'm free"" when the door opens? 1. I'M NOT THAT DEAF. 2. Makes me wistfully nostalgic (almost) for the previous exhortation not to lob my goldfish down the khazi",accessibility_assistance,0.8161,rare_intent
+2647483,@VirginTrains Sometimes I think what's the point because all it does is fall on deaf ears. The days when train staff cared what passengers thought is well dead and buried.,accessibility_assistance,0.8172,rare_intent
+2754468,@VirginTrains 2 weeks running no M tickets on website. The re-appeared for 2 weeks - what is going on? No joke when you have mobility problems,accessibility_assistance,0.8207,rare_intent
+583235,".@VirginTrains need to stop apologising at #Euston . They, .@115793 and .@LondonMidland are pulling a blinder getting these trains away, especially with the overhead damage. #firstclassservice",accessibility_assistance,0.8222,rare_intent
+1092767,@VirginTrains London Euston to Coventry the Virgin Service. Tweeted a couple of weeks ago &amp; it seemed fixed (m tickets) but website is off again. I have limited mobility so collecting tickets is an issue,accessibility_assistance,0.8224,rare_intent
+1387863,@VirginTrains Looks like I’m not getting any food as we are only 20m out of London. This is hardly accessibility. Won’t be doing this again 😢,accessibility_assistance,0.8243,rare_intent
+1753909,@VirginTrains 8.30 London Euston to Preston. Seems to be on time to Crewe fingers crossed do not relish another night my wheelchair on Preston station,accessibility_assistance,0.8258,rare_intent
+147526,"@VirginTrains it must cost more to raise the cheque than the £5 value. Not cashing it #insult - and to top it off, live chat not accessible.",accessibility_assistance,0.832,rare_intent
+2785823,@VirginTrains I had a damaged ticket. I was advised by Trainline to present the ticket and proof on the Trainline app. I was accused of attempting to use an already used ticket &amp; it was taken off me. It’s cost me £100 to get home. I’m disabled. Arseholes.,accessibility_assistance,0.8373,rare_intent
+2605851,"@VirginTrains @242596 Top of the ramp between bridges at the entrance,paramedics and virgin staff are in attendance",accessibility_assistance,0.8375,rare_intent
+2404571,"@VirginTrains I have spoken to them, apparently they do not have the technology to teleport me past the inaccessible carriage route to the food cart. I'm thoroughly disappointed. Instead they've offered to basically be a trolley service, which is rather ironic considering you removed it.",accessibility_assistance,0.8396,rare_intent
+2469324,"@VirginTrains @133684 The Costa coffee shop on the platform at Lancaster has made no attempt to remove the step at its entrance, making it inaccessible",accessibility_assistance,0.841,rare_intent
+1190877,"@133522 @VirginTrains Exactly. The last time my mother (in her 70s, some relatively small mobility issues) used @VirginTrains out of Euston was three years ago, for precisely this reason. If I hadn't been with her, she'd have been in real difficulty trying to board in the time allowed.",accessibility_assistance,0.8412,rare_intent
+2672787,"@VirginTrains @752497 @443209 Hi Helen, thanks for getting in touch! We also have an accessible toilet in Coach F, which provides a little more room :) ^JC",accessibility_assistance,0.8435,rare_intent
