@@ -10,6 +10,9 @@ __pycache__/
 # Data — large raw dump NOT committed (repro downloads via kagglehub, see README)
 data/raw/twcs.csv
 
+# Phase 3 HITL review queue — SQLite runtime state (schema created on demand)
+data/processed/review_queue.db
+
 # Models / indexes are small enough to commit (repro without retrain)
 # (uncomment to exclude if repo gets heavy)
 # models/*.pkl

@@ -1,0 +1,70 @@
+# Hiver autonomy matrix v1 — intent x risk-tier x confidence-band -> route.
+# Versioned routing policy for the HITL review queue (Phase 3 flagship).
+# Model stays FROZEN (models/intent_virgin.pkl); this file only decides
+# auto vs human review. Edit + bump version to change policy, never the model.
+version: 1
+updated_at: "2026-09-12"
+thresholds_source: "evaluation/virgin/thresholds.json"
+description: >-
+  Fail-closed routing. High-risk (money/safety/sensitive) intents always need a
+  human (must_review). Medium-risk needs a human unless confidence is high, and
+  even then stays in review. Low-risk auto-handles only at high confidence.
+
+sla_minutes_default: 30
+sla_minutes_high_risk: 15
+
+# Confidence bands align with production gates: low_conf < 0.45 (src/agent.py)
+# and money_threshold 0.70 for purchase/fare intents.
+confidence_bands:
+  low: {max: 0.45, note: "below production low_conf gate -> never auto"}
+  medium: {min: 0.45, max: 0.7, note: "human review, may approve quickly"}
+  high: {min: 0.7, note: "auto only for low-risk"}
+
+risk_tiers:
+  high:
+    - delay_claim
+    - ticket_change_refund
+    - complaint_service
+    - accessibility_assistance
+    - apple_id_icloud
+    - purchase_billing_service
+    - hardware_device
+    - setup_transfer_restore
+  medium:
+    - fare_ticketing
+    - timetable_platform
+    - lost_property
+  low:
+    - howto_guidance
+    - support_access_followup
+    - other_out_of_scope
+    - software_update
+    - battery_power
+    - connectivity
+    - apps_media
+
+# Exhaustive risk x band table (deterministic; explicit beats implicit).
+routing_rules:
+  - {risk: high, band: low, route: must_review, why: "safety/money: always human"}
+  - {risk: high, band: medium, route: must_review, why: "safety/money: always human"}
+  - {risk: high, band: high, route: must_review, why: "confident money errors cost cash (repeat-refund @0.92)"}
+  - {risk: medium, band: low, route: must_review, why: "low conf + grounding risk"}
+  - {risk: medium, band: medium, route: review, why: "human confirms wording"}
+  - {risk: medium, band: high, route: review, why: "fare/price wording still reviewed, fast approve"}
+  - {risk: low, band: low, route: review, why: "below 0.45 gate -> review, never auto"}
+  - {risk: low, band: medium, route: review, why: "quick human approve"}
+  - {risk: low, band: high, route: auto, why: "only auto lane: low-risk + high confidence"}
+
+# Per-intent F1/precision-tuned thresholds (copied from thresholds.json @ v1;
+# reference only — production gate remains 0.45 unless matrix version bumps).
+per_intent_thresholds:
+  accessibility_assistance: 0.8345
+  complaint_service: 0.2754
+  delay_claim: 0.4771
+  fare_ticketing: 0.6945
+  howto_guidance: 0.5324
+  lost_property: 0.1474
+  other_out_of_scope: 0.3371
+  support_access_followup: 0.5854
+  ticket_change_refund: 0.7083
+  timetable_platform: 0.6979

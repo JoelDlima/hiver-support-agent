@@ -762,6 +762,184 @@ def _brand_summary(b: str):
 
 SERVER_STARTED_AT = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
+# ---------------------------------------------------------------------------
+# Phase 3 (HITL review queue) — ADDITIVE ONLY. No existing route above is
+# modified. All state lives in data/processed/review_queue.db via
+# src/review_store.py (SQLite, gitignored runtime state).
+# ---------------------------------------------------------------------------
+
+class ReviewEnqueueIn(BaseModel):
+    text: str = ""
+    brand: Optional[str] = "virgin"
+    idempotency_key: Optional[str] = None
+    sla_minutes: Optional[int] = None
+
+
+class ReviewApproveIn(BaseModel):
+    reviewer: Optional[str] = "reviewer"
+    rationale: Optional[str] = ""
+
+
+class ReviewEditIn(BaseModel):
+    reviewer: Optional[str] = "reviewer"
+    rationale: Optional[str] = ""
+    final_text: Optional[str] = ""
+    corrected_intent: Optional[str] = None
+
+
+class ReviewRejectIn(BaseModel):
+    reviewer: Optional[str] = "reviewer"
+    rationale: Optional[str] = ""
+
+
+def _review_store():
+    from src import review_store as _rs
+    return _rs
+
+
+@app.get("/review/queue")
+def review_queue(status: Optional[str] = None, brand: Optional[str] = None,
+                 limit: Optional[int] = 100, offset: Optional[int] = 0):
+    rs = _review_store()
+    try:
+        lim = max(1, min(int(limit or 100), 500))
+    except Exception:
+        lim = 100
+    try:
+        off = max(0, int(offset or 0))
+    except Exception:
+        off = 0
+    st = (status or "").upper().strip() or None
+    if st and st not in ("PENDING", "APPROVED", "APPROVED_WITH_EDITS", "REJECTED", "EXPIRED"):
+        return JSONResponse({"detail": f"unknown status {status}"}, status_code=400)
+    try:
+        rs.expire_overdue()
+    except Exception:
+        pass
+    items = rs.list_queue(status=st, brand=(_normalize_brand(brand) if brand else None),
+                          limit=lim, offset=off)
+    return {"items": items, "count": len(items)}
+
+
+@app.get("/review/stats")
+def review_stats():
+    rs = _review_store()
+    try:
+        rs.expire_overdue()
+    except Exception:
+        pass
+    return rs.stats()
+
+
+@app.get("/review/matrix")
+def review_matrix():
+    rs = _review_store()
+    matrix = rs.load_matrix()
+    # Coverage-vs-risk grid for the frontend threshold slider (read-only ref).
+    grid = None
+    try:
+        tp = Path(__file__).resolve().parent.parent / "evaluation" / "virgin" / "thresholds.json"
+        if tp.exists():
+            grid = json.loads(tp.read_text(encoding="utf-8")).get("msp_floor", {}).get("grid")
+    except Exception:
+        grid = None
+    return {"matrix": matrix, "coverage_grid": grid}
+
+
+@app.post("/review/expire-sweep")
+def review_expire_sweep():
+    rs = _review_store()
+    try:
+        n = int(rs.expire_overdue())
+    except Exception as e:
+        return JSONResponse({"detail": str(e)[:200]}, status_code=500)
+    return {"expired": n}
+
+
+@app.post("/review/enqueue")
+def review_enqueue(inp: ReviewEnqueueIn):
+    rs = _review_store()
+    brand = _normalize_brand(inp.brand)
+    text = (inp.text or "")[:MAX_CHARS]
+    if not text.strip():
+        return JSONResponse({"detail": "empty text"}, status_code=400)
+    agent = get_agent(brand)
+    r = agent.handle(text, brand)
+    # Matrix route is advisory; the queue holds agent escalations.
+    try:
+        route = rs.route_for(r.intent, float(r.intent_confidence))
+    except Exception:
+        route = "review"
+    if r.decision != "escalate":
+        return {"enqueued": False, "decision": r.decision,
+                "intent": r.intent, "intent_confidence": r.intent_confidence,
+                "escalate_reason": r.escalate_reason, "route": route,
+                "brand": brand}
+    try:
+        row = rs.enqueue_from_result(r, text, brand,
+                                     idempotency_key=(inp.idempotency_key or None),
+                                     sla_minutes=inp.sla_minutes)
+    except Exception as e:
+        return JSONResponse({"detail": str(e)[:200]}, status_code=500)
+    row["route"] = route
+    return row
+
+
+@app.get("/review/{escalation_id}")
+def review_get(escalation_id: str):
+    rs = _review_store()
+    row = rs.get_escalation(escalation_id)
+    if not row:
+        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+    return row
+
+
+@app.get("/review/{escalation_id}/transfer")
+def review_transfer(escalation_id: str):
+    rs = _review_store()
+    row = rs.get_escalation(escalation_id)
+    if not row:
+        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+    return rs.build_warm_transfer(row)
+
+
+@app.get("/review/{escalation_id}/audit")
+def review_audit(escalation_id: str):
+    rs = _review_store()
+    if not rs.get_escalation(escalation_id):
+        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+    return {"escalation_id": escalation_id, "events": rs.list_audit(escalation_id)}
+
+
+def _do_review_transition(escalation_id: str, to_status: str, reviewer, rationale,
+                          final_text=None, corrected_intent=None):
+    rs = _review_store()
+    try:
+        return rs.transition(escalation_id, to_status, reviewer=reviewer or "reviewer",
+                             rationale=rationale or "", final_text=final_text,
+                             corrected_intent=corrected_intent)
+    except KeyError:
+        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+    except ValueError as e:
+        return JSONResponse({"detail": str(e)[:200]}, status_code=409)
+
+
+@app.post("/review/{escalation_id}/approve")
+def review_approve(escalation_id: str, inp: ReviewApproveIn):
+    return _do_review_transition(escalation_id, "APPROVED", inp.reviewer, inp.rationale)
+
+
+@app.post("/review/{escalation_id}/edit")
+def review_edit(escalation_id: str, inp: ReviewEditIn):
+    return _do_review_transition(escalation_id, "APPROVED_WITH_EDITS", inp.reviewer,
+                                 inp.rationale, final_text=inp.final_text,
+                                 corrected_intent=inp.corrected_intent)
+
+
+@app.post("/review/{escalation_id}/reject")
+def review_reject(escalation_id: str, inp: ReviewRejectIn):
+    return _do_review_transition(escalation_id, "REJECTED", inp.reviewer, inp.rationale)
+
 @app.get("/metrics")
 def metrics():
     with _metrics_lock:
