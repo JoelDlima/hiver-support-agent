@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "@react-three/fiber": "^8.17.10",
+    "@xyflow/react": "^12.3.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dagre": "^0.8.5",
     "framer-motion": "^13.2.0",
     "geist": "^1.7.2",
     "lucide-react": "^1.45.0",
@@ -19,7 +21,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^3.6.0",
-    "three": "^0.170.0"
+    "three": "^0.170.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20.16.0",

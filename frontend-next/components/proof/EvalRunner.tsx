@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Card } from "../sg/card";
+import { parseEvalPayload } from "./schemas";
 
 type Row = {
   key: string;
@@ -28,12 +29,32 @@ export default function EvalRunner({ brand }: { brand: string }) {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [finishedAt, setFinishedAt] = useState<string | null>(null);
+  const startRef = useRef<number | null>(null);
+
+  // Exact replay of this widget's request (live values, no fixtures).
+  const curl = `curl -N -X POST http://127.0.0.1:8000/eval/run -H "Content-Type: application/json" -d '${JSON.stringify(
+    { n, seed, brand }
+  ).replace(/'/g, "'\\''")}'`;
+
+  async function copyCurl() {
+    try {
+      await navigator.clipboard.writeText(curl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   async function run() {
     setRunning(true);
     setError(null);
     setRows([]);
     setSummary(null);
+    setFinishedAt(null);
+    startRef.current = Date.now();
     try {
       const r = await fetch("/api/eval/run", {
         method: "POST",
@@ -54,23 +75,21 @@ export default function EvalRunner({ brand }: { brand: string }) {
         for (const part of parts) {
           const line = part.trim();
           if (!line.startsWith("data:")) continue;
-          const payload = line.slice(5).trim();
-          if (payload === "[DONE]") continue;
-          let ev: Record<string, unknown>;
-          try {
-            ev = JSON.parse(payload) as Record<string, unknown>;
-          } catch {
-            continue;
+          // zod-validated: malformed chunks are skipped, never crash the list.
+          const parsed = parseEvalPayload(line.slice(5).trim());
+          if (parsed.kind === "error") {
+            throw new Error(parsed.value.detail || "eval stream error");
           }
-          if (ev.event === "done") {
+          if (parsed.kind === "done") {
+            const ev = parsed.value;
             if (typeof ev.intent_acc === "number" || typeof ev.esc_acc === "number") {
               setSummary({
                 intentAcc: typeof ev.intent_acc === "number" ? ev.intent_acc : undefined,
                 escAcc: typeof ev.esc_acc === "number" ? ev.esc_acc : undefined,
               });
-            } else if (typeof ev.total === "number") {
-              const total = ev.total as number;
-              const passed = typeof ev.passed === "number" ? (ev.passed as number) : 0;
+            } else if (typeof ev.total === "number" || typeof ev.n === "number") {
+              const total = (ev.total ?? ev.n ?? 0) as number;
+              const passed = typeof ev.passed === "number" ? ev.passed : 0;
               setSummary({
                 passed,
                 total,
@@ -79,25 +98,30 @@ export default function EvalRunner({ brand }: { brand: string }) {
             } else {
               setSummary({});
             }
-          } else if (typeof ev.i === "number") {
-            const pass =
-              ev.esc_ok !== undefined ? Boolean(ev.esc_ok) && Boolean(ev.ok) : Boolean(ev.ok);
-            const label =
-              ev.pred_intent !== undefined
-                ? `${String(ev.pred_intent)} (expected ${String(ev.human_intent ?? "?")})`
-                : String(ev.text ?? "").slice(0, 80);
-            const key = String(ev.i);
-            setRows((prev) => [...prev, { key, label, pass, at: timestamp() }]);
-          } else if (ev.event === "item") {
-            const key = String(ev.id ?? fallback++);
-            const label = String(
-              (ev.intent as string | undefined) ?? (ev.note as string | undefined) ?? (ev.text as string | undefined) ?? key
-            ).slice(0, 80);
-            setRows((prev) => [
-              ...prev,
-              { key, label, pass: ev.ok !== undefined ? Boolean(ev.ok) : true, at: timestamp() },
-            ]);
+            setFinishedAt(new Date().toLocaleTimeString());
+          } else if (parsed.kind === "item") {
+            const ev = parsed.value;
+            if (typeof ev.i === "number") {
+              const pass =
+                ev.esc_ok !== undefined ? Boolean(ev.esc_ok) && Boolean(ev.ok) : Boolean(ev.ok);
+              const label =
+                ev.pred_intent !== undefined
+                  ? `${String(ev.pred_intent)} (expected ${String(ev.human_intent ?? "?")})`
+                  : String(ev.text ?? "").slice(0, 80);
+              const key = String(ev.i);
+              setRows((prev) => [...prev, { key, label, pass, at: timestamp() }]);
+            } else {
+              const key = String(ev.id ?? fallback++);
+              const label = String(
+                ev.intent ?? ev.note ?? ev.text ?? key
+              ).slice(0, 80);
+              setRows((prev) => [
+                ...prev,
+                { key, label, pass: ev.ok !== undefined ? Boolean(ev.ok) : true, at: timestamp() },
+              ]);
+            }
           }
+          // kind "unknown" (keep-alives, [DONE], malformed) is ignored.
         }
       }
     } catch (e) {
@@ -138,6 +162,48 @@ export default function EvalRunner({ brand }: { brand: string }) {
         >
           {gate === "pass" ? "PASS" : gate === "block" ? "BLOCK" : "UNKNOWN"}
         </span>
+      </div>
+
+      {/* Liveness: status · items · measured items/s · retry · copy-as-curl. */}
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+        <span
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-semibold ${
+            running
+              ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 animate-pulse"
+              : error
+                ? "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300"
+                : summary
+                  ? "border-teal-600/40 bg-teal-600/10 text-teal-700 dark:text-teal-300"
+                  : "border-hairline-soft bg-paper"
+          }`}
+        >
+          {running ? "● RUNNING" : error ? "● ERROR" : summary ? "● LIVE" : "○ AWAITING"}
+        </span>
+        <span className="font-mono tabular-nums">
+          {rows.length} items
+          {startRef.current && rows.length > 0
+            ? ` · ${(
+                rows.length / Math.max((Date.now() - startRef.current) / 1000, 0.1)
+              ).toFixed(1)}/s`
+            : ""}
+          {finishedAt ? ` · done ${finishedAt}` : ""}
+        </span>
+        <button
+          type="button"
+          onClick={run}
+          disabled={running}
+          className="font-semibold text-teal hover:underline disabled:opacity-50"
+        >
+          ↻ retry
+        </button>
+        <button
+          type="button"
+          onClick={copyCurl}
+          title={curl}
+          className="font-mono hover:underline"
+        >
+          {copied ? "copied ✓" : "</> curl"}
+        </button>
       </div>
 
       <ol className="mt-4 grid grid-cols-3 gap-2">

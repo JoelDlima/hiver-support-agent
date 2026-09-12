@@ -1,17 +1,34 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { Activity, AlertTriangle, Gauge, XCircle } from "lucide-react";
 import MetricsPanel from "../components/MetricsPanel";
 import PipelineTimeline from "../components/PipelineTimeline";
+import PipelineFlow from "../components/graph/PipelineFlow";
+import EvidenceView from "../components/graph/EvidenceView";
 import Inspector from "../components/proof/Inspector";
 import RunAgainDiff from "../components/proof/RunAgainDiff";
 import LogTail from "../components/proof/LogTail";
 import CurlCopy from "../components/proof/CurlCopy";
 import EvalRunner from "../components/proof/EvalRunner";
 import EmbedScene from "../components/proof/EmbedScene";
+import {
+  InspectRecordSchema,
+  JudgeSchema,
+  PredictResponseSchema,
+  parsePassageList,
+  parseStreamPayload,
+} from "../components/proof/schemas";
 import type { EmbedPoint, Passage, PredictResponse } from "../lib";
+
+// The legacy 3D retrieval graph is kept as a lazy toggle only: it mounts on
+// demand (ssr:false, code-split) while the React-Flow DAG is the default view.
+const RetrievalGraph3D = dynamic(() => import("../components/RetrievalGraph3D"), {
+  ssr: false,
+  loading: () => <p className="text-sm text-muted">Loading 3D graph…</p>,
+});
 
 type Judge = { groundedness: number; verdict: string } | null;
 
@@ -48,6 +65,135 @@ function isEscalateDecision(decision: string | undefined): boolean {
   return /escalate/i.test(decision || "");
 }
 
+/* ------------- Per-widget liveness badges + copy-as-curl ------------- */
+
+type WidgetStatus = "LIVE" | "STALE" | "AWAITING" | "RUNNING" | "LOADING" | "ERROR";
+
+const BADGE_PILL: Record<WidgetStatus, string> = {
+  LIVE: "border-teal-600/40 bg-teal-600/10 text-teal-700 dark:text-teal-300",
+  STALE: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+  AWAITING: "border-hairline-soft bg-paper text-muted",
+  RUNNING:
+    "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 animate-pulse",
+  LOADING:
+    "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 animate-pulse",
+  ERROR: "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300",
+};
+
+function LiveBadge({
+  status,
+  requestId,
+  ms,
+  toks,
+  onRetry,
+  retryLabel,
+}: {
+  status: WidgetStatus;
+  requestId?: string | null;
+  ms?: number;
+  toks?: number | null;
+  onRetry?: () => void;
+  retryLabel?: string;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-semibold ${BADGE_PILL[status]}`}
+      >
+        {status === "LIVE" ? "●" : status === "AWAITING" ? "○" : status === "STALE" ? "◐" : "●"}{" "}
+        {status}
+      </span>
+      {requestId ? <span className="font-mono">{requestId}</span> : null}
+      {ms !== undefined && Number.isFinite(ms) ? (
+        <span className="font-mono tabular-nums">{Math.round(ms)} ms</span>
+      ) : null}
+      {toks !== undefined && toks !== null && Number.isFinite(toks) ? (
+        <span className="font-mono tabular-nums">{toks.toFixed(1)} tok/s</span>
+      ) : null}
+      {onRetry ? (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="font-semibold text-teal hover:underline"
+        >
+          {retryLabel || "↻ retry"}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function CurlButton({ cmd }: { cmd: string }) {
+  const [copied, setCopied] = useState(false);
+  async function copy() {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(cmd);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = cmd;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  }
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      title={cmd}
+      className="font-mono text-[11px] text-muted hover:underline"
+    >
+      {copied ? "copied ✓" : "</> curl"}
+    </button>
+  );
+}
+
+function shellQuote(payload: string): string {
+  return `'${payload.replace(/'/g, "'\\''")}'`;
+}
+
+function buildPredictCurl(text: string, brand: string): string {
+  return `curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d ${shellQuote(
+    JSON.stringify({ text, brand })
+  )}`;
+}
+
+function buildStreamCurl(text: string, brand: string): string {
+  return `curl -N -X POST http://127.0.0.1:8000/predict/stream -H "Content-Type: application/json" -H "Accept: text/event-stream" -d ${shellQuote(
+    JSON.stringify({ text, brand })
+  )}`;
+}
+
+function buildJudgeCurl(args: { intent: string; draft: string; ids: string[]; inbound: string }): string {
+  return `curl -X POST http://127.0.0.1:8000/judge -H "Content-Type: application/json" -d ${shellQuote(
+    JSON.stringify({
+      intent: args.intent,
+      draft_reply: args.draft,
+      passage_ids: args.ids,
+      inbound: args.inbound.slice(0, 800),
+    })
+  )}`;
+}
+
+function buildPassagesCurl(brand: string, q: string): string {
+  return `curl "http://127.0.0.1:8000/passages?brand=${encodeURIComponent(brand)}&q=${encodeURIComponent(
+    q.slice(0, 200)
+  )}"`;
+}
+
+function buildEmbedCurl(brand: string, q: string): string {
+  return `curl "http://127.0.0.1:8000/embed2d?brand=${encodeURIComponent(brand)}&q=${encodeURIComponent(
+    q.slice(0, 200)
+  )}"`;
+}
+
 export default function Page() {
   const [tab, setTab] = useState<"triage" | "proof" | "eval">("triage");
   const [brand, setBrand] = useState("virgin");
@@ -64,6 +210,17 @@ export default function Page() {
   const [inspectId, setInspectId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [apiOk, setApiOk] = useState<boolean | null>(null);
+  // Phase 4B verification-viz widget state (all fed by live backend routes).
+  const [retrievalView, setRetrievalView] = useState<"flow" | "3d">("flow");
+  const [passagesLoading, setPassagesLoading] = useState(false);
+  const [passagesError, setPassagesError] = useState<string | null>(null);
+  const [judgeLoading, setJudgeLoading] = useState(false);
+  const [judgeError, setJudgeError] = useState<string | null>(null);
+  const [streamChunks, setStreamChunks] = useState(0);
+  const [streamToks, setStreamToks] = useState<number | null>(null);
+  const [metricsNonce, setMetricsNonce] = useState(0);
+  const streamStartRef = useRef<number | null>(null);
+  const streamCountRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
 
   // Ticking clock for the 60s stale-after rule (mirrors the SmartGrey gauge).
@@ -136,13 +293,22 @@ export default function Page() {
     setError(null);
     setStreaming("");
     setJudge(null);
+    setJudgeError(null);
+    setStreamChunks(0);
+    setStreamToks(null);
+    streamStartRef.current = null;
+    streamCountRef.current = 0;
     try {
       const r = await fetch("/api/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, brand }),
       });
-      const j: PredictResponse = await r.json();
+      const raw: unknown = await r.json();
+      // zod-validated: malformed payloads surface as an error, not a crash.
+      const parsed = PredictResponseSchema.safeParse(raw);
+      if (!parsed.success) throw new Error("predict payload failed validation");
+      const j = parsed.data as unknown as PredictResponse;
       setResult(j);
       setResultAt(Date.now());
       appendRunLog(j);
@@ -158,21 +324,45 @@ export default function Page() {
   }
 
   async function loadPassages(j: PredictResponse) {
+    setPassagesLoading(true);
+    setPassagesError(null);
     try {
       const r = await fetch(`/api/passages?brand=${j.brand}&q=${encodeURIComponent(text.slice(0, 200))}`);
-      if (r.ok) setPassages(await r.json());
-      else
-        setPassages(
-          (j.grounding_passage_ids || []).map((id, i) => ({ tweet_id: id, score: 1 - i * 0.05, text: "" }))
-        );
+      if (r.ok) {
+        const validated = parsePassageList((await r.json()) as unknown);
+        if (validated) {
+          setPassages(validated);
+          return;
+        }
+      }
+      // Honest fallback: the inspect record stores the same live retrieval
+      // rows with real scores. Scores are never synthesized client-side.
+      try {
+        const ir = await fetch(`/api/inspect/${encodeURIComponent(j.request_id)}`);
+        if (ir.ok) {
+          const rec = InspectRecordSchema.safeParse((await ir.json()) as unknown);
+          const fromInspect = rec.success ? parsePassageList(rec.data.passages) : null;
+          if (fromInspect && fromInspect.length > 0) {
+            setPassages(fromInspect);
+            return;
+          }
+        }
+      } catch {
+        /* fall through to the empty state below */
+      }
+      setPassages([]);
+      setPassagesError("Passages unavailable — /passages and /inspect both failed.");
     } catch {
-      setPassages(
-        (j.grounding_passage_ids || []).map((id, i) => ({ tweet_id: id, score: 1 - i * 0.05, text: "" }))
-      );
+      setPassages([]);
+      setPassagesError("Passages unavailable — backend not reached.");
+    } finally {
+      setPassagesLoading(false);
     }
   }
 
   async function loadJudge(j: PredictResponse) {
+    setJudgeLoading(true);
+    setJudgeError(null);
     try {
       const r = await fetch("/api/judge", {
         method: "POST",
@@ -184,9 +374,16 @@ export default function Page() {
           inbound: text,
         }),
       });
-      if (r.ok) setJudge(await r.json());
-    } catch {
-      /* judge is advisory */
+      if (!r.ok) throw new Error(`judge returned status ${r.status}`);
+      // zod-validated: a malformed verdict surfaces as an error, not a crash.
+      const parsed = JudgeSchema.safeParse((await r.json()) as unknown);
+      if (!parsed.success) throw new Error("judge payload failed validation");
+      setJudge({ groundedness: parsed.data.groundedness, verdict: parsed.data.verdict });
+    } catch (e) {
+      setJudge(null);
+      setJudgeError(`Judge unavailable (${String(e)})`);
+    } finally {
+      setJudgeLoading(false);
     }
   }
 
@@ -197,7 +394,22 @@ export default function Page() {
     setResultAt(null);
     setStreaming("");
     setJudge(null);
+    setJudgeError(null);
     setPassages([]);
+    setPassagesError(null);
+    setStreamChunks(0);
+    setStreamToks(null);
+    streamStartRef.current = Date.now();
+    streamCountRef.current = 0;
+    const noteToks = () => {
+      const t0 = streamStartRef.current;
+      if (t0 === null) return;
+      streamCountRef.current += 1;
+      const count = streamCountRef.current;
+      const elapsed = Math.max((Date.now() - t0) / 1000, 0.1);
+      setStreamChunks(count);
+      setStreamToks(count / elapsed);
+    };
     abortRef.current?.abort();
     const ctl = new AbortController();
     abortRef.current = ctl;
@@ -221,34 +433,32 @@ export default function Page() {
         for (const part of parts) {
           const line = part.trim();
           if (!line.startsWith("data:")) continue;
-          const payload = line.slice(5).trim();
-          if (payload === "[DONE]") continue;
-          try {
-            const ev = JSON.parse(payload);
-            if (ev.event === "token") setStreaming((s) => s + (ev.text || ""));
-            else if (ev.event === "stages") {
-              setResult(
-                (prev) =>
-                  ({
-                    ...(prev as PredictResponse),
-                    intent: ev.intent,
-                    intent_confidence: ev.intent_confidence,
-                    signals: {
-                      ...(prev?.signals || {}),
-                      classify_ms: ev.classify_ms,
-                      retrieve_ms: ev.retrieve_ms,
-                      draft_ms: ev.draft_ms,
-                    },
-                  }) as PredictResponse
-              );
-              setResultAt(Date.now());
-            } else if (ev.event === "final") {
-              final = ev as PredictResponse;
-              setResult(final);
-              setResultAt(Date.now());
-            }
-          } catch {
-            /* keep-alive */
+          // zod-validated: malformed chunks are skipped, never crash the run.
+          const ev = parseStreamPayload(line.slice(5).trim());
+          if (!ev) continue;
+          if (ev.event === "token") {
+            setStreaming((s) => s + ev.text);
+            noteToks();
+          } else if (ev.event === "stages") {
+            setResult(
+              (prev) =>
+                ({
+                  ...(prev as PredictResponse),
+                  intent: ev.intent,
+                  intent_confidence: ev.intent_confidence,
+                  signals: {
+                    ...(prev?.signals || {}),
+                    classify_ms: ev.classify_ms,
+                    retrieve_ms: ev.retrieve_ms,
+                    draft_ms: ev.draft_ms,
+                  },
+                }) as PredictResponse
+            );
+            setResultAt(Date.now());
+          } else if (ev.event === "final") {
+            final = ev as unknown as PredictResponse;
+            setResult(final);
+            setResultAt(Date.now());
           }
         }
       }
@@ -519,6 +729,17 @@ export default function Page() {
                     <span className="text-sm text-red-700 dark:text-red-300">{error}</span>
                   ) : null}
                 </div>
+                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <LiveBadge
+                    status={loading ? "RUNNING" : result ? (stale ? "STALE" : "LIVE") : "AWAITING"}
+                    requestId={result?.request_id}
+                    ms={result?.latency_ms}
+                    toks={streamToks}
+                    onRetry={runPredict}
+                  />
+                  <CurlButton cmd={buildPredictCurl(text, brand)} />
+                  <CurlButton cmd={buildStreamCurl(text, brand)} />
+                </div>
                 <p className="mt-3 text-xs text-muted">
                   Sandbox open · Try any customer message, including unseen queries. No demo
                   fixtures required.
@@ -632,13 +853,30 @@ export default function Page() {
                   <h2 className="font-display text-xl font-semibold tracking-[-0.03em]">
                     Draft reply
                   </h2>
+                  <div className="mt-1">
+                    <LiveBadge
+                      status={
+                        loading && !result
+                          ? "RUNNING"
+                          : draftText
+                            ? stale
+                              ? "STALE"
+                              : "LIVE"
+                            : "AWAITING"
+                      }
+                      requestId={result?.request_id}
+                      toks={streamToks}
+                      onRetry={runStream}
+                      retryLabel="↻ re-stream"
+                    />
+                  </div>
                   <p className="mt-1 min-h-16 whitespace-pre-wrap text-[15px] leading-relaxed">
                     {draftText || (
                       <span className="text-muted">Run a prediction to see the draft.</span>
                     )}
                   </p>
                   {result ? (
-                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
                       <span>
                         Request <span className="font-mono">{result.request_id}</span>
                       </span>
@@ -652,6 +890,16 @@ export default function Page() {
                       <span>
                         Confidence <span className="font-mono tabular-nums">{confPct}%</span>
                       </span>
+                      {streamChunks > 0 ? (
+                        <span>
+                          Stream{" "}
+                          <span className="font-mono tabular-nums">
+                            {streamChunks} chunks
+                            {streamToks !== null ? ` · ${streamToks.toFixed(1)} tok/s` : ""}
+                          </span>
+                        </span>
+                      ) : null}
+                      <CurlButton cmd={buildStreamCurl(text, brand)} />
                     </div>
                   ) : null}
                 </section>
@@ -712,6 +960,30 @@ export default function Page() {
                   <h3 className="mt-1 font-display text-xl font-semibold tracking-[-0.03em]">
                     Pipeline trace
                   </h3>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <LiveBadge
+                      status={loading ? "RUNNING" : result ? (stale ? "STALE" : "LIVE") : "AWAITING"}
+                      requestId={result?.request_id}
+                      ms={result?.latency_ms}
+                      onRetry={runPredict}
+                    />
+                    <CurlButton cmd={buildPredictCurl(text, brand)} />
+                  </div>
+                  <div className="mt-3">
+                    <PipelineFlow
+                      classifyMs={sig.classify_ms as number | undefined}
+                      retrieveMs={sig.retrieve_ms as number | undefined}
+                      draftMs={sig.draft_ms as number | undefined}
+                      latencyMs={result?.latency_ms}
+                      intent={result?.intent}
+                      intentConfidence={result?.intent_confidence}
+                      draftPath={draftPath}
+                      decision={result?.decision}
+                      requestId={result?.request_id}
+                      running={loading}
+                      hasResult={result !== null}
+                    />
+                  </div>
                   <div className="mt-3">
                     <PipelineTimeline stages={stages} />
                   </div>
@@ -721,43 +993,86 @@ export default function Page() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
                     Evidence
                   </p>
-                  <h3 className="mt-1 font-display text-xl font-semibold tracking-[-0.03em]">
-                    Retrieval evidence
-                  </h3>
-                  <p className="mt-1 text-xs text-muted">
+                  <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
+                    <h3 className="font-display text-xl font-semibold tracking-[-0.03em]">
+                      Retrieval evidence
+                    </h3>
+                    {/* React-Flow is the default retrieval view; the 3D graph
+                        is a lazy toggle and only mounts on demand. */}
+                    <div className="inline-flex rounded-full border border-hairline-soft bg-paper p-1">
+                      <button
+                        type="button"
+                        onClick={() => setRetrievalView("flow")}
+                        aria-pressed={retrievalView === "flow"}
+                        className={`rounded-full px-4 py-1.5 text-sm font-medium ${
+                          retrievalView === "flow"
+                            ? "bg-teal font-semibold text-[#03211f]"
+                            : "text-muted hover:opacity-75"
+                        }`}
+                      >
+                        Flow + links
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRetrievalView("3d")}
+                        aria-pressed={retrievalView === "3d"}
+                        className={`rounded-full px-4 py-1.5 text-sm font-medium ${
+                          retrievalView === "3d"
+                            ? "bg-teal font-semibold text-[#03211f]"
+                            : "text-muted hover:opacity-75"
+                        }`}
+                      >
+                        3D graph
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <LiveBadge
+                      status={
+                        passagesLoading
+                          ? "LOADING"
+                          : passagesError
+                            ? "ERROR"
+                            : passages.length > 0
+                              ? stale
+                                ? "STALE"
+                                : "LIVE"
+                              : "AWAITING"
+                      }
+                      requestId={result?.request_id}
+                      ms={sig.retrieve_ms as number | undefined}
+                      onRetry={result ? () => loadPassages(result) : undefined}
+                    />
+                    <CurlButton cmd={buildPassagesCurl(result?.brand || brand, text)} />
+                  </div>
+                  <p className="mt-2 text-xs text-muted">
                     {passages.length > 0
                       ? `${passages.length} passages`
                       : `${topK} passages`}
                   </p>
-                  {passages.length > 0 ? (
-                    <ol className="mt-3 space-y-2 text-sm">
-                      {passages.map((p) => (
-                        <li
-                          key={p.tweet_id}
-                          className="rounded-2xl border border-hairline-soft bg-paper p-3"
-                        >
-                          <div className="flex items-baseline justify-between gap-3">
-                            <span className="truncate font-mono text-xs">{p.tweet_id}</span>
-                            <span className="shrink-0 font-mono text-xs tabular-nums text-muted">
-                              {Number(p.score ?? 0).toFixed(3)}
-                            </span>
-                          </div>
-                          {p.text ? (
-                            <p className="mt-1 whitespace-pre-wrap text-[13px] leading-relaxed">
-                              {p.text}
-                            </p>
-                          ) : null}
-                        </li>
-                      ))}
-                    </ol>
+                  {retrievalView === "3d" ? (
+                    <div className="mt-3">
+                      <RetrievalGraph3D passages={passages} />
+                    </div>
                   ) : (
-                    <p className="mt-2 text-sm text-muted">
-                      {(result.grounding_passage_ids || []).join(", ") || "No passages returned."}
-                    </p>
+                    <div className="mt-3">
+                      <EvidenceView
+                        draftReply={result.draft_reply || ""}
+                        groundingIds={result.grounding_passage_ids || []}
+                        passages={passages}
+                        loading={passagesLoading}
+                        loadError={passagesError}
+                      />
+                    </div>
                   )}
                 </section>
 
-                <EmbedScene embed={embed} loading={embedLoading} />
+                <EmbedScene
+                  embed={embed}
+                  loading={embedLoading}
+                  onRetry={() => loadEmbed(result.brand || brand, text)}
+                  curl={buildEmbedCurl(result.brand || brand, text)}
+                />
 
                 <Inspector inspectId={inspectId} />
 
@@ -810,6 +1125,25 @@ export default function Page() {
               <h3 className="mt-1 font-display text-xl font-semibold tracking-[-0.03em]">
                 Judge summary
               </h3>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <LiveBadge
+                  status={
+                    judgeLoading ? "LOADING" : judgeError ? "ERROR" : judge ? "LIVE" : "AWAITING"
+                  }
+                  requestId={result?.request_id}
+                  onRetry={result ? () => loadJudge(result) : undefined}
+                />
+                {result ? (
+                  <CurlButton
+                    cmd={buildJudgeCurl({
+                      intent: result.intent,
+                      draft: result.draft_reply,
+                      ids: result.grounding_passage_ids || [],
+                      inbound: text,
+                    })}
+                  />
+                ) : null}
+              </div>
               {judge ? (
                 <p className="mt-2 text-sm">
                   Groundedness{" "}
@@ -817,7 +1151,9 @@ export default function Page() {
                   <span className="font-medium">{judge.verdict}</span>
                 </p>
               ) : (
-                <p className="mt-2 text-sm text-muted">Runs on each prediction, advisory only.</p>
+                <p className="mt-2 text-sm text-muted">
+                  {judgeError || "Runs on each prediction, advisory only."}
+                </p>
               )}
             </section>
 
@@ -825,8 +1161,15 @@ export default function Page() {
               <h3 className="font-display text-xl font-semibold tracking-[-0.03em]">
                 Session metrics · Since server start
               </h3>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <LiveBadge
+                  status={apiOk ? "LIVE" : apiOk === false ? "ERROR" : "AWAITING"}
+                  onRetry={() => setMetricsNonce((v) => v + 1)}
+                />
+                <CurlButton cmd="curl http://127.0.0.1:8000/metrics" />
+              </div>
               <div className="mt-3">
-                <MetricsPanel />
+                <MetricsPanel key={metricsNonce} />
               </div>
             </section>
 

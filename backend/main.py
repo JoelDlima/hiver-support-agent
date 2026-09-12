@@ -15,6 +15,32 @@ from src.agent import AppleAgent
 from src.retriever import Retriever
 from src import brands as brands_mod
 
+# ---- Phase 4A (additive): hardening + observability imports (fail-soft) ----
+try:
+    from slowapi import Limiter
+    from slowapi.middleware import SlowAPIMiddleware
+    from slowapi.util import get_remote_address
+    from slowapi.errors import RateLimitExceeded
+    _SLOWAPI_OK = True
+except Exception:
+    Limiter = None
+    SlowAPIMiddleware = None
+    get_remote_address = None
+    RateLimitExceeded = None
+    _SLOWAPI_OK = False
+try:
+    from starlette.exceptions import HTTPException as StarletteHTTPException
+except Exception:
+    StarletteHTTPException = None
+try:
+    from fastapi.exceptions import RequestValidationError
+except Exception:
+    RequestValidationError = None
+try:
+    from src import tracing as _tracing
+except Exception:
+    _tracing = None
+
 logger = logging.getLogger("hiver")
 if not logger.handlers:
     logging.basicConfig(level=logging.INFO)
@@ -226,6 +252,232 @@ def _build_inspect_record(rid, brand, raw_text, result, sig, latency_ms, passage
 
 app = FastAPI(title="Hiver Support Agent (VirginTrains primary, Apple kept)", version="2.0.0")
 
+# ---------------------------------------------------------------------------
+# Phase 4A (ADDITIVE ONLY): request-ID middleware, timing header, RFC-9457
+# envelopes, slowapi 5/min/IP on /predict + /review/enqueue, OTel init,
+# GET /traces tail. No existing route contract is changed.
+# ---------------------------------------------------------------------------
+
+def _rate_limit_key(request: Request):
+    try:
+        fwd = (request.headers.get("x-forwarded-for") or "").split(",")[0].strip()
+        if fwd:
+            return fwd
+    except Exception:
+        pass
+    try:
+        if get_remote_address is not None:
+            return get_remote_address(request)
+    except Exception:
+        pass
+    try:
+        if request.client and request.client.host:
+            return request.client.host
+    except Exception:
+        pass
+    return "unknown"
+
+
+class _RequestIDMiddleware:
+    """Pure-ASGI request-ID + timing middleware (no BaseHTTPMiddleware)."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") != "http":
+            await self.app(scope, receive, send)
+            return
+        rid = ""
+        try:
+            for k, v in scope.get("headers", []):
+                try:
+                    if k.decode("latin-1").lower() == "x-request-id":
+                        rid = v.decode("latin-1").strip()
+                        break
+                except Exception:
+                    continue
+        except Exception:
+            rid = ""
+        if not rid:
+            try:
+                rid = uuid.uuid4().hex[:8]
+            except Exception:
+                rid = "unknown"
+        t0 = time.perf_counter()
+        try:
+            hdrs = list(scope.get("headers", []) or [])
+            if not any(k.decode("latin-1").lower() == "x-request-id" for k, v in hdrs):
+                hdrs.append((b"x-request-id", rid.encode("latin-1")))
+            scope["headers"] = hdrs
+        except Exception:
+            pass
+        try:
+            scope["request_id"] = rid
+        except Exception:
+            pass
+
+        async def _send(message):
+            try:
+                if message.get("type") == "http.response.start":
+                    h = list(message.get("headers", []) or [])
+                    try:
+                        h.append((b"x-request-id", rid.encode("latin-1")))
+                    except Exception:
+                        pass
+                    try:
+                        ms = (time.perf_counter() - t0) * 1000
+                        h.append((b"x-process-time-ms", f"{ms:.1f}".encode("latin-1")))
+                    except Exception:
+                        pass
+                    message["headers"] = h
+            except Exception:
+                pass
+            await send(message)
+
+        await self.app(scope, receive, _send)
+
+
+def _problem(status: int, title: str, detail: str, request=None):
+    try:
+        inst = str(request.url.path) if request is not None and hasattr(request, "url") else ""
+    except Exception:
+        inst = ""
+    return JSONResponse(
+        status_code=status,
+        content={"type": "about:blank", "title": title, "status": status,
+                 "detail": detail, "instance": inst},
+    )
+
+
+async def _http_exc_handler(request: Request, exc):
+    try:
+        status = int(getattr(exc, "status_code", 500))
+    except Exception:
+        status = 500
+    try:
+        detail = str(getattr(exc, "detail", "error") or "error")[:500]
+    except Exception:
+        detail = "error"
+    _titles = {400: "Bad Request", 401: "Unauthorized", 403: "Forbidden",
+               404: "Not Found", 405: "Method Not Allowed", 409: "Conflict",
+               422: "Unprocessable Entity", 429: "Too Many Requests",
+               500: "Internal Server Error"}
+    return _problem(status, _titles.get(status, "Error"), detail, request)
+
+
+async def _validation_handler(request: Request, exc):
+    try:
+        detail = json.dumps(exc.errors())[:1000]
+    except Exception:
+        try:
+            detail = str(exc)[:500]
+        except Exception:
+            detail = "validation failed"
+    return _problem(422, "Unprocessable Entity", detail, request)
+
+
+async def _unhandled_handler(request: Request, exc):
+    try:
+        logger.exception("unhandled: %s", type(exc).__name__)
+    except Exception:
+        pass
+    return _problem(500, "Internal Server Error", "Internal Server Error", request)
+
+
+def _ratelimit_429_handler(request: Request, exc):
+    try:
+        path = str(request.url.path)
+    except Exception:
+        path = ""
+    try:
+        detail = f"Rate limit exceeded: {exc.detail}"
+    except Exception:
+        detail = "Rate limit exceeded: 5 per 1 minute"
+    return JSONResponse(
+        status_code=429,
+        content={"type": "about:blank", "title": "Too Many Requests", "status": 429,
+                 "detail": detail, "instance": path},
+        headers={"Retry-After": "60"},
+    )
+
+
+limiter = None
+try:
+    if _SLOWAPI_OK and Limiter is not None:
+        limiter = Limiter(key_func=_rate_limit_key)
+        app.state.limiter = limiter
+except Exception:
+    limiter = None
+
+try:
+    if StarletteHTTPException is not None:
+        app.add_exception_handler(StarletteHTTPException, _http_exc_handler)
+    if RequestValidationError is not None:
+        app.add_exception_handler(RequestValidationError, _validation_handler)
+    app.add_exception_handler(Exception, _unhandled_handler)
+    if _SLOWAPI_OK and RateLimitExceeded is not None:
+        app.add_exception_handler(RateLimitExceeded, _ratelimit_429_handler)
+except Exception:
+    pass
+
+try:
+    if _SLOWAPI_OK and SlowAPIMiddleware is not None:
+        app.add_middleware(SlowAPIMiddleware)
+except Exception:
+    pass
+try:
+    app.add_middleware(_RequestIDMiddleware)
+except Exception:
+    pass
+
+try:
+    _rate_limit_5pm = limiter.limit("5/minute") if limiter is not None else (lambda fn: fn)
+except Exception:
+    def _rate_limit_5pm(fn):
+        return fn
+
+try:
+    if _tracing is not None:
+        _tracing.init_tracing()
+        try:
+            from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+            FastAPIInstrumentor.instrument_app(app)
+        except Exception:
+            pass
+except Exception:
+    pass
+
+
+@app.get("/traces")
+def traces_tail(limit: int = 50):
+    """Phase 4A: tail of the JSONL trace file (read-only, trivial)."""
+    try:
+        n = max(1, min(int(limit), 200))
+    except Exception:
+        n = 50
+    try:
+        if _tracing is None:
+            return {"traces": [], "count": 0}
+        path = _tracing.traces_path()
+    except Exception:
+        return {"traces": [], "count": 0}
+    try:
+        if not path.exists():
+            return {"traces": [], "count": 0}
+        with open(path, "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+        tail = lines[-n:] if len(lines) > n else lines
+        out = []
+        for ln in tail:
+            try:
+                out.append(json.loads(ln))
+            except Exception:
+                continue
+        return {"traces": out, "count": len(out)}
+    except Exception:
+        return {"traces": [], "count": 0}
+
 # Per-brand retriever/agent cache (brand-agnostic, keyless default).
 _retrievers = {}
 _agents = {}
@@ -383,6 +635,7 @@ def readyz():
         return JSONResponse({"ready": False, "error": str(e)}, status_code=500)
 
 @app.post("/predict")
+@_rate_limit_5pm
 def predict(inp: PredictIn, request: Request):
     t0 = time.perf_counter()
     rid = request.headers.get("X-Request-ID", str(uuid.uuid4())[:8])
@@ -392,6 +645,19 @@ def predict(inp: PredictIn, request: Request):
     brand = _normalize_brand(inp.brand)
     agent = get_agent(brand)
     r = agent.handle(text, brand)
+    # Phase 4A: OTel pipeline spans + structlog bound log (fail-closed).
+    try:
+        if _tracing is not None:
+            _tracing.emit_pipeline_spans(rid, brand, r.intent, r.escalate_signals or {},
+                                         model="openai/gpt-oss-20b")
+    except Exception:
+        pass
+    try:
+        if _tracing is not None:
+            _tracing.get_logger(rid).info("predict", brand=brand, intent=r.intent,
+                                          decision=r.decision)
+    except Exception:
+        pass
     latency_ms = round((time.perf_counter() - t0) * 1000, 1)
     _record_latency(brand, latency_ms, r.decision)
     log_line = json.dumps({"request_id": rid, "brand": brand, "intent": r.intent,
@@ -438,6 +704,12 @@ def predict_stream(inp: PredictIn, request: Request):
         agent = get_agent(brand)
         # Fast deterministic stages (same code path as /predict, timed live)
         r = agent.handle(text, brand)
+        try:
+            if _tracing is not None:
+                _tracing.emit_pipeline_spans(rid, brand, r.intent, r.escalate_signals or {},
+                                             model="openai/gpt-oss-20b")
+        except Exception:
+            pass
         yield f"data: {json.dumps({'event': 'stages', 'intent': r.intent, 'intent_confidence': r.intent_confidence, 'classify_ms': (r.escalate_signals or {}).get('classify_ms'), 'retrieve_ms': (r.escalate_signals or {}).get('retrieve_ms'), 'draft_ms': (r.escalate_signals or {}).get('draft_ms'), 'latency_ms': r.latency_ms})}\n\n"
         sig = r.escalate_signals or {}
         if sig.get("draft_path") == "groq":
@@ -857,7 +1129,8 @@ def review_expire_sweep():
 
 
 @app.post("/review/enqueue")
-def review_enqueue(inp: ReviewEnqueueIn):
+@_rate_limit_5pm
+def review_enqueue(inp: ReviewEnqueueIn, request: Request):
     rs = _review_store()
     brand = _normalize_brand(inp.brand)
     text = (inp.text or "")[:MAX_CHARS]
@@ -865,6 +1138,18 @@ def review_enqueue(inp: ReviewEnqueueIn):
         return JSONResponse({"detail": "empty text"}, status_code=400)
     agent = get_agent(brand)
     r = agent.handle(text, brand)
+    # Phase 4A: trace the enqueue path too (fail-closed).
+    try:
+        if _tracing is not None:
+            _rid = ""
+            try:
+                _rid = request.headers.get("X-Request-ID", "") or ""
+            except Exception:
+                _rid = ""
+            _tracing.emit_pipeline_spans(_rid or "review-enqueue", brand, r.intent,
+                                         r.escalate_signals or {}, model="openai/gpt-oss-20b")
+    except Exception:
+        pass
     # Matrix route is advisory; the queue holds agent escalations.
     try:
         route = rs.route_for(r.intent, float(r.intent_confidence))

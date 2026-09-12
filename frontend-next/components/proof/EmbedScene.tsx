@@ -131,11 +131,16 @@ function Scene({
 export default function EmbedScene({
   embed,
   loading,
+  onRetry,
+  curl,
 }: {
   embed: EmbedPoint[] | null;
   loading: boolean;
+  onRetry?: () => void;
+  curl?: string;
 }) {
   const [hovered, setHovered] = useState<EmbedPoint | null>(null);
+  const [copied, setCopied] = useState(false);
   const points = embed || [];
   const { pos: positions, overlapped } = usePositions(points);
   const queryIdx = useMemo(() => {
@@ -146,6 +151,17 @@ export default function EmbedScene({
     () => JSON.stringify(points.map((p) => [p.tweet_id, p.x, p.y, p.z, p.score, p.is_query])),
     [points]
   );
+
+  async function copyCurl() {
+    if (!curl) return;
+    try {
+      await navigator.clipboard.writeText(curl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   return (
     <Card className="rounded-[24px] p-6">
@@ -160,6 +176,41 @@ export default function EmbedScene({
           <p className="mt-1 text-xs text-muted">
             Two dimensional SVD projection of retrieved passages, computed per query
           </p>
+          {/* Liveness: status · point count · retry · copy-as-curl. */}
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-semibold ${
+                loading
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 animate-pulse"
+                  : points.length > 0
+                    ? "border-teal-600/40 bg-teal-600/10 text-teal-700 dark:text-teal-300"
+                    : "border-hairline-soft bg-paper"
+              }`}
+            >
+              {loading ? "● LOADING" : points.length > 0 ? "● LIVE" : "○ AWAITING"}
+            </span>
+            <span className="font-mono tabular-nums">{points.length} points</span>
+            {onRetry ? (
+              <button
+                type="button"
+                onClick={onRetry}
+                disabled={loading}
+                className="font-semibold text-teal hover:underline disabled:opacity-50"
+              >
+                ↻ retry
+              </button>
+            ) : null}
+            {curl ? (
+              <button
+                type="button"
+                onClick={copyCurl}
+                title={curl}
+                className="font-mono hover:underline"
+              >
+                {copied ? "copied ✓" : "</> curl"}
+              </button>
+            ) : null}
+          </div>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted">
           <span className="inline-flex items-center gap-1.5">

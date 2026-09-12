@@ -17,6 +17,16 @@ import json
 import os
 import re
 
+# Phase 4A (additive): sandbox untrusted passages; resilience (breaker+retry).
+try:
+    from . import sandbox as _sandbox
+except Exception:
+    _sandbox = None
+try:
+    from . import resilience as _resilience
+except Exception:
+    _resilience = None
+
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 # D1 (PLAN_V2, locked 2026-09-12): primary = openai/gpt-oss-20b (production,
 # $0.075/$0.30 per M, ~1000 t/s, strict:true); fallback = qwen/qwen3.8-27b
@@ -68,18 +78,30 @@ def validate_draft(draft, inbound, passages):
 
 
 def _prompts(intent, inbound, passages, brand):
-    ctx = []
-    for p in (passages or [])[:3]:
-        t = (p.get("text") or p.get("clean") or "")[:300] if isinstance(p, dict) else str(p)[:300]
-        if t.strip():
-            ctx.append(t.strip())
-    ctx_block = "\n- ".join(ctx) if ctx else "(no passages; safe generic help, no times/prices)"
+    # Phase 4A: sandbox retrieved passages as untrusted data.
+    try:
+        if _sandbox is not None:
+            ctx_block = _sandbox.build_context(passages, k=3)
+        else:
+            raise RuntimeError("no-sandbox")
+    except Exception:
+        ctx = []
+        for p in (passages or [])[:3]:
+            t = (p.get("text") or p.get("clean") or "")[:300] if isinstance(p, dict) else str(p)[:300]
+            if t.strip():
+                ctx.append(t.strip())
+        ctx_block = "\n- ".join(ctx) if ctx else "(no passages; safe generic help, no times/prices)"
     system = (
         f"You draft short UK customer-support replies for brand={brand}. "
         "Rules: <=280 chars, calm/plain, one next step, ask for DM on PII. "
         "Never invent times, platforms, prices, or URLs/links. If unsure, omit them. "
         'Return JSON only as {"draft_reply": "..."}.'
     )
+    try:
+        if _sandbox is not None:
+            system = _sandbox.harden_system_prompt(system)
+    except Exception:
+        pass
     user = (
         f"intent={intent}\n"
         f"inbound={(inbound or '')[:800]}\n"
@@ -207,10 +229,18 @@ def draft_with_groq(intent, inbound, passages, brand="virgin"):
     if not _api_key():
         return None, {**info_base, "reason": "no-key", "draft_path": "template",
                       "sys_prompt": "", "user_prompt": "", "usage": _empty_usage()}
+    # Phase 4A: breaker-open short-circuit (bounded latency, template fallback).
+    try:
+        if _resilience is not None and _resilience.is_breaker_open():
+            return None, {**info_base, "reason": "breaker-open", "draft_path": "template",
+                          "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _empty_usage()}
+    except Exception:
+        pass
     client, via = _client()
     if client is None:
         return None, {**info_base, "reason": "no-client", "draft_path": "template",
                       "sys_prompt": "", "user_prompt": "", "usage": _empty_usage()}
+    last = "error"
     for model in (GROQ_MODEL, GROQ_FALLBACK_MODEL):
         # 1) Instructor structured path (optional dep; ImportError -> JSON below).
         try:
@@ -225,19 +255,52 @@ def draft_with_groq(intent, inbound, passages, brand="virgin"):
             return _ins_draft, {**info_base, "model": model, "reason": "ok", "draft_path": "groq", "via": _ins_via or "instructor",
                                 "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _ins_usage or _empty_usage()}
         # 2) Existing JSON-schema path (fallback when Instructor is absent or errored).
+        # Phase 4A: breaker-gated + 429/5xx-only retry (<=3) via resilience wrapper.
         try:
-            resp = client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": _sys_prompt},
-                    {"role": "user", "content": _user_prompt},
-                ],
-                temperature=0.6,
-                max_completion_tokens=256,
-                top_p=0.95,
-                response_format=_draft_json_schema(),
-                stop=None,
-            )
+            try:
+                _create = client.chat.completions.create
+                if _resilience is not None:
+                    resp = _resilience.call_groq_with_resilience(
+                        _create,
+                        model=model,
+                        messages=[
+                            {"role": "system", "content": _sys_prompt},
+                            {"role": "user", "content": _user_prompt},
+                        ],
+                        temperature=0.6,
+                        max_completion_tokens=256,
+                        top_p=0.95,
+                        response_format=_draft_json_schema(),
+                        stop=None,
+                    )
+                else:
+                    raise RuntimeError("_no_resilience_fallback")
+            except Exception as _w:
+                # CircuitBreakerError -> fail closed immediately (template).
+                try:
+                    import pybreaker as _pb
+                    if isinstance(_w, _pb.CircuitBreakerError):
+                        return None, {**info_base, "reason": "breaker-open", "draft_path": "template",
+                                      "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _empty_usage()}
+                except Exception:
+                    if "CircuitBreaker" in type(_w).__name__ or "breaker-open" in str(_w).lower():
+                        return None, {**info_base, "reason": "breaker-open", "draft_path": "template",
+                                      "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _empty_usage()}
+                if _resilience is None and "_no_resilience_fallback" in str(_w):
+                    resp = client.chat.completions.create(
+                        model=model,
+                        messages=[
+                            {"role": "system", "content": _sys_prompt},
+                            {"role": "user", "content": _user_prompt},
+                        ],
+                        temperature=0.6,
+                        max_completion_tokens=256,
+                        top_p=0.95,
+                        response_format=_draft_json_schema(),
+                        stop=None,
+                    )
+                else:
+                    raise
             content = resp.choices[0].message.content or ""
             try:
                 draft = (json.loads(content).get("draft_reply") or "").strip()
@@ -264,6 +327,13 @@ def stream_groq_draft(intent, inbound, passages, brand="virgin"):
     if not _api_key():
         yield None, {**info_base, "reason": "no-key", "draft_path": "template", "draft": None}
         return
+    # Phase 4A: breaker-open short-circuit (bounded latency, template fallback).
+    try:
+        if _resilience is not None and _resilience.is_breaker_open():
+            yield None, {**info_base, "reason": "breaker-open", "draft_path": "template", "draft": None}
+            return
+    except Exception:
+        pass
     client, via = _client()
     if client is None:
         yield None, {**info_base, "reason": "no-client", "draft_path": "template", "draft": None}

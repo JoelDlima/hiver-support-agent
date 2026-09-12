@@ -41,3 +41,7 @@ searxng/.venv-sxng/
 searxng/hiver-settings.yml
 searxng/sxng-out.log
 searxng/sxng-err.log
+
+# Phase 4 runtime artifacts
+data/traces.jsonl
+data/processed/golden_candidate.jsonl

@@ -13,9 +13,23 @@ export default function LogTail() {
   const [lines, setLines] = useState<string[]>([]);
   const [paused, setPaused] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [nonce, setNonce] = useState(0);
+  const [copied, setCopied] = useState(false);
   const pausedRef = useRef(false);
   const boxRef = useRef<HTMLDivElement>(null);
   pausedRef.current = paused;
+
+  const curl = "curl -N http://127.0.0.1:8000/logs/stream";
+
+  async function copyCurl() {
+    try {
+      await navigator.clipboard.writeText(curl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   useEffect(() => {
     const es = new EventSource("/api/logs");
@@ -29,7 +43,7 @@ export default function LogTail() {
       setError("Log stream unavailable, retrying");
     };
     return () => es.close();
-  }, []);
+  }, [nonce]);
 
   useEffect(() => {
     const el = boxRef.current;
@@ -67,6 +81,33 @@ export default function LogTail() {
           </p>
           {pauseSwitch}
         </div>
+        {/* Liveness: status · retry · copy-as-curl. */}
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-semibold ${
+              error
+                ? "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300"
+                : "border-hairline-soft bg-paper"
+            }`}
+          >
+            {error ? "● ERROR" : "○ AWAITING"}
+          </span>
+          <button
+            type="button"
+            onClick={() => setNonce((v) => v + 1)}
+            className="font-semibold text-teal hover:underline"
+          >
+            ↻ retry
+          </button>
+          <button
+            type="button"
+            onClick={copyCurl}
+            title={curl}
+            className="font-mono hover:underline"
+          >
+            {copied ? "copied ✓" : "</> curl"}
+          </button>
+        </div>
         {error ? (
           <p className="mt-2 font-mono text-[11px] text-red-700 dark:text-red-300">
             {error}
@@ -86,6 +127,36 @@ export default function LogTail() {
           <h3 className="mt-1 font-display text-xl font-semibold tracking-[-0.03em]">
             Service log
           </h3>
+          {/* Liveness: status · buffered lines · retry · copy-as-curl. */}
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-semibold ${
+                error
+                  ? "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300"
+                  : paused
+                    ? "border-hairline-soft bg-paper"
+                    : "border-teal-600/40 bg-teal-600/10 text-teal-700 dark:text-teal-300"
+              }`}
+            >
+              {error ? "● ERROR" : paused ? "❚❚ PAUSED" : "● LIVE"}
+            </span>
+            <span className="font-mono tabular-nums">{lines.length} lines</span>
+            <button
+              type="button"
+              onClick={() => setNonce((v) => v + 1)}
+              className="font-semibold text-teal hover:underline"
+            >
+              ↻ retry
+            </button>
+            <button
+              type="button"
+              onClick={copyCurl}
+              title={curl}
+              className="font-mono hover:underline"
+            >
+              {copied ? "copied ✓" : "</> curl"}
+            </button>
+          </div>
         </div>
         {pauseSwitch}
       </div>
