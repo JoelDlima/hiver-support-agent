@@ -85,8 +85,18 @@ Failure probes (source: `evaluation/virgin/FAILURE_TESTS.md`): exact-text re-pro
 * FastAPI `0.141.1` + `uvicorn==0.52.4` — `backend/main.py` (`/predict` brand-aware, `/healthz`, `/readyz`, `/metrics` per-brand)
 * Next.js 14 (`next ^14.2.18` in `frontend-next/package.json`) + React 18.3.1 + three.js / `@react-three/fiber` + `framer-motion` + `tailwindcss` — demo UI on `:3000`
 * Streamlit `1.63.0` — legacy demo `frontend/app.py` (no server)
-* pytest `9.1.1` + `httpx==0.28.1` — `tests/` (33 passed) incl. `test_virgin_fixes.py` + `test_brand_groq.py`
+* pytest `9.1.1` + `httpx==0.28.1` — `tests/` (75 passed) incl. `test_virgin_fixes.py`, `test_brand_groq.py`, `test_win_plan_a.py`
 * Groq optional drafter behind gate (`src/groq_draft.py`, key via env only, fail-closed to template)
+
+### V2 (2026-09-15)
+
+V2 closes the Win-Plan workstreams and FIX_PLAN hygiene items — every change verified end-to-end (75 pytest + `npm run build` + live backend/frontend smoke of all 13 endpoints and the full HITL loop):
+
+- **Proof endpoints**: `POST /judge/groundedness` (claim-level entailment; Groq `gpt-oss-20b` temp-0 primary, deterministic offline heuristic fallback), `POST /eval/retrieval-ablation` (8 arms), `GET /eval/compare` (file-cached brand matrix), `offline` flag on `/predict` + `/predict/stream`.
+- **3-tab demo** (`Try it / Proof / Review`) with zod-validated live payloads; 3D graph + log tail demoted to Advanced disclosures (R5 two-tier demo).
+- **Honest baseline (R1a)**: pre-fix keyword rules reconstructed from git history and rescored on human-200 — final-vs-teacher delta **+0.020 acc (CI [−0.035, +0.080])**, **+0.572 esc F1** (`evaluation/virgin/R1_PREFIX_BASELINE.md`).
+- **Miss audit (R1b)**: all 41 human-200 misses bucketed — 41% OOS/noise, 27% ambiguous, 29% model-error (`evaluation/virgin/MISS_AUDIT.md`).
+- **Portability**: zero hardcoded `C:\Hiver` paths in code (all resolved from `__file__`); `requirements.txt` synced with the venv; Dockerfile rewritten for `backend.main:app`; blinded IAA pack + `compute_iaa.py` ready for the annotator hour (R4).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -194,14 +204,15 @@ Done (source: `docs/DECISION_LOG.md` lines 28–30; `evaluation/virgin/FAILURE_T
 - [x] Judge v2 + Groq A/B reported against the gate (both kept advisory): passages + double-run self-consistency 1.000 but κ −0.005; A/B 29/30 live drafts, specificity only, template stays default
 - [x] Failure probes 9/9 green + `tests/test_virgin_fixes.py` regressions (timetable `still running`, crowd remap, amend reprint/receipt cues)
 - [x] `frontend-next` demo (:3000) + per-brand `/metrics` + brand-agnostic dict (`DEFAULT_BRAND=virgin`)
+- [x] **V2**: groundedness/ablation/compare endpoints + V3 study (wκ 0.007 gate FAIL reported honestly), retrieval ablation table, 3-tab demo, offline flag, honest pre-fix baseline + miss audit, portability (no hardcoded roots), Dockerfile rewrite, blinded IAA pack ready
 
 Queued (source: `docs/DECISION_LOG.md` line 31; `docs/REPORT_VIRGIN_6PAGE.md` §5):
 
-- [ ] Annotator-2 κ: grade the generated `evaluation/virgin/annotation_pack_50.csv` (30 spotcheck + 20 fresh seed-11) + adjudicate the 41-flip single-annotator set; report inter-annotator κ (biggest trust upgrade left — human-hours, correctly left to humans)
+- [ ] Annotator-2 κ: fill the blinded pack `evaluation/virgin/relabel_60_blind.csv`, run `scripts/compute_iaa.py`, adjudicate; then the n=100 groundedness label pack for the V4 judge study (biggest trust upgrade left — human-hours, correctly left to humans)
+- [ ] Keyed judge V4: G-Eval anchors, judge≠generator family, double-run (FIX_PLAN R2) — needs a GROQ_API_KEY session
+- [ ] Constrained generation A/B (FIX_PLAN R3): citation-before-claim LLM drafts vs template, NLI gate ≥ 0.9
 - [ ] Time-split train ≤2017-11-15 / test >2017-11-15 (burst-month slice) + supervised virgin LogReg/MiniLM on human labels
 - [ ] Hybrid BM25 + MiniLM + rerank, recall@3 ≥ 0.85 on virgin KB
-- [ ] 75-pair judge-human study (wκ ≥ 0.60 + safety-recall ≥ 0.90 to ship, else advisory); 2-turn thread context + language ID
-- [ ] Cache classifier load, per-brand `/metrics` + rate-limit + Docker load test
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
