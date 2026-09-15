@@ -1,42 +1,45 @@
-# Minimal production image for AppleSupport agent (Agent 10)
-# Build: docker build -f deployment/Dockerfile.simple -t hiver-applesupport:simple .
-# Run:   docker run --rm -p 8000:8000 -e WORKERS=2 hiver-applesupport:simple
-# Design: stateless CPU API, joblib + SQLite file-backed, no GPU, no K8s.
+# Hiver — minimal CPU-only serving image (VirginTrains primary, Apple kept).
+# Rewritten for the current layout: backend.main:app + per-brand artifacts.
+#
+# Build:  docker build -f deployment/Dockerfile.simple -t hiver-agent:latest .
+# Run:    docker run --rm -p 8000:8000 -e WORKERS=2 hiver-agent:latest
+#
+# Design: stateless CPU API; joblib models + SQLite review queue file-backed;
+# no GPU, no orchestrator. GROQ_API_KEY is optional at runtime (fail-closed to
+# template drafts when absent). Data/ and models/ are baked read-only.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    WORKERS=2 \
-    LOG_JSON=1 \
-    KB_PATH=/app/data/kb.sqlite \
-    MODEL_DIR=/app/models
+    PYTHONPATH=/app \
+    WORKERS=2
 
 WORKDIR /app
 
-# System deps (build-only kept minimal; sklearn needs no compiler for wheels)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Layer cache: deps first, code last
+# Deps first for layer caching (scipy/sklearn ship wheels; no compiler needed).
 COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir "uvicorn[standard]>=0.30" fastapi slowapi
+RUN pip install --no-cache-dir -r requirements.txt
 
-# App + baked artifacts (SQLite KB is read-only at runtime)
-COPY src/app ./app
+# App code + baked artifacts (read-only at runtime).
+COPY src ./src
+COPY backend ./backend
 COPY models ./models
-COPY data/kb.sqlite ./data/kb.sqlite
+COPY data/indexes ./data/indexes
+COPY data/processed/virgin_kb.csv data/processed/apple_kb.csv ./data/processed/
+COPY autonomy_matrix.yaml promptfooconfig.yaml pytest.ini ./
 
-# Non-root user + read-only friendly perms
-RUN useradd -r -m appuser && chown -R appuser:appuser /app
+# Non-root user + read-only-friendly perms. The review queue lives in
+# data/processed/ (SQLite, created on demand) so it stays writable.
+RUN useradd -r -m appuser \
+    && mkdir -p /app/data/processed /app/data/traces.jsonl \
+    && chown -R appuser:appuser /app/data
 USER appuser
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:8000/healthz || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3).status==200 else 1)"
 
-# Exec-form via sh for $WORKERS expansion; uvicorn manages workers (no gunicorn needed)
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${WORKERS:-2} --no-access-log --proxy-headers"]
+# Exec form; uvicorn manages workers (no gunicorn needed for this profile).
+CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers ${WORKERS:-2} --no-access-log --proxy-headers"]
