@@ -1,0 +1,46 @@
+{
+  "manifest_version": 1,
+  "vault_tag": "hiver-deep-research-audit-058174",
+  "profile": "full",
+  "profile_steps": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16"
+  ],
+  "status": "running",
+  "started_at": "2026-09-14T08:11:00.773712+00:00",
+  "updated_at": "2026-09-14T08:12:35.376941+00:00",
+  "budget_usd": null,
+  "blocked_on": null,
+  "steps": {
+    "1": {
+      "status": "running",
+      "started_at": "2026-09-14T08:11:17.957583+00:00"
+    }
+  },
+  "chapters": {},
+  "spend": {
+    "estimated_usd": 0.0,
+    "sources_fetched": 0,
+    "notes_written": 0,
+    "agents_spawned": 0
+  },
+  "levers": {
+    "register": "analyze",
+    "inference_depth": "standard",
+    "domain_notes": "Sourcing: scholarly APIs first for IR/classification/eval literature (OpenAlex, CORE); official current docs (verified via Context7/fetch, as of September 2026) for every selected library; Kaggle dataset docs and repo issues for conversation-reconstruction facts. Evidence norms: measured workspace benchmarks outrank vendor claims; GitHub maintenance/issues outrank stars. Recency window: last 1-2 years for models, frameworks, and eval tooling; older foundations acceptable for BM25/classification statistics."
+  }
+}

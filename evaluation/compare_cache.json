@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-09-15T04:12:52.579895+00:00",
+  "generator": "backend/main.py eval_compare (frozen CSVs + offline ground pass)",
+  "sources": {
+    "virgin": "evaluation/virgin/results_human200.csv",
+    "apple": "evaluation/results_human60.csv (+ offline ground_mean pass)"
+  },
+  "results": {
+    "virgin": {
+      "intent_acc": 0.795,
+      "macro_f1": 0.803,
+      "esc_f1": 0.767,
+      "ground_mean": 4.21,
+      "n": 200
+    },
+    "apple": {
+      "intent_acc": 0.433,
+      "macro_f1": 0.443,
+      "esc_f1": 0.471,
+      "n": 60,
+      "ground_mean": 4.72
+    }
+  }
+}

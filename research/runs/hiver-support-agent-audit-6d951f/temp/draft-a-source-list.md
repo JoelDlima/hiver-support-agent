@@ -1,0 +1,47 @@
+# Draft A — must_read_note_ids (n=44)
+Angle: Strongest-thesis — forensic verdict + recommended architecture, argued forcefully.
+
+- interim-leakage-safe-temporal-split-vs-random-stratified-split: thread-aware temporal split recipe + workspace forensics
+- interim-setfit-vs-llm-intent-with-uncertainty-routing: SetFit-first hybrid position with numbers
+- interim-hybrid-retrieval-payoff: hybrid + rerank design with deltas
+- caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge: judge cage spec + gates
+- interim-escalation-calibration-under-shift-depth-investigation: MaxProb floor + AUGRC + reason taxonomy
+- interim-golden-set-adjudication-and-agreement-gate: n=200 tiered gates + adjudication
+- intent-detection-in-the-age-of-llms: hybrid within-2% at -50% latency; OOS scope/size experiments
+- 230814634-breaking-the-bank-with-chatgpt-few-shot-text-classification-for-financ: Banking77 LLM numbers (concede-then-bound)
+- making-llms-worth-every-penny-resource-limited-text-classification-in-banking-ac: cost-aware SetFit vs LLM
+- bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology: Twitter backbone requirement
+- beyond-the-known-investigating-llms-performance-on-out-of-domain-intent-detectio: LLM OOD collapse at scale
+- hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter: silent-failure mechanism
+- hybrid-search-bm25-and-dense-retrieval-combined-interactive: fusion arithmetic handbook
+- hybrid-search-in-production-bm25-dense-retrieval-turionai: +11-17pts recall stack numbers
+- contextual-retrieval-in-ai-systems-anthropic: -49-67% failure stack
+- why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh: +8-15% exact-term lift
+- llm-judge-biases-position-verbosity-self-preference-aitldr: bias catalog + mitigations
+- llm-as-a-judge-pitfalls-bias-detection-mitigation-aitldr: pitfalls + detection tests
+- self-preference-bias-in-llm-as-a-judge: self-preference mechanism
+- judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm: style-dominance + mid-tier economics
+- g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment: G-Eval Spearman .514 + bias note
+- 241115594-a-survey-on-llm-as-a-judge: judge survey
+- pairwise-or-pointwise-evaluating-feedback-protocols-for-bias-in-llm-based-evalua: pointwise-over-pairwise evidence
+- benchmarking-llm-faithfulness-in-rag-with-evolving-leaderboards: RAGAS/HHEM demotion evidence
+- on-the-limitations-of-reference-free-evaluations-of-generated-text-acl-anthology: Deutsch anti-reference-free formalism
+- length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators: length-controlled GLM pattern
+- the-art-of-abstention-selective-prediction-and-error-regularization-for-natural: abstention foundations
+- 200809371-towards-improving-selective-prediction-ability-of-nlp-systems: calibrator gains
+- investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an: MaxProb non-dominance result
+- 240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification: AUGRC supersedes AURC
+- 250901455-trusted-uncertainty-in-large-language-models-a-unified-framework-for-c: UniCR learned calibrator
+- 210600170-adaptive-conformal-inference-under-distribution-shift: ACI streaming recipe
+- github-ercedutselective-prediction-toolkit-github: risk-coverage/AUGRC implementation
+- selective-selective-prediction-reducing-unnecessary-abstention-in-vision-languag: over-abstention costs + recovery
+- post-abstention-towards-reliably-re-attempting-the-abstained-instances-in-qa: post-abstention recovery gains
+- overview-of-leakage-scenarios-in-supervised-machine-learning-journal-of-big-data: leakage taxonomy
+- 220707048-leakage-and-the-reproducibility-crisis-in-ml-based-science: Kapoor L3.1/L3.2 block design
+- data-leakage-inflates-prediction-performance-in-connectome-based-machine-learnin: Rosenblatt repeated-subject inflation
+- dropout-as-a-bayesian-approximation-representing-model-uncertainty-in-deep-learn: MC-dropout foundations
+- supplementary-materials-foron-calibration-of-modern-neural-networks: Guo miscalibration
+- measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid: Zapf N=200 coverage
+- 221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien: Hughes jackknife CI
+- krippendorffs-alpha-intercoder-reliability-casrai: 0.80/0.667 benchmarks
+- isarcasm-a-dataset-of-intended-sarcasm: sarcasm carve-out evidence

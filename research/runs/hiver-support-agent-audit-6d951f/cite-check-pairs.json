@@ -1,0 +1,2357 @@
+{
+  "report": "C:\\Hiver\\research\\notes\\final_report_hiver-support-agent-audit-6d951f.md",
+  "summary": {
+    "total": 252,
+    "supported_mechanical": 0,
+    "dangling": 0,
+    "needs_llm": 252
+  },
+  "sampled_for_llm": [
+    {
+      "sentence": "The assignment picks one brand from Customer Support on Twitter, builds intent classification plus grounded reply generation plus an auto-handle versus escalate decider, and proves trustworthiness with a 150 to 250 item golden set, an evaluation harness, LLM-as-judge plus human agreement, two baselines, a concise report, and a decision log [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "150",
+        "250"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Those behaviors are measured on a conversation-disjoint temporally posterior golden set of 150 to 250 hand-labelled threads, scored against two honest baselines, with an LLM judge whose agreement with humans is itself measured and gated before any headline is quoted [[interim-golden-set-adjudication-and-agreement-gate]][[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "150",
+        "250"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Those behaviors are measured on a conversation-disjoint temporally posterior golden set of 150 to 250 hand-labelled threads, scored against two honest baselines, with an LLM judge whose agreement with humans is itself measured and gated before any headline is quoted [[interim-golden-set-adjudication-and-agreement-gate]][[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "150",
+        "250"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Trust evidence at n equals 200 has statistical meaning only inside that scope [[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "200"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Averaging across a retailer and a device maker and an airline can look adequate while being unsafe on each, and per-label agreement math at n equals 200 already forces a small taxonomy with no headroom for cross-brand variation [[intent-detection-in-the-age-of-llms]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [
+        "200"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Any sensitive action, missing slot, or low-confidence grounding escalates with a reason code [[interim-escalation-calibration-under-shift-depth-investigation]].",
+      "note_id": "interim-escalation-calibration-under-shift-depth-investigation",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The handoff default shows reason and evidence while suppressing the uncertain draft unless a handler explicitly requests it, because informing handlers of deferral without surfacing the uncertain guess improves downstream accuracy while revealing the low-confidence guess degrades it in the single available study [[interim-escalation-calibration-under-shift-depth-investigation]][[selective-prediction-tasks]].",
+      "note_id": "selective-prediction-tasks",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Intent is good when 6 to 8 distinguishable intents route correctly on future threads with graceful out-of-scope handling [[intent-detection-in-the-age-of-llms]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [
+        "6",
+        "8"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Escalation is good when the auto-handled slice meets a pre-registered risk target and every escalation carries a coded reason plus evidence [[interim-escalation-calibration-under-shift-depth-investigation]].",
+      "note_id": "interim-escalation-calibration-under-shift-depth-investigation",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Reproducibility is good when a stranger reproduces the headline in under 15 minutes from a frozen subsample [[if-you-build-your-own-ner-scorer-non-replicable-results-will-come-acl-anthology]].",
+      "note_id": "if-you-build-your-own-ner-scorer-non-replicable-results-will-come-acl-anthology",
+      "numbers": [
+        "15"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Deployment on new threads is out-of-distribution by definition [[211011334-generalized-out-of-distribution-detection-a-survey]][[beyond-the-known-investigating-llms-performance-on-out-of-domain-intent-detectio]], and interpolating-split metrics do not license deployment claims [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "211011334-generalized-out-of-distribution-detection-a-survey",
+      "numbers": [
+        "211011334"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Deployment on new threads is out-of-distribution by definition [[211011334-generalized-out-of-distribution-detection-a-survey]][[beyond-the-known-investigating-llms-performance-on-out-of-domain-intent-detectio]], and interpolating-split metrics do not license deployment claims [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "beyond-the-known-investigating-llms-performance-on-out-of-domain-intent-detectio",
+      "numbers": [
+        "211011334"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Deployment on new threads is out-of-distribution by definition [[211011334-generalized-out-of-distribution-detection-a-survey]][[beyond-the-known-investigating-llms-performance-on-out-of-domain-intent-detectio]], and interpolating-split metrics do not license deployment claims [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "211011334"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Each row carries tweet identifier, anonymized author, inbound flag, timestamp, masked text, plus reply linkage that reconstructs threads [[customer-support-on-twitter-openbigdataorg]], widely mirrored as the approximately 3M-row thoughtvector source [[github-amruta33customer-support-on-twitter-the-customer-support-on-twitter-datas]].",
+      "note_id": "customer-support-on-twitter-openbigdataorg",
+      "numbers": [
+        "3",
+        "33"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Each row carries tweet identifier, anonymized author, inbound flag, timestamp, masked text, plus reply linkage that reconstructs threads [[customer-support-on-twitter-openbigdataorg]], widely mirrored as the approximately 3M-row thoughtvector source [[github-amruta33customer-support-on-twitter-the-customer-support-on-twitter-datas]].",
+      "note_id": "github-amruta33customer-support-on-twitter-the-customer-support-on-twitter-datas",
+      "numbers": [
+        "3",
+        "33"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The TNE-AI build preserves threading across 794,000 rows and 109 companies [[tne-aicustomer-support-on-twitter-conversation-datasets-at-hugging-face]].",
+      "note_id": "tne-aicustomer-support-on-twitter-conversation-datasets-at-hugging-face",
+      "numbers": [
+        "794,000",
+        "109"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The 945,000-row input-output derivative distills threads into normalized pairs with slang and emoji and URL cleaning [[mohammadothmanmo-customer-support-tweets-945k-datasets-at-hugging-face]].",
+      "note_id": "mohammadothmanmo-customer-support-tweets-945k-datasets-at-hugging-face",
+      "numbers": [
+        "945,000",
+        "945"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Exact-corpus analysis reports AmazonHelp at 169,840 tweets and 168,823 responses with median 11.47 minutes, AppleSupport at 106,860 and 106,648 with median 70.97 minutes, TMobileHelp at 34,317 and 34,229 with median 2.75 minutes, AmericanAir at 36,764 with median 10.73 minutes, and British Airways at 29,361 with median 180.5 minutes [[github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag]].",
+      "note_id": "github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag",
+      "numbers": [
+        "169,840",
+        "168,823",
+        "11.47",
+        "106,860",
+        "106,648",
+        "70.97",
+        "34,317",
+        "34,229",
+        "2.75",
+        "36,764",
+        "10.73",
+        "29,361",
+        "180.5",
+        "2050"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Structured high-volume playbooks support grounding while slow sparse responders undermine it [[github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag]].",
+      "note_id": "github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag",
+      "numbers": [
+        "2050"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Corpus precedents cover count-vectorizer through FastText exploration [[github-jessica1438twitter-customer-support-dataset-textual-analysis-and-perspect]].",
+      "note_id": "github-jessica1438twitter-customer-support-dataset-textual-analysis-and-perspect",
+      "numbers": [
+        "1438"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Build on AmazonHelp by default with AmericanAir as fallback, gated by a pre-Phase-0 pilot: sample 100 threads per brand scoring resolution-template coverage, identifier density, and median turns-to-resolution [[github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag]].",
+      "note_id": "github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag",
+      "numbers": [
+        "0",
+        "100",
+        "2050"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The headline inbound pool holds 97,592 rows without thread or time keys, so disjoint or temporal splitting is impossible from that artifact [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "97,592"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The 200-row golden file carries text plus labels without tweet or thread or time keys, so provenance is untraceable and overlap with train and retrieval pools is unauditable [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "200"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "All 200 golden texts match pool texts verbatim [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "200"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The 89,694-row knowledge base is outbound with identifiers preserved, so it structurally holds gold responses while same-thread containment cannot be checked for lack of keys — the retriever fetching the exact gold answer with the judge rewarding groundedness is unmeasurable, which is itself the finding [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "89,694"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Same-thread overlap shares entities and resolution state across turns [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Future-answering-past trains on later policy to answer earlier queries, violating the requirements that test data not predate training data and splits respect dependency structure [[220707048-leakage-and-the-reproducibility-crisis-in-ml-based-science]][[overview-of-leakage-scenarios-in-supervised-machine-learning-journal-of-big-data]].",
+      "note_id": "220707048-leakage-and-the-reproducibility-crisis-in-ml-based-science",
+      "numbers": [
+        "220707048"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Future-answering-past trains on later policy to answer earlier queries, violating the requirements that test data not predate training data and splits respect dependency structure [[220707048-leakage-and-the-reproducibility-crisis-in-ml-based-science]][[overview-of-leakage-scenarios-in-supervised-machine-learning-journal-of-big-data]].",
+      "note_id": "overview-of-leakage-scenarios-in-supervised-machine-learning-journal-of-big-data",
+      "numbers": [
+        "220707048"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Repeated-subject leakage inflates performance and small eval sets amplify it — the exact combination of same-thread tweets with a 150 to 250 golden set [[data-leakage-inflates-prediction-performance-in-connectome-based-machine-learnin]].",
+      "note_id": "data-leakage-inflates-prediction-performance-in-connectome-based-machine-learnin",
+      "numbers": [
+        "150",
+        "250"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Out-of-distribution degradation is the norm [[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Partition everything with GroupShuffleSplit semantics on thread identifier (fractions refer to groups not samples) plus a fail-closed zero-overlap assertion on every harness run, with TimeSeriesSplit-style gap mapping to the no-straddle-by-start-time rule and author overlap reported separately [[groupshufflesplit-scikit-learn-191-documentation]][[timeseriessplit-scikit-learn-191-documentation]][[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "groupshufflesplit-scikit-learn-191-documentation",
+      "numbers": [
+        "191",
+        "191"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Partition everything with GroupShuffleSplit semantics on thread identifier (fractions refer to groups not samples) plus a fail-closed zero-overlap assertion on every harness run, with TimeSeriesSplit-style gap mapping to the no-straddle-by-start-time rule and author overlap reported separately [[groupshufflesplit-scikit-learn-191-documentation]][[timeseriessplit-scikit-learn-191-documentation]][[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "timeseriessplit-scikit-learn-191-documentation",
+      "numbers": [
+        "191",
+        "191"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Partition everything with GroupShuffleSplit semantics on thread identifier (fractions refer to groups not samples) plus a fail-closed zero-overlap assertion on every harness run, with TimeSeriesSplit-style gap mapping to the no-straddle-by-start-time rule and author overlap reported separately [[groupshufflesplit-scikit-learn-191-documentation]][[timeseriessplit-scikit-learn-191-documentation]][[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "191",
+        "191"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Stratify threads, not tweets, by weak-intent bucket and escalate flag and size bucket, backfilling rare strata only from latest pre-cutoff threads with per-stratum counts disclosed in the golden note and with/without exclusion scores as the leakage diagnostic [[interim-leakage-safe-temporal-split-vs-random-stratified-split]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The rebuild uses Polars with DuckDB over Parquet on tutorial-scale speedups without distributed machinery [[python-data-pipelines-with-polars-and-duckdb-andrew-odendaal]][[modern-dataframes-in-python-a-hands-on-tutorial-with-polars-and-duckdb-towards-d]], NOT MEASURED on this slice; the report times its own ETL wall-clock rather than quoting tutorials as results.",
+      "note_id": "modern-dataframes-in-python-a-hands-on-tutorial-with-polars-and-duckdb-towards-d",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "A 200-item golden set with a 20-per-intent minimum caps the scheme at 10 absolute, with decision and difficulty and temporal strata pushing the practical ceiling near 7 [[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "200",
+        "20",
+        "10",
+        "7"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Its 13,083 queries across 77 intents with 10,003 train and 3,080 test rows are clean banking English [[polyaibanking77-datasets-at-hugging-face]].",
+      "note_id": "polyaibanking77-datasets-at-hugging-face",
+      "numbers": [
+        "13,083",
+        "77",
+        "10,003",
+        "3,080",
+        "77"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Embed a thread-aware sample with a Twitter-pretrained encoder, reduce and cluster without forcing every ticket into a cluster, and describe clusters with class-based TF-IDF [[bertopic-bertopic-latest-documentation]].",
+      "note_id": "bertopic-bertopic-latest-documentation",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The BERT plus HDBSCAN plus class-TF-IDF pattern is the established ticket-theme recipe [[ml-case-study-interview-question-discovering-support-ticket-themes-with-bert-emb]], shown on 5,000-plus support conversations with coherence 0.63 and manual review [[github-kelukesvps-support-ticket-clustering-clustering-and-topic-modeling-of-vps]].",
+      "note_id": "ml-case-study-interview-question-discovering-support-ticket-themes-with-bert-emb",
+      "numbers": [
+        "5,000",
+        "0.63"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The BERT plus HDBSCAN plus class-TF-IDF pattern is the established ticket-theme recipe [[ml-case-study-interview-question-discovering-support-ticket-themes-with-bert-emb]], shown on 5,000-plus support conversations with coherence 0.63 and manual review [[github-kelukesvps-support-ticket-clustering-clustering-and-topic-modeling-of-vps]].",
+      "note_id": "github-kelukesvps-support-ticket-clustering-clustering-and-topic-modeling-of-vps",
+      "numbers": [
+        "5,000",
+        "0.63"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Encoder recall near 0.38 and best-LLM recall near 0.60 to 0.64 at best-F1 are the controlled reference [[intent-detection-in-the-age-of-llms]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [
+        "0.38",
+        "0.60",
+        "0.64",
+        "1"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Negative augmentation at one-fifth of training sentences lifts the encoder substantially [[intent-detection-in-the-age-of-llms]] and belongs in the recipe.",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Orchestration with hundreds of integrations earns overhead for multi-step tool loops, but plain Python with direct calls is faster to build and debug and maintain for single-pass generation [[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]].",
+      "note_id": "is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com",
+      "numbers": [
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "If the pipeline fits in direct calls, it does not need the framework [[rag-vs-langchain-which-do-you-need]].",
+      "note_id": "rag-vs-langchain-which-do-you-need",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "SetFit-first intent on a Twitter backbone with negative augmentation routes uncertain items to a low-cost model with retrieval-filtered few-shot examples [[intent-detection-in-the-age-of-llms]][[bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Hybrid BM25 plus dense retrieval over thread windows with cold-start fusion and later tuned weighting plus rerank of at most 50 supplies top contexts [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[contextual-retrieval-in-ai-systems-anthropic]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "25",
+        "50",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Hybrid BM25 plus dense retrieval over thread windows with cold-start fusion and later tuned weighting plus rerank of at most 50 supplies top contexts [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[contextual-retrieval-in-ai-systems-anthropic]].",
+      "note_id": "contextual-retrieval-in-ai-systems-anthropic",
+      "numbers": [
+        "25",
+        "50",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Constrained generation drafts only from retrieved history with an entailment veto [[interim-escalation-calibration-under-shift-depth-investigation]].",
+      "note_id": "interim-escalation-calibration-under-shift-depth-investigation",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Temperature-scaled MaxProb plus entailment governs escalation, with a learned calibrator admitted only on cross-split proof [[200809371-towards-improving-selective-prediction-ability-of-nlp-systems]][[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "200809371-towards-improving-selective-prediction-ability-of-nlp-systems",
+      "numbers": [
+        "200809371"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Temperature-scaled MaxProb plus entailment governs escalation, with a learned calibrator admitted only on cross-split proof [[200809371-towards-improving-selective-prediction-ability-of-nlp-systems]][[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an",
+      "numbers": [
+        "200809371"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "On six dialogue datasets SetFit averages 0.600 F1 at 0.030 seconds, negative augmentation lifts it past 0.65, the best LLM averages 0.736 at 1.7 seconds, and the routed hybrid lands within about 2 points of the LLM outside shift but about 4 points inside shift (M-equals-10-plus-Haiku 0.737 ex-OADP vs 0.696 incl-OADP against native 0.760/0.736), at roughly half the latency while routing 0.32 to 0.43 of queries to the LLM [[intent-detection-in-the-age-of-llms]][[interim-setfit-vs-llm-intent-with-uncertainty-routing]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [
+        "0.600",
+        "1",
+        "0.030",
+        "0.65",
+        "0.736",
+        "1.7",
+        "2",
+        "4",
+        "10",
+        "0.737",
+        "0.696",
+        "0.760",
+        "0.736",
+        "0.32",
+        "0.43"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "On six dialogue datasets SetFit averages 0.600 F1 at 0.030 seconds, negative augmentation lifts it past 0.65, the best LLM averages 0.736 at 1.7 seconds, and the routed hybrid lands within about 2 points of the LLM outside shift but about 4 points inside shift (M-equals-10-plus-Haiku 0.737 ex-OADP vs 0.696 incl-OADP against native 0.760/0.736), at roughly half the latency while routing 0.32 to 0.43 of queries to the LLM [[intent-detection-in-the-age-of-llms]][[interim-setfit-vs-llm-intent-with-uncertainty-routing]].",
+      "note_id": "interim-setfit-vs-llm-intent-with-uncertainty-routing",
+      "numbers": [
+        "0.600",
+        "1",
+        "0.030",
+        "0.65",
+        "0.736",
+        "1.7",
+        "2",
+        "4",
+        "10",
+        "0.737",
+        "0.696",
+        "0.760",
+        "0.736",
+        "0.32",
+        "0.43"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "ADP-to-OADP SetFit drops about 15 percent versus a smaller LLM drop, and OOS recall runs Mistral-L 0.641, Haiku 0.601, SNA 0.489, baseline SetFit 0.378 [[interim-setfit-vs-llm-intent-with-uncertainty-routing]].",
+      "note_id": "interim-setfit-vs-llm-intent-with-uncertainty-routing",
+      "numbers": [
+        "15",
+        "0.641",
+        "0.601",
+        "0.489",
+        "0.378"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "[[intent-detection-in-the-age-of-llms]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Retrieval-filtered top-20 few-shot reaches 85.5 percent at 42 dollars versus 83.1 percent at 740 dollars for a 231-example full prompt on the same test set [[making-llms-worth-every-penny-resource-limited-text-classification-in-banking-ac]], and cascades match best singles at large savings or improve at equal cost [[230505176-frugalgpt-how-to-use-large-language-models-while-reducing-cost-and-imp]].",
+      "note_id": "making-llms-worth-every-penny-resource-limited-text-classification-in-banking-ac",
+      "numbers": [
+        "20",
+        "85.5",
+        "42",
+        "83.1",
+        "740",
+        "231",
+        "230505176"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Retrieval-filtered top-20 few-shot reaches 85.5 percent at 42 dollars versus 83.1 percent at 740 dollars for a 231-example full prompt on the same test set [[making-llms-worth-every-penny-resource-limited-text-classification-in-banking-ac]], and cascades match best singles at large savings or improve at equal cost [[230505176-frugalgpt-how-to-use-large-language-models-while-reducing-cost-and-imp]].",
+      "note_id": "230505176-frugalgpt-how-to-use-large-language-models-while-reducing-cost-and-imp",
+      "numbers": [
+        "20",
+        "85.5",
+        "42",
+        "83.1",
+        "740",
+        "231",
+        "230505176"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Close the gap with a Twitter-pretrained backbone, which beats generic baselines on tweet tagging and entity and classification [[bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology]], with the IntentBERT pre-training effect supporting few-shot intent transfer [[effectiveness-of-pre-training-for-few-shot-intent-classification-acl-anthology]], since generic-backbone SetFit underperforms Twitter-pretrained models on noisy tweets [[fine-tuning-language-models-on-dutch-protest-event-tweets-acl-anthology]].",
+      "note_id": "bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Close the gap with a Twitter-pretrained backbone, which beats generic baselines on tweet tagging and entity and classification [[bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology]], with the IntentBERT pre-training effect supporting few-shot intent transfer [[effectiveness-of-pre-training-for-few-shot-intent-classification-acl-anthology]], since generic-backbone SetFit underperforms Twitter-pretrained models on noisy tweets [[fine-tuning-language-models-on-dutch-protest-event-tweets-acl-anthology]].",
+      "note_id": "fine-tuning-language-models-on-dutch-protest-event-tweets-acl-anthology",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Start from the prompt-free contrastive SetFit recipe [[220911055-efficient-few-shot-learning-without-prompts]][[github-huggingfacesetfit-efficient-few-shot-learning-with-sentence-transformers]].",
+      "note_id": "220911055-efficient-few-shot-learning-without-prompts",
+      "numbers": [
+        "220911055"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Start from the prompt-free contrastive SetFit recipe [[220911055-efficient-few-shot-learning-without-prompts]][[github-huggingfacesetfit-efficient-few-shot-learning-with-sentence-transformers]].",
+      "note_id": "github-huggingfacesetfit-efficient-few-shot-learning-with-sentence-transformers",
+      "numbers": [
+        "220911055"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "[[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Full-layer 10-pass dropout (dropout 0.1, M equals 10; M equals 5 captures most gain, 10-to-20 flat, batched MC cuts latency) routes under the Arora App A.2 predicate — uncertain iff stochastic forwards show more than one distinct argmax or fewer than M/2 agree — and only if it beats temperature-scaled MaxProb picked by AURC/refinement on IID-held-out and temporal-held-out [[interim-setfit-vs-llm-intent-with-uncertainty-routing]][[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "interim-setfit-vs-llm-intent-with-uncertainty-routing",
+      "numbers": [
+        "10",
+        "0.1",
+        "10",
+        "5",
+        "10",
+        "20",
+        "2",
+        "2"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Full-layer 10-pass dropout (dropout 0.1, M equals 10; M equals 5 captures most gain, 10-to-20 flat, batched MC cuts latency) routes under the Arora App A.2 predicate — uncertain iff stochastic forwards show more than one distinct argmax or fewer than M/2 agree — and only if it beats temperature-scaled MaxProb picked by AURC/refinement on IID-held-out and temporal-held-out [[interim-setfit-vs-llm-intent-with-uncertainty-routing]][[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an",
+      "numbers": [
+        "10",
+        "0.1",
+        "10",
+        "5",
+        "10",
+        "20",
+        "2",
+        "2"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Taxonomy controls ride along: masked Label-xx names, explicit out-of-scope, merge any pair above 15 percent cross-confusion, RAG top-K 5 to 10 only for routed queries, more-than-5-per-class before fine-tuning, representative over random demos, with 8.49 percent format failures at N equals 150 as the prompt-fragility guard [[interim-setfit-vs-llm-intent-with-uncertainty-routing]].",
+      "note_id": "interim-setfit-vs-llm-intent-with-uncertainty-routing",
+      "numbers": [
+        "15",
+        "5",
+        "10",
+        "5",
+        "8.49",
+        "150"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Narrower in-domain rejection results keep dropout as challenger [[uncertainty-estimation-of-transformer-predictions-for-misclassification-detectio]], with single-pass softmax as cost default [[221014037-revisiting-softmax-for-uncertainty-approximation-in-text-classificatio]].",
+      "note_id": "uncertainty-estimation-of-transformer-predictions-for-misclassification-detectio",
+      "numbers": [
+        "221014037"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Narrower in-domain rejection results keep dropout as challenger [[uncertainty-estimation-of-transformer-predictions-for-misclassification-detectio]], with single-pass softmax as cost default [[221014037-revisiting-softmax-for-uncertainty-approximation-in-text-classificatio]].",
+      "note_id": "221014037-revisiting-softmax-for-uncertainty-approximation-in-text-classificatio",
+      "numbers": [
+        "221014037"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "LLM few-shot with filtered prompts is the fallback the contest can promote, since in-context models beat fine-tuned non-generative ones on few examples and wording variance [[230814634-breaking-the-bank-with-chatgpt-few-shot-text-classification-for-financ]].",
+      "note_id": "230814634-breaking-the-bank-with-chatgpt-few-shot-text-classification-for-financ",
+      "numbers": [
+        "230814634"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Embedded stores answer top-10 under 30 ms at this scale with rerank dominating end-to-end [[chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn]], so in-process BM25 plus a local dense index keeps the 15 minute repro free of containers.",
+      "note_id": "chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn",
+      "numbers": [
+        "10",
+        "30",
+        "25",
+        "15"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Support prompts carry redaction and injection guards and escalation paths throughout [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Support prompts carry redaction and injection guards and escalation paths throughout [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "defending-against-prompt-injection-essential-practices-for-2026-orchestratordev",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Support prompts carry redaction and injection guards and escalation paths throughout [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "how-to-prevent-your-chatbot-from-leaking-pii-modelmetry",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Support prompts carry redaction and injection guards and escalation paths throughout [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "improving-security-data-redaction-for-support-chatbots",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Ranked architectures: (1) plain dependency-ordered pipeline — COMMITTED; wins on trust-per-complexity within the 15-minute repro; reversal only on router AUGRC fail or identifier-gate fail. (2) retrieval-filtered LLM-first fallback — wins if the incl-shift gap replicates or the router fails MaxProb on AUGRC; promoted by contest. (3) graph-orchestrated agent — REJECTED; wins only on genuine multi-step tool loops with a second retrieve-grade-retry loop; revival on second loop [[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]][[rag-vs-langchain-which-do-you-need]].",
+      "note_id": "is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com",
+      "numbers": [
+        "1",
+        "15",
+        "2",
+        "3",
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Ranked architectures: (1) plain dependency-ordered pipeline — COMMITTED; wins on trust-per-complexity within the 15-minute repro; reversal only on router AUGRC fail or identifier-gate fail. (2) retrieval-filtered LLM-first fallback — wins if the incl-shift gap replicates or the router fails MaxProb on AUGRC; promoted by contest. (3) graph-orchestrated agent — REJECTED; wins only on genuine multi-step tool loops with a second retrieve-grade-retry loop; revival on second loop [[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]][[rag-vs-langchain-which-do-you-need]].",
+      "note_id": "rag-vs-langchain-which-do-you-need",
+      "numbers": [
+        "1",
+        "15",
+        "2",
+        "3",
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| ETL | Polars plus DuckDB, Parquet | pandas-only, Spark | Speedups without distribution [[python-data-pipelines-with-polars-and-duckdb-andrew-odendaal]] | Free, in-process | Tutorial-scale; NOT MEASURED on this slice | pandas slows rebuild; Spark breaks 15-min repro |",
+      "note_id": "python-data-pipelines-with-polars-and-duckdb-andrew-odendaal",
+      "numbers": [
+        "15"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| Graded store | In-process FAISS or Chroma plus rank-bm25 | Managed DB, Elasticsearch | All stores under 30 ms; rerank dominates [[chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn]] | Free | Top-10 under 30 ms; rerank 100-200 ms | Managed DB breaks repro with credentials |",
+      "note_id": "chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn",
+      "numbers": [
+        "25",
+        "30",
+        "10",
+        "30",
+        "100",
+        "200"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| Scale-up | Postgres pgvector plus tsvector in SQL, documented | Managed default | Concrete hybrid-SQL recipe [[how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz]] | Single-node Postgres | One-SQL hybrid; NOT MEASURED here | Premature ops without 1M-chunk need |",
+      "note_id": "how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz",
+      "numbers": [
+        "25",
+        "1"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| Framework | Plain Python direct calls | LangChain, LangGraph, LlamaIndex | Faster for simple RAG [[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]] | Free | Faster debug | Second retry loop forces framework revisit |",
+      "note_id": "is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com",
+      "numbers": [
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| Harness | Code-first JSON default + hosted mirror (LangSmith evaluate()/datasets/experiments + Langfuse experiment-action/RegressionError/approved-baseline CI gate) | Single-suite headline | Bespoke splits/exclusion force custom code; matrix compared [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted SDK/CI [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]] | JSON free; hosted pay-per-run | JSON instant; CI minutes | Custom drifts without CI gate; adopt hosted when it catches a missed regression |",
+      "note_id": "how-to-evaluate-agents-docs-by-langchain",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| Harness | Code-first JSON default + hosted mirror (LangSmith evaluate()/datasets/experiments + Langfuse experiment-action/RegressionError/approved-baseline CI gate) | Single-suite headline | Bespoke splits/exclusion force custom code; matrix compared [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted SDK/CI [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]] | JSON free; hosted pay-per-run | JSON instant; CI minutes | Custom drifts without CI gate; adopt hosted when it catches a missed regression |",
+      "note_id": "evaluation-of-llm-applications-langfuse",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| Judge | Cross-family mid-tier with debias bundle | Same-family frontier | 71 percent at 0.001 dollars per eval [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]] | ~0.001 dollars per eval | Seconds per item | Same-family self-preference gap |",
+      "note_id": "judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm",
+      "numbers": [
+        "71",
+        "0.001",
+        "0.001"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Pooling token vectors into one fixed vector buys paraphrase tolerance but destroys rare-string identity, while an inverted index either finds the term or not, with rarity helping via inverse document frequency [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Pooling token vectors into one fixed vector buys paraphrase tolerance but destroys rare-string identity, while an inverted index either finds the term or not, with rarity helping via inverse document frequency [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh]].",
+      "note_id": "why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh",
+      "numbers": [
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Support tweets concentrate dense-hostile features — handles, tags, order numbers, versions, URLs, typos, 2 to 5 word queries — in under 280 characters [[interim-hybrid-retrieval-payoff]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "2",
+        "5",
+        "280"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Zero-shot dense trained on web passages often fails to beat BM25 out-of-distribution [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "25",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "[[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Index thread windows with 50 to 100 tokens of prepended context carrying brand and thread and turn position and issue summary and prior turn [[contextual-retrieval-in-ai-systems-anthropic]].",
+      "note_id": "contextual-retrieval-in-ai-systems-anthropic",
+      "numbers": [
+        "50",
+        "100"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Contextualization cuts top-20 failures by about 35 percent, plus contextual BM25 about 49 percent, plus rerank about 67 percent cross-domain [[contextual-retrieval-in-ai-systems-anthropic]].",
+      "note_id": "contextual-retrieval-in-ai-systems-anthropic",
+      "numbers": [
+        "20",
+        "35",
+        "25",
+        "49",
+        "67"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Fuse 100 candidates per arm with cold-start RRF score(d) equals sum 1/(k plus rank), k equals 60, sidestepping BM25-versus-cosine scale, then migrate to weighted score equals alpha times dense_norm plus (1 minus alpha) times sparse_norm only after 40-plus relevance pairs via alpha-sweep 0 to 1 [[interim-hybrid-retrieval-payoff]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "100",
+        "1",
+        "60,",
+        "25",
+        "1",
+        "40",
+        "0",
+        "1"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Domain priors start alpha near 0.3 sparse-heavy for identifier traffic, 0.7 to 0.8 conversational, 0.5 to 0.6 balanced; normalization is second-order but depth-coupled so depths are logged with alpha [[interim-hybrid-retrieval-payoff]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "0.3",
+        "0.7",
+        "0.8",
+        "0.5",
+        "0.6"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "BM25 k1 0.5 to 0.8 for short docs with preserved @/#/digits/hyphens [[interim-hybrid-retrieval-payoff]]; WANDS shows naive fusion 0.7068 versus 0.6983/0.6953 (plus about 1.2 percent) versus tuned-plus-boost 0.7497 (plus 7.4 percent), tiered plus 7.5 versus plain plus 1.3, justifying the 5-point identifier gate [[interim-hybrid-retrieval-payoff]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "25",
+        "1",
+        "0.5",
+        "0.8",
+        "0.7068",
+        "0.6983",
+        "0.6953",
+        "1.2",
+        "0.7497",
+        "7.4",
+        "7.5",
+        "1.3",
+        "5"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "BM25 k1 0.5 to 0.8 for short docs with preserved @/#/digits/hyphens [[interim-hybrid-retrieval-payoff]]; WANDS shows naive fusion 0.7068 versus 0.6983/0.6953 (plus about 1.2 percent) versus tuned-plus-boost 0.7497 (plus 7.4 percent), tiered plus 7.5 versus plain plus 1.3, justifying the 5-point identifier gate [[interim-hybrid-retrieval-payoff]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "25",
+        "1",
+        "0.5",
+        "0.8",
+        "0.7068",
+        "0.6983",
+        "0.6953",
+        "1.2",
+        "0.7497",
+        "7.4",
+        "7.5",
+        "1.3",
+        "5"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Tech-docs stacks move 0.67 dense-only to 0.78 hybrid to 0.84 with rerank [[interim-hybrid-retrieval-payoff]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "0.67",
+        "0.78",
+        "0.84"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Tuned weighting with field boosts adds 7-plus points where naive fusion adds about 1 [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "7",
+        "1",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Exact-term lift of 8 to 15 percent concentrates on exact-term queries [[why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh]].",
+      "note_id": "why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh",
+      "numbers": [
+        "8",
+        "15"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "WANDS naive-versus-tuned and financial recall-at-5 tables are specified in the six-arm ablation below [[hybrid-search-for-rag-combining-bm25-and-dense-vector-search-2026-guide]].",
+      "note_id": "hybrid-search-for-rag-combining-bm25-and-dense-vector-search-2026-guide",
+      "numbers": [
+        "5",
+        "25",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Direction is committed on structural grounds: identifier traffic keeps a lexical arm because pooled dense vectors destroy rare-string identity while an inverted index preserves it [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Direction is committed on structural grounds: identifier traffic keeps a lexical arm because pooled dense vectors destroy rare-string identity while an inverted index preserves it [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh]].",
+      "note_id": "why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh",
+      "numbers": [
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Rerank discipline is strict: 30 to 50 candidates cost 100 to 200 ms, and needing 200-plus signals broken first-stage recall [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "30",
+        "50",
+        "100",
+        "200",
+        "200",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Score recall at 5 and 10, reciprocal rank, NDCG at 10, exact-identifier correctness downstream, and per-stage p50 and p95, overall and per identifier versus paraphrase versus mixed stratum, with adversarial identifier probes countering survivorship bias [[interim-hybrid-retrieval-payoff]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "5",
+        "10,",
+        "10,",
+        "50",
+        "95,"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Unsupported claims cap groundedness; invented policy or identifier echo fails safety [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Natural-language-inference entailment near 0.9 vetoes auto-handle independently of intent confidence [[interim-escalation-calibration-under-shift-depth-investigation]].",
+      "note_id": "interim-escalation-calibration-under-shift-depth-investigation",
+      "numbers": [
+        "0.9"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Learned sparse is gated candidacy, not rejection: document-only SPLADE matches hybrid quality in a single index and is evaluated alongside tuned fusion on the same 5-point identifier gate with query-latency ledger; query-side expansion stays unbuilt on latency grounds [[splade-vs-bm25-vs-dense-does-learned-sparse-retrieval-beat-hybrid-search]].",
+      "note_id": "splade-vs-bm25-vs-dense-does-learned-sparse-retrieval-beat-hybrid-search",
+      "numbers": [
+        "5",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The contest logs joint router-abstain versus escalation-abstain confusion and scores margin/entropy challengers specifically on discordant slices where MaxProb is confidently wrong; divergent signals become mandatory if the joint-failure rate exceeds a pre-registered bound [[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]][[200809371-towards-improving-selective-prediction-ability-of-nlp-systems]].",
+      "note_id": "investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an",
+      "numbers": [
+        "200809371"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The contest logs joint router-abstain versus escalation-abstain confusion and scores margin/entropy challengers specifically on discordant slices where MaxProb is confidently wrong; divergent signals become mandatory if the joint-failure rate exceeds a pre-registered bound [[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]][[200809371-towards-improving-selective-prediction-ability-of-nlp-systems]].",
+      "note_id": "200809371-towards-improving-selective-prediction-ability-of-nlp-systems",
+      "numbers": [
+        "200809371"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Modern networks are systematically overconfident and single-parameter temperature scaling is the most effective post-hoc fix [[supplementary-materials-foron-calibration-of-modern-neural-networks]].",
+      "note_id": "supplementary-materials-foron-calibration-of-modern-neural-networks",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "A published confidence-plus-difficulty calibrator reports 15.81 percent IID and 5.64 percent OOD gains on NLI and 6.19 percent IID and 13.9 percent OOD on duplicate detection [[200809371-towards-improving-selective-prediction-ability-of-nlp-systems]], but ships only if it beats scaled MaxProb on risk-coverage area and ranking refinement on held-out and temporal slices, since the 17-dataset follow-up finds no consistent dominance [[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "200809371-towards-improving-selective-prediction-ability-of-nlp-systems",
+      "numbers": [
+        "15.81",
+        "5.64",
+        "6.19",
+        "13.9",
+        "200809371",
+        "17"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "A published confidence-plus-difficulty calibrator reports 15.81 percent IID and 5.64 percent OOD gains on NLI and 6.19 percent IID and 13.9 percent OOD on duplicate detection [[200809371-towards-improving-selective-prediction-ability-of-nlp-systems]], but ships only if it beats scaled MaxProb on risk-coverage area and ranking refinement on held-out and temporal slices, since the 17-dataset follow-up finds no consistent dominance [[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]].",
+      "note_id": "investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an",
+      "numbers": [
+        "15.81",
+        "5.64",
+        "6.19",
+        "13.9",
+        "200809371",
+        "17"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Refinement isolates ranking quality where naive area confounds accuracy and ordering [[on-the-evaluation-of-neural-selective-prediction-methods-for-natural-language-pr]].",
+      "note_id": "on-the-evaluation-of-neural-selective-prediction-methods-for-natural-language-pr",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk (Whitehead 6.8 to 16.3 percent, 2.4x, at 1 percent risk) [[interim-escalation-calibration-under-shift-depth-investigation]]; scoring uses Phi_1 (plus-1 correct, minus-c incorrect, 0 abstain) and AUGRC with GRC(c) equals risk plus gamma times (1 minus c), gamma 0.5 [[240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification]]; split-conformal bands 1-minus-alpha to 1-minus-alpha-plus-1/(n-plus-1) are quoted only with exchangeability disclaimed under brand drift [[a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty]][[210600170-adaptive-conformal-inference-under-distribution-shift]].",
+      "note_id": "interim-escalation-calibration-under-shift-depth-investigation",
+      "numbers": [
+        "8",
+        "1",
+        "6.8",
+        "16.3",
+        "2.4",
+        "1",
+        "1",
+        "1",
+        "0",
+        "1",
+        "0.5",
+        "240701032",
+        "1",
+        "1",
+        "1",
+        "1",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk (Whitehead 6.8 to 16.3 percent, 2.4x, at 1 percent risk) [[interim-escalation-calibration-under-shift-depth-investigation]]; scoring uses Phi_1 (plus-1 correct, minus-c incorrect, 0 abstain) and AUGRC with GRC(c) equals risk plus gamma times (1 minus c), gamma 0.5 [[240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification]]; split-conformal bands 1-minus-alpha to 1-minus-alpha-plus-1/(n-plus-1) are quoted only with exchangeability disclaimed under brand drift [[a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty]][[210600170-adaptive-conformal-inference-under-distribution-shift]].",
+      "note_id": "240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification",
+      "numbers": [
+        "8",
+        "1",
+        "6.8",
+        "16.3",
+        "2.4",
+        "1",
+        "1",
+        "1",
+        "0",
+        "1",
+        "0.5",
+        "240701032",
+        "1",
+        "1",
+        "1",
+        "1",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk (Whitehead 6.8 to 16.3 percent, 2.4x, at 1 percent risk) [[interim-escalation-calibration-under-shift-depth-investigation]]; scoring uses Phi_1 (plus-1 correct, minus-c incorrect, 0 abstain) and AUGRC with GRC(c) equals risk plus gamma times (1 minus c), gamma 0.5 [[240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification]]; split-conformal bands 1-minus-alpha to 1-minus-alpha-plus-1/(n-plus-1) are quoted only with exchangeability disclaimed under brand drift [[a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty]][[210600170-adaptive-conformal-inference-under-distribution-shift]].",
+      "note_id": "a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty",
+      "numbers": [
+        "8",
+        "1",
+        "6.8",
+        "16.3",
+        "2.4",
+        "1",
+        "1",
+        "1",
+        "0",
+        "1",
+        "0.5",
+        "240701032",
+        "1",
+        "1",
+        "1",
+        "1",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk (Whitehead 6.8 to 16.3 percent, 2.4x, at 1 percent risk) [[interim-escalation-calibration-under-shift-depth-investigation]]; scoring uses Phi_1 (plus-1 correct, minus-c incorrect, 0 abstain) and AUGRC with GRC(c) equals risk plus gamma times (1 minus c), gamma 0.5 [[240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification]]; split-conformal bands 1-minus-alpha to 1-minus-alpha-plus-1/(n-plus-1) are quoted only with exchangeability disclaimed under brand drift [[a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty]][[210600170-adaptive-conformal-inference-under-distribution-shift]].",
+      "note_id": "210600170-adaptive-conformal-inference-under-distribution-shift",
+      "numbers": [
+        "8",
+        "1",
+        "6.8",
+        "16.3",
+        "2.4",
+        "1",
+        "1",
+        "1",
+        "0",
+        "1",
+        "0.5",
+        "240701032",
+        "1",
+        "1",
+        "1",
+        "1",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Calibration must be conversation-disjoint and temporal with at least 500 fresh threads, never random alone, because drift violates the exchangeability behind conformal-style guarantees [[210600170-adaptive-conformal-inference-under-distribution-shift]].",
+      "note_id": "210600170-adaptive-conformal-inference-under-distribution-shift",
+      "numbers": [
+        "500",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Conformal bounds assume exchangeable points [[a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty]]; brand drift breaks the premise, so every coverage-at-risk claim is conditional on no further shift.",
+      "note_id": "a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Report the full risk-coverage curve with area and generalized area at default penalty — the newer measure supersedes the older and changes rankings on most datasets [[240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification]] — plus selective risk at 70 and 90 percent coverage, coverage at 1 and 5 and 10 percent risk, effective reliability, answered-correct recall, needlessly-abstained share, post-abstention recovery with marginal risk, and the calibration-to-test gap.",
+      "note_id": "240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification",
+      "numbers": [
+        "240701032",
+        "70",
+        "90",
+        "1",
+        "5",
+        "10"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk with most correct predictions abstained-on at strict targets, while evidence-recovery lifts coverage up to 20 points without raising risk and re-attempting lifts coverage toward 80 percent with risk improvements over 20 points in-domain and out-of-domain [[selective-selective-prediction-reducing-unnecessary-abstention-in-vision-languag]][[post-abstention-towards-reliably-re-attempting-the-abstained-instances-in-qa]].",
+      "note_id": "selective-selective-prediction-reducing-unnecessary-abstention-in-vision-languag",
+      "numbers": [
+        "8",
+        "1",
+        "20",
+        "80",
+        "20"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk with most correct predictions abstained-on at strict targets, while evidence-recovery lifts coverage up to 20 points without raising risk and re-attempting lifts coverage toward 80 percent with risk improvements over 20 points in-domain and out-of-domain [[selective-selective-prediction-reducing-unnecessary-abstention-in-vision-languag]][[post-abstention-towards-reliably-re-attempting-the-abstained-instances-in-qa]].",
+      "note_id": "post-abstention-towards-reliably-re-attempting-the-abstained-instances-in-qa",
+      "numbers": [
+        "8",
+        "1",
+        "20",
+        "80",
+        "20"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Unified calibration-plus-conformal heads point the same way [[250901455-trusted-uncertainty-in-large-language-models-a-unified-framework-for-c]]; online updates with long-run guarantees under drift are deferred to production monitoring [[210600170-adaptive-conformal-inference-under-distribution-shift]].",
+      "note_id": "250901455-trusted-uncertainty-in-large-language-models-a-unified-framework-for-c",
+      "numbers": [
+        "250901455",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Unified calibration-plus-conformal heads point the same way [[250901455-trusted-uncertainty-in-large-language-models-a-unified-framework-for-c]]; online updates with long-run guarantees under drift are deferred to production monitoring [[210600170-adaptive-conformal-inference-under-distribution-shift]].",
+      "note_id": "210600170-adaptive-conformal-inference-under-distribution-shift",
+      "numbers": [
+        "250901455",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Every escalation logs code plus signals across five types: low intent confidence, grounding failure, sensitive action or identifier involvement, ambiguity or missing slot, and novelty or distance (deployment-is-OOD justification [[beyond-the-known-investigating-llms-performance-on-out-of-domain-intent-detectio]]) [[interim-escalation-calibration-under-shift-depth-investigation]].",
+      "note_id": "beyond-the-known-investigating-llms-performance-on-out-of-domain-intent-detectio",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Sensitive handling follows redaction and refusal and escalation paths [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]].",
+      "note_id": "safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "If the full system cannot beat simple by more than the 6 to 8 point minimum detectable effect at n equals 200, complexity is unjustified [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "6",
+        "8",
+        "200,"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "TF-IDF versus transformer precedent on 1.5M tweets exists [[github-vishesh062customer-support-tweet-classifier-multi-class-text-classifier-f]] but keyword-derived labels risk circularity.",
+      "note_id": "github-vishesh062customer-support-tweet-classifier-multi-class-text-classifier-f",
+      "numbers": [
+        "1.5",
+        "062"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Spec 200 threads: 120 random within strata plus 80 hard cases for short, multi-intent, sarcasm and negation, identifier-heavy, and context-dependent turns, with 20-plus per intent, 60 to 80 escalations, random-hard difficulty split, full timeline plus recent drift slice, and intent plus resolution note plus reason per item under a one-page ordered procedure with a 30-item pilot and double-to-triple labels [[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "200",
+        "120",
+        "80",
+        "20",
+        "60",
+        "80",
+        "30"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Use label-correct machinery: Krippendorff alpha for nominal intent, weighted agreement plus rank correlation for ordinal quality, chance-corrected agreement plus F1 with prevalence for binary escalation [[measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid]][[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]].",
+      "note_id": "measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid",
+      "numbers": [
+        "1",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Use label-correct machinery: Krippendorff alpha for nominal intent, weighted agreement plus rank correlation for ordinal quality, chance-corrected agreement plus F1 with prevalence for binary escalation [[measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid]][[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]].",
+      "note_id": "221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien",
+      "numbers": [
+        "1",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Ship gold only at alpha at or above 0.80 with lower bound at or above 0.70, per-label alpha at or above 0.70 (Gwet AC1 reported when a label is rarer than about 10 percent), ordinal reply-quality quad-weighted kappa plus ordinal alpha at or above 0.70 with Spearman at or above 0.70, and escalation kappa at or above 0.70 plus F1 with prevalence disclosed; confidence 1 to 5 per label catches unanimous-but-uncertain [[interim-golden-set-adjudication-and-agreement-gate]][[krippendorffs-alpha-intercoder-reliability-casrai]][[counting-on-consensus-selecting-the-right-inter-annotator-agreement-metric-for-n]][[cohen-fleiss-krippendorff-iaa-metrics-implementation-interactive]]. 0.667 to 0.80 is tentative requiring slice re-annotation, not headline quoting, under 0.667 blocks.",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "0.80",
+        "0.70",
+        "0.70",
+        "1",
+        "10",
+        "0.70",
+        "0.70",
+        "0.70",
+        "1",
+        "1",
+        "5",
+        "0.667",
+        "0.80",
+        "0.667"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Ship gold only at alpha at or above 0.80 with lower bound at or above 0.70, per-label alpha at or above 0.70 (Gwet AC1 reported when a label is rarer than about 10 percent), ordinal reply-quality quad-weighted kappa plus ordinal alpha at or above 0.70 with Spearman at or above 0.70, and escalation kappa at or above 0.70 plus F1 with prevalence disclosed; confidence 1 to 5 per label catches unanimous-but-uncertain [[interim-golden-set-adjudication-and-agreement-gate]][[krippendorffs-alpha-intercoder-reliability-casrai]][[counting-on-consensus-selecting-the-right-inter-annotator-agreement-metric-for-n]][[cohen-fleiss-krippendorff-iaa-metrics-implementation-interactive]]. 0.667 to 0.80 is tentative requiring slice re-annotation, not headline quoting, under 0.667 blocks.",
+      "note_id": "krippendorffs-alpha-intercoder-reliability-casrai",
+      "numbers": [
+        "0.80",
+        "0.70",
+        "0.70",
+        "1",
+        "10",
+        "0.70",
+        "0.70",
+        "0.70",
+        "1",
+        "1",
+        "5",
+        "0.667",
+        "0.80",
+        "0.667"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Ship gold only at alpha at or above 0.80 with lower bound at or above 0.70, per-label alpha at or above 0.70 (Gwet AC1 reported when a label is rarer than about 10 percent), ordinal reply-quality quad-weighted kappa plus ordinal alpha at or above 0.70 with Spearman at or above 0.70, and escalation kappa at or above 0.70 plus F1 with prevalence disclosed; confidence 1 to 5 per label catches unanimous-but-uncertain [[interim-golden-set-adjudication-and-agreement-gate]][[krippendorffs-alpha-intercoder-reliability-casrai]][[counting-on-consensus-selecting-the-right-inter-annotator-agreement-metric-for-n]][[cohen-fleiss-krippendorff-iaa-metrics-implementation-interactive]]. 0.667 to 0.80 is tentative requiring slice re-annotation, not headline quoting, under 0.667 blocks.",
+      "note_id": "counting-on-consensus-selecting-the-right-inter-annotator-agreement-metric-for-n",
+      "numbers": [
+        "0.80",
+        "0.70",
+        "0.70",
+        "1",
+        "10",
+        "0.70",
+        "0.70",
+        "0.70",
+        "1",
+        "1",
+        "5",
+        "0.667",
+        "0.80",
+        "0.667"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Ship gold only at alpha at or above 0.80 with lower bound at or above 0.70, per-label alpha at or above 0.70 (Gwet AC1 reported when a label is rarer than about 10 percent), ordinal reply-quality quad-weighted kappa plus ordinal alpha at or above 0.70 with Spearman at or above 0.70, and escalation kappa at or above 0.70 plus F1 with prevalence disclosed; confidence 1 to 5 per label catches unanimous-but-uncertain [[interim-golden-set-adjudication-and-agreement-gate]][[krippendorffs-alpha-intercoder-reliability-casrai]][[counting-on-consensus-selecting-the-right-inter-annotator-agreement-metric-for-n]][[cohen-fleiss-krippendorff-iaa-metrics-implementation-interactive]]. 0.667 to 0.80 is tentative requiring slice re-annotation, not headline quoting, under 0.667 blocks.",
+      "note_id": "cohen-fleiss-krippendorff-iaa-metrics-implementation-interactive",
+      "numbers": [
+        "0.80",
+        "0.70",
+        "0.70",
+        "1",
+        "10",
+        "0.70",
+        "0.70",
+        "0.70",
+        "1",
+        "1",
+        "5",
+        "0.667",
+        "0.80",
+        "0.667"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Honeypots at 3 to 10 percent rotating with about 90 percent block, static-honeypot leak warning, gold-equals-compliance versus disagreement-audit-equals-wellformedness, and a mandatory disagreement-distribution audit ride with the gate [[interim-golden-set-adjudication-and-agreement-gate]][[data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "3",
+        "10",
+        "90",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Honeypots at 3 to 10 percent rotating with about 90 percent block, static-honeypot leak warning, gold-equals-compliance versus disagreement-audit-equals-wellformedness, and a mandatory disagreement-distribution audit ride with the gate [[interim-golden-set-adjudication-and-agreement-gate]][[data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026]].",
+      "note_id": "data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026",
+      "numbers": [
+        "3",
+        "10",
+        "90",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Intervals span 5 to 10 points even at hundreds of items, favoring jackknife at n equals 200 over under-dispersed bootstrap [[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]][[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien",
+      "numbers": [
+        "5",
+        "10",
+        "200",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Intervals span 5 to 10 points even at hundreds of items, favoring jackknife at n equals 200 over under-dispersed bootstrap [[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]][[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "5",
+        "10",
+        "200",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Report sarcasm separately: author-intended sarcasm shows third-party agreement near 0.36 to 0.39 [[isarcasm-a-dataset-of-intended-sarcasm]].",
+      "note_id": "isarcasm-a-dataset-of-intended-sarcasm",
+      "numbers": [
+        "0.36",
+        "0.39"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "No majority votes; disagreements go to a named reviewer with a dated changelog entry, soft labels preserved, honeypots monitoring compliance [[interim-golden-set-adjudication-and-agreement-gate]][[data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026]][[inter-annotator-agreement-for-llm-evaluation-guide]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "No majority votes; disagreements go to a named reviewer with a dated changelog entry, soft labels preserved, honeypots monitoring compliance [[interim-golden-set-adjudication-and-agreement-gate]][[data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026]][[inter-annotator-agreement-for-llm-evaluation-guide]].",
+      "note_id": "data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "No majority votes; disagreements go to a named reviewer with a dated changelog entry, soft labels preserved, honeypots monitoring compliance [[interim-golden-set-adjudication-and-agreement-gate]][[data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026]][[inter-annotator-agreement-for-llm-evaluation-guide]].",
+      "note_id": "inter-annotator-agreement-for-llm-evaluation-guide",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Simulation validates 200 as near-nominal while 100 is inadequate [[measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid]].",
+      "note_id": "measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid",
+      "numbers": [
+        "200",
+        "100"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Three anchored 1 to 5 dimensions — groundedness as entailment with unsupported-claim cap, usefulness as playbook-correct next step with deflection cap, safety-honesty as no invented policy or identifier echo — plus a separate categorical escalate verdict removes the pairwise order-swap surface (not all position effects) [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "1",
+        "5"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Multi-family measurement in one controlled study finds position at or below 0.04 while style dominates at 0.10 to 0.76 [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]]; scale-compression, serial-position, and few-shot-order effects remain and are covered by the swap-consistency, length, and self-preference audits below.",
+      "note_id": "judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm",
+      "numbers": [
+        "0.04",
+        "0.10",
+        "0.76"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Pairwise order-swap flips of about a third remain true for pairwise designs [[why-llm-judges-are-biased-position-self-preference]], which is why pairwise is reserved for close-call comparison with dual-order disagreement rates reported (not averaged away), never gold grading [[llm-judge-biases-position-verbosity-self-preference-aitldr]][[llm-as-a-judge-pitfalls-bias-detection-mitigation-aitldr]].",
+      "note_id": "llm-judge-biases-position-verbosity-self-preference-aitldr",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Self-preference is perplexity-familiarity near 0.52 gap for the strongest judge (0.945 vs 0.425, DP 0.749), so judge and generator families differ with DBG defined as own-minus-gold (naive own-versus-other conflates quality) audited under 0.10 [[self-preference-bias-in-llm-as-a-judge]][[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "self-preference-bias-in-llm-as-a-judge",
+      "numbers": [
+        "0.52",
+        "0.945",
+        "0.425",
+        "0.749",
+        "0.10"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Self-preference is perplexity-familiarity near 0.52 gap for the strongest judge (0.945 vs 0.425, DP 0.749), so judge and generator families differ with DBG defined as own-minus-gold (naive own-versus-other conflates quality) audited under 0.10 [[self-preference-bias-in-llm-as-a-judge]][[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "0.52",
+        "0.945",
+        "0.425",
+        "0.749",
+        "0.10"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Verbosity is heterogeneous per judge (plus 0.24 to 0.44 Llama/Pro/Flash, minus 0.12 Claude, minus 0.04 GPT-4o; humans 57 percent vs judges 73 to 97 percent), so per-judge length-Spearman is bounded under 0.15 with no fixed direction assumed, with anti-verbosity and anti-format clauses, normalized formatting, and length-controlled regression of the form that lifted arena correlation from 0.94 to 0.98 [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators]].",
+      "note_id": "judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm",
+      "numbers": [
+        "0.24",
+        "0.44",
+        "0.12",
+        "0.04",
+        "4",
+        "57",
+        "73",
+        "97",
+        "0.15",
+        "0.94",
+        "0.98"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Verbosity is heterogeneous per judge (plus 0.24 to 0.44 Llama/Pro/Flash, minus 0.12 Claude, minus 0.04 GPT-4o; humans 57 percent vs judges 73 to 97 percent), so per-judge length-Spearman is bounded under 0.15 with no fixed direction assumed, with anti-verbosity and anti-format clauses, normalized formatting, and length-controlled regression of the form that lifted arena correlation from 0.94 to 0.98 [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators]].",
+      "note_id": "length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators",
+      "numbers": [
+        "0.24",
+        "0.44",
+        "0.12",
+        "0.04",
+        "4",
+        "57",
+        "73",
+        "97",
+        "0.15",
+        "0.94",
+        "0.98"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Swap helps plus 4.7pp natural but hurts minus 3 to minus 13pp adversarial (3 Holm-Bonferroni-significant) by discarding correct verdicts as ties, ties 32.8 to 12.5 percent with stronger prompts — the mechanism behind pointwise-for-gold [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "4.7",
+        "3",
+        "13",
+        "3",
+        "32.8",
+        "12.5"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Require cited evidence before scores and penalize unsupported confidence [[llm-as-a-judge-pitfalls-bias-detection-mitigation-aitldr]].",
+      "note_id": "llm-as-a-judge-pitfalls-bias-detection-mitigation-aitldr",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Chain-of-thought form-filling reaches mid-0.50s rank correlation on summarization and higher on dialogue, beating prior reference-free metrics [[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology]] — pinned judging can work, but G-Eval tilts pro-LLM even where human alpha equals 0.07, so judges are distrusted where humans disagree and the sarcasm slice reports separately [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology",
+      "numbers": [
+        "0.50",
+        "4",
+        "0.07"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Chain-of-thought form-filling reaches mid-0.50s rank correlation on summarization and higher on dialogue, beating prior reference-free metrics [[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology]] — pinned judging can work, but G-Eval tilts pro-LLM even where human alpha equals 0.07, so judges are distrusted where humans disagree and the sarcasm slice reports separately [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "0.50",
+        "4",
+        "0.07"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Continuous scoring uses prob-weighted score equals sum p(si) times si, n equals 20, with Kendall tie-inflation warning; held-out re-audit on 100 to 300 pairs with drop-under-75-percent rotation and mid-tier 71.0 percent kappa 0.549 at about 0.001 dollars per eval as cost anchor [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]][[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "20,",
+        "100",
+        "300",
+        "75",
+        "71.0",
+        "0.549",
+        "0.001"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Continuous scoring uses prob-weighted score equals sum p(si) times si, n equals 20, with Kendall tie-inflation warning; held-out re-audit on 100 to 300 pairs with drop-under-75-percent rotation and mid-tier 71.0 percent kappa 0.549 at about 0.001 dollars per eval as cost anchor [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]][[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]].",
+      "note_id": "judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm",
+      "numbers": [
+        "20,",
+        "100",
+        "300",
+        "75",
+        "71.0",
+        "0.549",
+        "0.001"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Reference-free faithfulness stays secondary (RAGAS faithfulness as the secondary definition [[faithfulness-ragas]][[github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github]]) via non-LLM entailment spot-checked by humans, since one model grading another is optimizable and at times anti-human [[on-the-limitations-of-reference-free-evaluations-of-generated-text-acl-anthology]][[benchmarking-llm-faithfulness-in-rag-with-evolving-leaderboards]].",
+      "note_id": "github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Reference-free faithfulness stays secondary (RAGAS faithfulness as the secondary definition [[faithfulness-ragas]][[github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github]]) via non-LLM entailment spot-checked by humans, since one model grading another is optimizable and at times anti-human [[on-the-limitations-of-reference-free-evaluations-of-generated-text-acl-anthology]][[benchmarking-llm-faithfulness-in-rag-with-evolving-leaderboards]].",
+      "note_id": "benchmarking-llm-faithfulness-in-rag-with-evolving-leaderboards",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Promote judges only behind human-first gates: human agreement first with 20 percent double annotation, then per-dimension weighted agreement near 0.60, escalation near 0.65, raw agreement at or above 75 percent, swap consistency at or above 0.80, bounded length and self-preference gaps, all with intervals and pre-registered effect size, with paired tests and multiple-comparison correction [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]][[241115594-a-survey-on-llm-as-a-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "20",
+        "0.60",
+        "0.65",
+        "75",
+        "0.80",
+        "241115594"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Promote judges only behind human-first gates: human agreement first with 20 percent double annotation, then per-dimension weighted agreement near 0.60, escalation near 0.65, raw agreement at or above 75 percent, swap consistency at or above 0.80, bounded length and self-preference gaps, all with intervals and pre-registered effect size, with paired tests and multiple-comparison correction [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]][[241115594-a-survey-on-llm-as-a-judge]].",
+      "note_id": "241115594-a-survey-on-llm-as-a-judge",
+      "numbers": [
+        "20",
+        "0.60",
+        "0.65",
+        "75",
+        "0.80",
+        "241115594"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "The 80 percent figure is aggregate context, not a per-task guarantee [[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "80"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Headlines stay custom because thread-aware splits, same-thread exclusion diagnostics, and with/without leakage reporting have no hosted primitive and must run in the 15-minute repro [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted tracing, datasets/experiments via evaluate(), and CI regression gates mirror them where they fit [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]][[ai-evaluation-frameworks-ragas-deepeval-and-promptfoo-compared-2026-knovo]][[intro-promptfoo]].",
+      "note_id": "llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust",
+      "numbers": [
+        "15",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Headlines stay custom because thread-aware splits, same-thread exclusion diagnostics, and with/without leakage reporting have no hosted primitive and must run in the 15-minute repro [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted tracing, datasets/experiments via evaluate(), and CI regression gates mirror them where they fit [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]][[ai-evaluation-frameworks-ragas-deepeval-and-promptfoo-compared-2026-knovo]][[intro-promptfoo]].",
+      "note_id": "how-to-evaluate-agents-docs-by-langchain",
+      "numbers": [
+        "15",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Headlines stay custom because thread-aware splits, same-thread exclusion diagnostics, and with/without leakage reporting have no hosted primitive and must run in the 15-minute repro [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted tracing, datasets/experiments via evaluate(), and CI regression gates mirror them where they fit [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]][[ai-evaluation-frameworks-ragas-deepeval-and-promptfoo-compared-2026-knovo]][[intro-promptfoo]].",
+      "note_id": "experiments-in-cicd-langfuse",
+      "numbers": [
+        "15",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Headlines stay custom because thread-aware splits, same-thread exclusion diagnostics, and with/without leakage reporting have no hosted primitive and must run in the 15-minute repro [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted tracing, datasets/experiments via evaluate(), and CI regression gates mirror them where they fit [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]][[ai-evaluation-frameworks-ragas-deepeval-and-promptfoo-compared-2026-knovo]][[intro-promptfoo]].",
+      "note_id": "evaluation-of-llm-applications-langfuse",
+      "numbers": [
+        "15",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Headlines stay custom because thread-aware splits, same-thread exclusion diagnostics, and with/without leakage reporting have no hosted primitive and must run in the 15-minute repro [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted tracing, datasets/experiments via evaluate(), and CI regression gates mirror them where they fit [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]][[ai-evaluation-frameworks-ragas-deepeval-and-promptfoo-compared-2026-knovo]][[intro-promptfoo]].",
+      "note_id": "ai-evaluation-frameworks-ragas-deepeval-and-promptfoo-compared-2026-knovo",
+      "numbers": [
+        "15",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Headlines stay custom because thread-aware splits, same-thread exclusion diagnostics, and with/without leakage reporting have no hosted primitive and must run in the 15-minute repro [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]]; hosted tracing, datasets/experiments via evaluate(), and CI regression gates mirror them where they fit [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]][[evaluation-of-llm-applications-langfuse]][[ai-evaluation-frameworks-ragas-deepeval-and-promptfoo-compared-2026-knovo]][[intro-promptfoo]].",
+      "note_id": "intro-promptfoo",
+      "numbers": [
+        "15",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 1 | Same-thread contamination, perfect groundedness | thread-id + quote placeholder | Expected: groundedness reflects retrieval; Actual: perfect via own gold response | Same-thread sharing + gold-in-index [[interim-leakage-safe-temporal-split-vs-random-stratified-split]] | Pre-cutoff index + same-thread exclusion with with-and-without reporting | No — needs rebuild |",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [
+        "1"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 2 | Identifier hallucination | order/tracking placeholder, identifier-heavy stratum | Expected: exact ID from history; Actual: fluent confident wrong specifics | Pooled embeddings average rare-token identity [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh]] | Gated hybrid + rerank with exact-ID scoring | No — gate pending |",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "2",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 2 | Identifier hallucination | order/tracking placeholder, identifier-heavy stratum | Expected: exact ID from history; Actual: fluent confident wrong specifics | Pooled embeddings average rare-token identity [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh]] | Gated hybrid + rerank with exact-ID scoring | No — gate pending |",
+      "note_id": "why-dense-retrieval-fails-on-acronyms-ids-and-code-and-how-hybrid-fixes-it-pradh",
+      "numbers": [
+        "2",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 3 | Sarcasm / multi-intent auto-handle | ironic-praise placeholder, sarcasm stratum | Expected: escalate or dual-label; Actual: single-label high-MaxProb auto-handle | Single-label pressure + scaling calibrates without reordering [[interim-escalation-calibration-under-shift-depth-investigation]][[isarcasm-a-dataset-of-intended-sarcasm]] | Ambiguity escalation, separated sarcasm reporting, margin/entropy challengers | No |",
+      "note_id": "interim-escalation-calibration-under-shift-depth-investigation",
+      "numbers": [
+        "3"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 3 | Sarcasm / multi-intent auto-handle | ironic-praise placeholder, sarcasm stratum | Expected: escalate or dual-label; Actual: single-label high-MaxProb auto-handle | Single-label pressure + scaling calibrates without reordering [[interim-escalation-calibration-under-shift-depth-investigation]][[isarcasm-a-dataset-of-intended-sarcasm]] | Ambiguity escalation, separated sarcasm reporting, margin/entropy challengers | No |",
+      "note_id": "isarcasm-a-dataset-of-intended-sarcasm",
+      "numbers": [
+        "3"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 4 | Verbosity rewarded over correctness | long-deflection vs terse-correct placeholder | Expected: terse correct wins; Actual: long formatted deflection wins | Style skew 0.10-0.76 [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[llm-judge-biases-position-verbosity-self-preference-aitldr]] | Normalization, anti-verbosity clauses, per-judge length audit, length-controlled analysis [[length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators]] | Partial — clauses without audit |",
+      "note_id": "judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm",
+      "numbers": [
+        "4",
+        "0.10",
+        "0.76"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 4 | Verbosity rewarded over correctness | long-deflection vs terse-correct placeholder | Expected: terse correct wins; Actual: long formatted deflection wins | Style skew 0.10-0.76 [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[llm-judge-biases-position-verbosity-self-preference-aitldr]] | Normalization, anti-verbosity clauses, per-judge length audit, length-controlled analysis [[length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators]] | Partial — clauses without audit |",
+      "note_id": "llm-judge-biases-position-verbosity-self-preference-aitldr",
+      "numbers": [
+        "4",
+        "0.10",
+        "0.76"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 4 | Verbosity rewarded over correctness | long-deflection vs terse-correct placeholder | Expected: terse correct wins; Actual: long formatted deflection wins | Style skew 0.10-0.76 [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[llm-judge-biases-position-verbosity-self-preference-aitldr]] | Normalization, anti-verbosity clauses, per-judge length audit, length-controlled analysis [[length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators]] | Partial — clauses without audit |",
+      "note_id": "length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators",
+      "numbers": [
+        "4",
+        "0.10",
+        "0.76"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 5 | Temporal staleness | pre-cutoff policy/link placeholder, drift slice | Expected: current policy or escalate; Actual: confident stale policy | Future-past mixing + missing novelty [[220707048-leakage-and-the-reproducibility-crisis-in-ml-based-science]][[210600170-adaptive-conformal-inference-under-distribution-shift]] | Temporal gold, novelty feature, exchangeability disclaimer | No |",
+      "note_id": "220707048-leakage-and-the-reproducibility-crisis-in-ml-based-science",
+      "numbers": [
+        "5",
+        "220707048",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 5 | Temporal staleness | pre-cutoff policy/link placeholder, drift slice | Expected: current policy or escalate; Actual: confident stale policy | Future-past mixing + missing novelty [[220707048-leakage-and-the-reproducibility-crisis-in-ml-based-science]][[210600170-adaptive-conformal-inference-under-distribution-shift]] | Temporal gold, novelty feature, exchangeability disclaimer | No |",
+      "note_id": "210600170-adaptive-conformal-inference-under-distribution-shift",
+      "numbers": [
+        "5",
+        "220707048",
+        "210600170"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 6 | Injection / PII leak via retrieved history | injected-instruction + masked-handle placeholder | Expected: ignore injected instruction, redact/never echo; Actual: follows instruction or echoes identifier | Untrusted history + citation-before-claim over masked text | Untrusted wrapping + redaction-before-prompt + never-echo + injection red-team appendix [[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]] | No |",
+      "note_id": "defending-against-prompt-injection-essential-practices-for-2026-orchestratordev",
+      "numbers": [
+        "6",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 6 | Injection / PII leak via retrieved history | injected-instruction + masked-handle placeholder | Expected: ignore injected instruction, redact/never echo; Actual: follows instruction or echoes identifier | Untrusted history + citation-before-claim over masked text | Untrusted wrapping + redaction-before-prompt + never-echo + injection red-team appendix [[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]] | No |",
+      "note_id": "how-to-prevent-your-chatbot-from-leaking-pii-modelmetry",
+      "numbers": [
+        "6",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "| 6 | Injection / PII leak via retrieved history | injected-instruction + masked-handle placeholder | Expected: ignore injected instruction, redact/never echo; Actual: follows instruction or echoes identifier | Untrusted history + citation-before-claim over masked text | Untrusted wrapping + redaction-before-prompt + never-echo + injection red-team appendix [[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]] | No |",
+      "note_id": "improving-security-data-redaction-for-support-chatbots",
+      "numbers": [
+        "6",
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Current accuracy and groundedness and risk-coverage overstate deployment by unknown amounts through same-thread sharing, gold-in-index retrieval, and future-answering-past, amplified by small-eval inflation [[interim-leakage-safe-temporal-split-vs-random-stratified-split]][[data-leakage-inflates-prediction-performance-in-connectome-based-machine-learnin]].",
+      "note_id": "interim-leakage-safe-temporal-split-vs-random-stratified-split",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Blended recall hides identifier collapse; blended agreement hides minority and sarcasm failure; risk without coverage hides abstention price; unanchored faithfulness hides judge-on-judge circularity [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[on-the-limitations-of-reference-free-evaluations-of-generated-text-acl-anthology]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Blended recall hides identifier collapse; blended agreement hides minority and sarcasm failure; risk without coverage hides abstention price; unanchored faithfulness hides judge-on-judge circularity [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[on-the-limitations-of-reference-free-evaluations-of-generated-text-acl-anthology]].",
+      "note_id": "on-the-limitations-of-reference-free-evaluations-of-generated-text-acl-anthology",
+      "numbers": [
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Predict-general accuracy misleads under imbalance, so macro-F1 and per-class tables headline [[github-vishesh062customer-support-tweet-classifier-multi-class-text-classifier-f]].",
+      "note_id": "github-vishesh062customer-support-tweet-classifier-multi-class-text-classifier-f",
+      "numbers": [
+        "1",
+        "062"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "At n equals 200 bands span 5 to 10 points, so sub-6-point gaps are noise [[caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge]].",
+      "note_id": "caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge",
+      "numbers": [
+        "200",
+        "5",
+        "10",
+        "6"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Hand-rolled scorers move numbers without changing quality [[if-you-build-your-own-ner-scorer-non-replicable-results-will-come-acl-anthology]].",
+      "note_id": "if-you-build-your-own-ner-scorer-non-replicable-results-will-come-acl-anthology",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Seven-engine benchmarks confirm tradeoffs are tunable everywhere with operational, not decisive, differences at this scale [[github-mohitnagpaldcevector-db-benchmark-vendor-neutral-benchmark-of-7-vector-da]].",
+      "note_id": "github-mohitnagpaldcevector-db-benchmark-vendor-neutral-benchmark-of-7-vector-da",
+      "numbers": [
+        "7"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Redact identifiers before prompts leave the process, wrap graded content as untrusted, never echo identifiers, keep secrets in environment with placeholder examples, and ship red-team injection results in the appendix [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Redact identifiers before prompts leave the process, wrap graded content as untrusted, never echo identifiers, keep secrets in environment with placeholder examples, and ship red-team injection results in the appendix [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "defending-against-prompt-injection-essential-practices-for-2026-orchestratordev",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Redact identifiers before prompts leave the process, wrap graded content as untrusted, never echo identifiers, keep secrets in environment with placeholder examples, and ship red-team injection results in the appendix [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "how-to-prevent-your-chatbot-from-leaking-pii-modelmetry",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Redact identifiers before prompts leave the process, wrap graded content as untrusted, never echo identifiers, keep secrets in environment with placeholder examples, and ship red-team injection results in the appendix [[safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p]][[defending-against-prompt-injection-essential-practices-for-2026-orchestratordev]][[how-to-prevent-your-chatbot-from-leaking-pii-modelmetry]][[improving-security-data-redaction-for-support-chatbots]].",
+      "note_id": "improving-security-data-redaction-for-support-chatbots",
+      "numbers": [
+        "2026"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Declarative red-teaming runs even minimally since rivals ignore it [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]].",
+      "note_id": "llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "In-process indices grade without Docker or credentials; past 1M chunks adopt Postgres pgvector plus full-text search in one SQL statement [[how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz]][[github-pgvectorpgvector-open-source-vector-similarity-search-for-postgres-github]], with FAISS documented [[getting-started-facebookresearchfaiss-wiki-github]] and embedded LanceDB surveyed [[github-lancedblancedb-developer-friendly-oss-embedded-retrieval-library-for-mult]].",
+      "note_id": "how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz",
+      "numbers": [
+        "1",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "In-process indices grade without Docker or credentials; past 1M chunks adopt Postgres pgvector plus full-text search in one SQL statement [[how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz]][[github-pgvectorpgvector-open-source-vector-similarity-search-for-postgres-github]], with FAISS documented [[getting-started-facebookresearchfaiss-wiki-github]] and embedded LanceDB surveyed [[github-lancedblancedb-developer-friendly-oss-embedded-retrieval-library-for-mult]].",
+      "note_id": "github-pgvectorpgvector-open-source-vector-similarity-search-for-postgres-github",
+      "numbers": [
+        "1",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "In-process indices grade without Docker or credentials; past 1M chunks adopt Postgres pgvector plus full-text search in one SQL statement [[how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz]][[github-pgvectorpgvector-open-source-vector-similarity-search-for-postgres-github]], with FAISS documented [[getting-started-facebookresearchfaiss-wiki-github]] and embedded LanceDB surveyed [[github-lancedblancedb-developer-friendly-oss-embedded-retrieval-library-for-mult]].",
+      "note_id": "getting-started-facebookresearchfaiss-wiki-github",
+      "numbers": [
+        "1",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "In-process indices grade without Docker or credentials; past 1M chunks adopt Postgres pgvector plus full-text search in one SQL statement [[how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz]][[github-pgvectorpgvector-open-source-vector-similarity-search-for-postgres-github]], with FAISS documented [[getting-started-facebookresearchfaiss-wiki-github]] and embedded LanceDB surveyed [[github-lancedblancedb-developer-friendly-oss-embedded-retrieval-library-for-mult]].",
+      "note_id": "github-lancedblancedb-developer-friendly-oss-embedded-retrieval-library-for-mult",
+      "numbers": [
+        "1",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Spillover funds the backbone ablation and hosted CI mirror (LangSmith experiments plus Langfuse RegressionError gate) [[how-to-evaluate-agents-docs-by-langchain]][[experiments-in-cicd-langfuse]].",
+      "note_id": "experiments-in-cicd-langfuse",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "AmazonHelp default, AmericanAir fallback, TMobileHelp pilot-gated alternate [[github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag]].",
+      "note_id": "github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag",
+      "numbers": [
+        "2050"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Cap taxonomy at 6 to 8 plus out-of-scope; model and annotation math over-determine it [[intent-detection-in-the-age-of-llms]][[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [
+        "6",
+        "8"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Cap taxonomy at 6 to 8 plus out-of-scope; model and annotation math over-determine it [[intent-detection-in-the-age-of-llms]][[interim-golden-set-adjudication-and-agreement-gate]].",
+      "note_id": "interim-golden-set-adjudication-and-agreement-gate",
+      "numbers": [
+        "6",
+        "8"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Banking77 for intent work only, never inflation [[polyaibanking77-datasets-at-hugging-face]].",
+      "note_id": "polyaibanking77-datasets-at-hugging-face",
+      "numbers": [
+        "77",
+        "77"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Conditional SetFit-first on Twitter backbone with reversal to retrieval-filtered LLM-first if the router fails MaxProb on AUGRC [[intent-detection-in-the-age-of-llms]][[making-llms-worth-every-penny-resource-limited-text-classification-in-banking-ac]][[bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology]].",
+      "note_id": "intent-detection-in-the-age-of-llms",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Conditional SetFit-first on Twitter backbone with reversal to retrieval-filtered LLM-first if the router fails MaxProb on AUGRC [[intent-detection-in-the-age-of-llms]][[making-llms-worth-every-penny-resource-limited-text-classification-in-banking-ac]][[bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology]].",
+      "note_id": "bertweet-a-pre-trained-language-model-for-english-tweets-acl-anthology",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Lexical arm mandatory on structural grounds; fusion form (cold-start vs tuned alpha vs doc-only SPLADE) gated on 5-point identifier recall, ops/latency ledger visible [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[interim-hybrid-retrieval-payoff]][[splade-vs-bm25-vs-dense-does-learned-sparse-retrieval-beat-hybrid-search]].",
+      "note_id": "hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter",
+      "numbers": [
+        "5",
+        "25",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Lexical arm mandatory on structural grounds; fusion form (cold-start vs tuned alpha vs doc-only SPLADE) gated on 5-point identifier recall, ops/latency ledger visible [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[interim-hybrid-retrieval-payoff]][[splade-vs-bm25-vs-dense-does-learned-sparse-retrieval-beat-hybrid-search]].",
+      "note_id": "interim-hybrid-retrieval-payoff",
+      "numbers": [
+        "5",
+        "25",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Lexical arm mandatory on structural grounds; fusion form (cold-start vs tuned alpha vs doc-only SPLADE) gated on 5-point identifier recall, ops/latency ledger visible [[hybrid-search-in-production-why-bm25-still-wins-on-the-queries-that-matter]][[interim-hybrid-retrieval-payoff]][[splade-vs-bm25-vs-dense-does-learned-sparse-retrieval-beat-hybrid-search]].",
+      "note_id": "splade-vs-bm25-vs-dense-does-learned-sparse-retrieval-beat-hybrid-search",
+      "numbers": [
+        "5",
+        "25",
+        "25"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Thread windows with 50 to 100 prepended context tokens [[contextual-retrieval-in-ai-systems-anthropic]].",
+      "note_id": "contextual-retrieval-in-ai-systems-anthropic",
+      "numbers": [
+        "50",
+        "100"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Unified MaxProb floor for routing and escalation with discordant-slice diagnostic; challengers must win where MaxProb is confidently wrong, on AUGRC across splits [[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]][[240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification]].",
+      "note_id": "investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an",
+      "numbers": [
+        "240701032"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Unified MaxProb floor for routing and escalation with discordant-slice diagnostic; challengers must win where MaxProb is confidently wrong, on AUGRC across splits [[investigating-selective-prediction-approaches-across-several-tasks-in-iid-ood-an]][[240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification]].",
+      "note_id": "240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification",
+      "numbers": [
+        "240701032"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "NLI gate near 0.9 vetoes auto-handle regardless of intent confidence [[interim-escalation-calibration-under-shift-depth-investigation]].",
+      "note_id": "interim-escalation-calibration-under-shift-depth-investigation",
+      "numbers": [
+        "0.9"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Defer-only handoff as default (handler-request override) with one pre-registered re-attempt and logged recovery, reversible on a handler A/B showing accuracy-neutral time win [[selective-prediction-tasks]][[selective-selective-prediction-reducing-unnecessary-abstention-in-vision-languag]].",
+      "note_id": "selective-selective-prediction-reducing-unnecessary-abstention-in-vision-languag",
+      "numbers": [],
+      "strong": false,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Caged pointwise judge with tiered gates, cross-family separation, style-first mitigations, jackknife intervals, RAGAS secondary [[faithfulness-ragas]][[github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github]] [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology]][[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]].",
+      "note_id": "faithfulness-ragas",
+      "numbers": [
+        "4",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Caged pointwise judge with tiered gates, cross-family separation, style-first mitigations, jackknife intervals, RAGAS secondary [[faithfulness-ragas]][[github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github]] [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology]][[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]].",
+      "note_id": "github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github",
+      "numbers": [
+        "4",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Caged pointwise judge with tiered gates, cross-family separation, style-first mitigations, jackknife intervals, RAGAS secondary [[faithfulness-ragas]][[github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github]] [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology]][[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]].",
+      "note_id": "judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm",
+      "numbers": [
+        "4",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Caged pointwise judge with tiered gates, cross-family separation, style-first mitigations, jackknife intervals, RAGAS secondary [[faithfulness-ragas]][[github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github]] [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology]][[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]].",
+      "note_id": "g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology",
+      "numbers": [
+        "4",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Caged pointwise judge with tiered gates, cross-family separation, style-first mitigations, jackknife intervals, RAGAS secondary [[faithfulness-ragas]][[github-vibrantlabsairagas-supercharge-your-llm-application-evaluations-github]] [[judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm]][[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology]][[221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien]].",
+      "note_id": "221013265-toward-improved-inference-for-krippendorffs-alpha-agreement-coefficien",
+      "numbers": [
+        "4",
+        "221013265"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Custom headlines with hosted mirror, plain Python, embedded stores, Polars plus DuckDB; complexity needs gold evidence at n equals 200 [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]][[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]][[python-data-pipelines-with-polars-and-duckdb-andrew-odendaal]][[chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn]].",
+      "note_id": "llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust",
+      "numbers": [
+        "200",
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Custom headlines with hosted mirror, plain Python, embedded stores, Polars plus DuckDB; complexity needs gold evidence at n equals 200 [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]][[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]][[python-data-pipelines-with-polars-and-duckdb-andrew-odendaal]][[chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn]].",
+      "note_id": "is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com",
+      "numbers": [
+        "200",
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Custom headlines with hosted mirror, plain Python, embedded stores, Polars plus DuckDB; complexity needs gold evidence at n equals 200 [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]][[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]][[python-data-pipelines-with-polars-and-duckdb-andrew-odendaal]][[chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn]].",
+      "note_id": "python-data-pipelines-with-polars-and-duckdb-andrew-odendaal",
+      "numbers": [
+        "200",
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    },
+    {
+      "sentence": "Custom headlines with hosted mirror, plain Python, embedded stores, Polars plus DuckDB; complexity needs gold evidence at n equals 200 [[llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust]][[is-langchain-becoming-too-complexbloated-for-simple-rag-applications-in-2025-com]][[python-data-pipelines-with-polars-and-duckdb-andrew-odendaal]][[chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn]].",
+      "note_id": "chromadb-vs-qdrant-vs-faiss-vs-pgvector-vector-database-for-local-rag-local-llmn",
+      "numbers": [
+        "200",
+        "2025"
+      ],
+      "strong": true,
+      "verdict": "needs-llm"
+    }
+  ],
+  "dangling": []
+}

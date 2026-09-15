@@ -120,6 +120,11 @@ export const PredictResponseSchema = z
     groq_reason: z.string().optional(),
     latency_ms: z.number().optional(),
     truncated: z.boolean().optional(),
+    // Workstream A/B contract additions (all optional — absent until live).
+    // `offline` echoes PredictIn.offline: template-only draft, no LLM calls.
+    // `template_id` identifies the template used for the draft, when known.
+    offline: z.boolean().optional(),
+    template_id: z.string().optional(),
   })
   .passthrough();
 
@@ -153,6 +158,75 @@ export const InspectRecordSchema = z
   .passthrough();
 
 export type InspectRecordPayload = z.infer<typeof InspectRecordSchema>;
+
+// ---- POST /judge/groundedness (workstream A contract; may be pending) ----
+// Request: {brand, text, reply, passage_ids?}
+// Response: {claims: [{text, supported, passage_id}], score, model}
+
+export const GroundednessClaimSchema = z
+  .object({
+    text: z.string(),
+    supported: z.boolean(),
+    passage_id: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const GroundednessSchema = z
+  .object({
+    claims: z.array(GroundednessClaimSchema),
+    score: z.number().optional(),
+    model: z.string().optional(),
+  })
+  .passthrough();
+
+export type GroundednessPayload = z.infer<typeof GroundednessSchema>;
+
+// ---- GET /eval/compare?brands=virgin,apple (workstream A contract; pending) ----
+// Response: {results: {virgin: {...}, apple: {...}}}
+// Per-brand: {intent_acc, macro_f1, esc_f1, ground_mean, n}
+
+export const CompareBrandSchema = z
+  .object({
+    intent_acc: z.number().optional(),
+    macro_f1: z.number().optional(),
+    esc_f1: z.number().optional(),
+    esc_p: z.number().optional(),
+    esc_r: z.number().optional(),
+    ground_mean: z.number().optional(),
+    n: z.number().optional(),
+  })
+  .passthrough();
+
+export const CompareSchema = z
+  .object({
+    results: z.record(CompareBrandSchema),
+  })
+  .passthrough();
+
+export type ComparePayload = z.infer<typeof CompareSchema>;
+
+// ---- POST /eval/retrieval-ablation (workstream A contract; pending) ----
+// Response: {arms: [{name, k, groundedness_mean, ge4_rate, p50_ms}]}
+
+export const AblationArmSchema = z
+  .object({
+    name: z.string().optional(),
+    k: z.number().optional(),
+    groundedness_mean: z.number().optional(),
+    ge4_rate: z.number().optional(),
+    p50_ms: z.number().optional(),
+    p95_ms: z.number().optional(),
+    recall_proxy: z.number().optional(),
+  })
+  .passthrough();
+
+export const AblationSchema = z
+  .object({
+    arms: z.array(AblationArmSchema),
+  })
+  .passthrough();
+
+export type AblationPayload = z.infer<typeof AblationSchema>;
 
 // ---- /api/eval/run SSE events ----
 

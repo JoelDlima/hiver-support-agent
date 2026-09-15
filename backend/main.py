@@ -7,6 +7,7 @@ import collections
 import datetime
 import json
 import logging
+import os
 import re
 import threading
 import time, uuid
@@ -586,6 +587,7 @@ def get_default_agent():
 class PredictIn(BaseModel):
     text: str
     brand: Optional[str] = Field(default="virgin", description="Brand: virgin (default, primary) or apple (v1 evidence). Unknown falls back to virgin.")
+    offline: bool = Field(default=False, description="Workstream A4: template-only draft, no LLM calls; echoed back as 'offline'.")
 
 
 class JudgeIn(BaseModel):
@@ -666,7 +668,37 @@ def predict(inp: PredictIn, request: Request):
     text = raw[:MAX_CHARS] if truncated else raw
     brand = _normalize_brand(inp.brand)
     agent = get_agent(brand)
-    r = agent.handle(text, brand)
+    # Workstream A4 (offline fallback): flag or HIVER_OFFLINE=1 forces template-only.
+    try:
+        _offline_env = (os.environ.get("HIVER_OFFLINE", "") or "").strip().lower() in ("1", "true", "yes", "on")
+    except Exception:
+        _offline_env = False
+    offline_mode = bool(getattr(inp, "offline", False)) or _offline_env
+    if offline_mode:
+        # Never silently degrade AND never call the LLM: stub out the Groq hook for
+        # the duration of handle() so no HTTP is attempted even with keys set.
+        _groq_mod = None
+        try:
+            from src import groq_draft as _groq_mod
+        except Exception:
+            _groq_mod = None
+        _orig_draft = getattr(_groq_mod, "draft_with_groq", None) if _groq_mod is not None else None
+
+        def _offline_stub(*a, **k):
+            return None, {"reason": "offline", "draft_path": "template"}
+
+        try:
+            if _groq_mod is not None and _orig_draft is not None:
+                _groq_mod.draft_with_groq = _offline_stub
+            r = agent.handle(text, brand)
+        finally:
+            try:
+                if _groq_mod is not None and _orig_draft is not None:
+                    _groq_mod.draft_with_groq = _orig_draft
+            except Exception:
+                pass
+    else:
+        r = agent.handle(text, brand)
     # Phase 4A: OTel pipeline spans + structlog bound log (fail-closed).
     try:
         if _tracing is not None:
@@ -690,9 +722,18 @@ def predict(inp: PredictIn, request: Request):
     logger.info(log_line)
     sig = r.escalate_signals or {}
     groq_reason = sig.get("groq_reason", "") if isinstance(sig, dict) else ""
+    if offline_mode and isinstance(sig, dict):
+        # Template path already; label the reason so audit shows intent, not an error.
+        try:
+            sig["groq_reason"] = "offline"
+            groq_reason = "offline"
+        except Exception:
+            pass
     try:
-        _store_inspect(_build_inspect_record(
-            rid, brand, raw, r, sig, latency_ms, _collect_passages(agent, text, k=5)))
+        _rec = _build_inspect_record(
+            rid, brand, raw, r, sig, latency_ms, _collect_passages(agent, text, k=5))
+        _rec["offline"] = bool(offline_mode)
+        _store_inspect(_rec)
     except Exception:
         pass
     return {
@@ -709,6 +750,7 @@ def predict(inp: PredictIn, request: Request):
         "groq_reason": groq_reason,
         "latency_ms": latency_ms,
         "truncated": truncated,
+        "offline": bool(offline_mode),
     }
 
 @app.post("/predict/stream")
@@ -720,12 +762,39 @@ def predict_stream(inp: PredictIn, request: Request):
     brand = _normalize_brand(inp.brand)
     rid = request.headers.get("X-Request-ID", str(uuid.uuid4())[:8])
     t0 = time.perf_counter()
+    try:
+        _s_offline_env = (os.environ.get("HIVER_OFFLINE", "") or "").strip().lower() in ("1", "true", "yes", "on")
+    except Exception:
+        _s_offline_env = False
+    offline_mode = bool(getattr(inp, "offline", False)) or _s_offline_env
 
     def gen():
         yield f"data: {json.dumps({'event': 'start', 'request_id': rid, 'brand': brand})}\n\n"
         agent = get_agent(brand)
         # Fast deterministic stages (same code path as /predict, timed live)
-        r = agent.handle(text, brand)
+        if offline_mode:
+            _s_groq = None
+            try:
+                from src import groq_draft as _s_groq
+            except Exception:
+                _s_groq = None
+            _s_orig = getattr(_s_groq, "draft_with_groq", None) if _s_groq is not None else None
+
+            def _s_stub(*a, **k):
+                return None, {"reason": "offline", "draft_path": "template"}
+
+            try:
+                if _s_groq is not None and _s_orig is not None:
+                    _s_groq.draft_with_groq = _s_stub
+                r = agent.handle(text, brand)
+            finally:
+                try:
+                    if _s_groq is not None and _s_orig is not None:
+                        _s_groq.draft_with_groq = _s_orig
+                except Exception:
+                    pass
+        else:
+            r = agent.handle(text, brand)
         try:
             if _tracing is not None:
                 _tracing.emit_pipeline_spans(rid, brand, r.intent, r.escalate_signals or {},
@@ -736,6 +805,9 @@ def predict_stream(inp: PredictIn, request: Request):
         sig = r.escalate_signals or {}
         if sig.get("draft_path") == "groq":
             # Non-stream path already produced a Groq draft; replay it as one chunk (live timings preserved)
+            yield f"data: {json.dumps({'event': 'token', 'text': r.draft_reply})}\n\n"
+        elif offline_mode:
+            # A4: offline stream replays the template draft; never attempt Groq HTTP.
             yield f"data: {json.dumps({'event': 'token', 'text': r.draft_reply})}\n\n"
         else:
             # Try live Groq streaming so judges SEE tokens arrive; fail-closed to template
@@ -761,9 +833,11 @@ def predict_stream(inp: PredictIn, request: Request):
         latency_ms = round((time.perf_counter() - t0) * 1000, 1)
         _record_latency(brand, latency_ms, r.decision)
         try:
-            _store_inspect(_build_inspect_record(
+            _s_rec = _build_inspect_record(
                 rid, brand, raw, r, (r.escalate_signals or {}), latency_ms,
-                _collect_passages(agent, text, k=5)))
+                _collect_passages(agent, text, k=5))
+            _s_rec["offline"] = bool(offline_mode)
+            _store_inspect(_s_rec)
         except Exception:
             pass
         try:
@@ -780,7 +854,7 @@ def predict_stream(inp: PredictIn, request: Request):
                  "grounding_passage_ids": r.grounding_passage_ids, "decision": r.decision,
                  "escalate_reason": r.escalate_reason, "signals": r.escalate_signals,
                  "draft_path": (r.escalate_signals or {}).get("draft_path", "template"),
-                 "latency_ms": latency_ms, "truncated": truncated}
+                 "latency_ms": latency_ms, "truncated": truncated, "offline": bool(offline_mode)}
         yield f"data: {json.dumps(final)}\n\n"
         yield "data: [DONE]\n\n"
 
@@ -1261,3 +1335,592 @@ def metrics():
             "avg_latency_ms": avg, "total_latency_ms": tot_lat,
             "started_at": SERVER_STARTED_AT,
             "per_brand": per}
+
+
+# ---------------------------------------------------------------------------
+# Workstream A (docs/WIN_PLAN.md) — ADDITIVE ONLY. Groundedness judge (A1),
+# retrieval ablation (A2), compare cache (A3). Nothing above is modified.
+# ---------------------------------------------------------------------------
+
+class GroundIn(BaseModel):
+    brand: Optional[str] = Field(default="virgin", description="Brand: virgin (default) or apple.")
+    text: str = Field(default="", description="Inbound customer text (retrieval query).")
+    reply: str = Field(default="", description="Draft reply whose claims are judged.")
+    passage_ids: Optional[list] = Field(default=None, description="Optional pinned passage IDs to judge against.")
+
+
+class AblIn(BaseModel):
+    brand: Optional[str] = Field(default="virgin", description="Brand (virgin primary).")
+    k_list: Optional[list] = Field(default=None, description="Retrieval depths, e.g. [1, 5].")
+    arms: Optional[list] = Field(default=None, description="Retriever arms, subset of ['keyword', 'virgin_nn'].")
+    context_window: Optional[list] = Field(default=None, description="Thread-context windows, e.g. [0, 2].")
+
+
+_CLAIM_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+_WORD_RE = re.compile(r"[a-z0-9']+")
+
+try:
+    from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS as _WIN_A_STOP
+except Exception:
+    _WIN_A_STOP = frozenset(
+        "a an the and or but if then else when while with for from to of in on at as is are was were be been "
+        "i you he she it we they me him her us them my your his our their this that these those do does did "
+        "not no yes can could should would will just very so than too also only own same dm us please".split())
+
+_WIN_A_STOP = frozenset(_WIN_A_STOP)
+
+
+def _win_a_stem(w: str) -> str:
+    """Minimal suffix stemmer (delay/delayed/delays -> delay). Standard lexical
+    normalization, frozen with the V3 instrument (see JUDGE_AGREEMENT_V3.md)."""
+    if len(w) > 4 and w.endswith("ies"):
+        return w[:-3] + "y"
+    if len(w) > 5 and w.endswith("ing"):
+        return w[:-3]
+    if len(w) > 4 and w.endswith("ed"):
+        return w[:-2]
+    if len(w) > 4 and w.endswith("es"):
+        return w[:-2]
+    if len(w) > 3 and w.endswith("s") and not w.endswith("ss"):
+        return w[:-1]
+    return w
+
+
+def _win_a_content_tokens(s: str) -> list:
+    return [_win_a_stem(w) for w in _WORD_RE.findall((s or "").lower())
+            if len(w) > 2 and w not in _WIN_A_STOP]
+
+
+def _win_a_split_claims(reply: str, max_claims: int = 12) -> list:
+    parts = []
+    for c in _CLAIM_SPLIT_RE.split(reply or ""):
+        c = (c or "").strip(" \t\n\r\"'“”‘’-\u2013\u2014\u2022")
+        if c:
+            parts.append(c)
+    return parts[:max_claims]
+
+
+def _win_a_heuristic_entail(claim: str, passages) -> tuple:
+    """Offline claim->passage entailment: >=1/3 of claim content tokens (stemmed)
+    in a SINGLE passage. Deterministic, no key needed. Threshold frozen pre-V3
+    on ungraded pilot probes (variance + face validity); LLM leg is primary
+    when keyed. Returns (supported: bool, passage_id: str).
+    """
+    ct = set(_win_a_content_tokens(claim))
+    if not ct:
+        return False, ""
+    best_id, best_cov = "", 0.0
+    for p in (passages or []):
+        try:
+            pt = set(_win_a_content_tokens(
+                str((p or {}).get("text") or "") + " " + str((p or {}).get("clean") or "")))
+        except Exception:
+            continue
+        if not pt:
+            continue
+        cov = len(ct & pt) / len(ct)
+        if cov > best_cov:
+            best_cov = cov
+            try:
+                best_id = str(p.get("tweet_id", ""))
+            except Exception:
+                best_id = ""
+    if best_cov >= 1.0 / 3.0:
+        return True, best_id
+    return False, ""
+
+
+def _win_a_groq_entail(claims: list, passages: list):
+    """LLM claim entailment via existing Groq hook (temp 0, strict JSON).
+
+    Primary openai/gpt-oss-20b, fallback qwen/qwen3.8-27b (mirrors
+    src/groq_draft.py legs). Returns list[(supported, passage_id)] or None
+    when unavailable (no key / no client / any error) so callers fail soft
+    to the heuristic. Never raises, never logs keys.
+    """
+    if not claims:
+        return []
+    try:
+        key = (os.environ.get("GROQ_API_KEY", "") or "").strip()
+    except Exception:
+        key = ""
+    if not key:
+        return None
+    try:
+        from src import groq_draft as _gd
+        models = [getattr(_gd, "GROQ_MODEL", "openai/gpt-oss-20b"),
+                  getattr(_gd, "GROQ_FALLBACK_MODEL", "qwen/qwen3.8-27b")]
+    except Exception:
+        models = ["openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
+    try:
+        from groq import Groq
+        client = Groq()
+    except Exception:
+        return None
+    ctx_lines = []
+    for p in (passages or [])[:5]:
+        try:
+            ctx_lines.append(f"[{p.get('tweet_id', '')}] {(p.get('text') or '')[:300]}")
+        except Exception:
+            continue
+    ctx = "\n".join(ctx_lines) if ctx_lines else "(no passages)"
+    numbered = "\n".join(f"C{i + 1}: {c[:400]}" for i, c in enumerate(claims))
+    system = ("You judge whether each draft claim is entailed by the cited passages. "
+              "A claim is supported ONLY if its factual content appears in a passage "
+              "(same event, entity, or instruction). Generic sympathy ('sorry to hear') "
+              "with no factual content counts as supported. DM/contact instructions are "
+              "supported only if a passage mentions contacting/DM. "
+              "Return JSON only.")
+    user = f"passages:\n{ctx}\nclaims:\n{numbered}\nReturn {{\"results\": [{{\"supported\": true/false, \"passage_id\": \"id or empty\"}}]}} in claim order."
+    schema = {"type": "object",
+              "properties": {"results": {"type": "array", "items": {
+                  "type": "object",
+                  "properties": {"supported": {"type": "boolean"},
+                                 "passage_id": {"type": "string"}},
+                  "required": ["supported", "passage_id"],
+                  "additionalProperties": False}}},
+              "required": ["results"], "additionalProperties": False}
+    for model in models:
+        try:
+            r = client.chat.completions.create(
+                model=model, temperature=0, max_tokens=800,
+                response_format={"type": "json_schema",
+                                 "json_schema": {"name": "ground_entail", "strict": True, "schema": schema}},
+                messages=[{"role": "system", "content": system},
+                          {"role": "user", "content": user}])
+            content = (r.choices[0].message.content or "").strip()
+            obj = json.loads(content[content.index("{"):content.rindex("}") + 1])
+            res = obj.get("results", [])
+            out = []
+            for i in range(len(claims)):
+                try:
+                    it = res[i]
+                    out.append((bool(it.get("supported", False)),
+                                str(it.get("passage_id", "") or "")))
+                except Exception:
+                    out.append((False, ""))
+            return out, model
+        except Exception:
+            continue
+    return None
+
+
+def _win_a_groundedness(brand: str, text: str, reply: str, passage_ids=None):
+    """Shared groundedness core for the endpoint + V3 study script."""
+    b = _normalize_brand(brand)
+    agent = get_agent(b)
+    try:
+        retrieved = _collect_passages(agent, text, k=5)
+    except Exception:
+        retrieved = []
+    passages = retrieved
+    if passage_ids:
+        try:
+            want = {str(x) for x in (passage_ids or [])}
+            pinned = [p for p in retrieved if str(p.get("tweet_id", "")) in want]
+            if pinned:
+                passages = pinned
+        except Exception:
+            passages = retrieved
+    claims = _win_a_split_claims(reply)
+    if not claims:
+        return {"claims": [], "score": 0.0, "model": "heuristic-offline"}
+    llm = _win_a_groq_entail(claims, passages)
+    if llm is None:
+        model = "heuristic-offline"
+        verdicts = [_win_a_heuristic_entail(c, passages) for c in claims]
+    else:
+        verdicts, model = llm
+    out_claims = [{"text": c, "supported": bool(s), "passage_id": str(pid or "")}
+                  for c, (s, pid) in zip(claims, verdicts)]
+    score = round(sum(1 for c in out_claims if c["supported"]) / len(out_claims), 3)
+    return {"claims": out_claims, "score": score, "model": model}
+
+
+@app.post("/judge/groundedness")
+def judge_groundedness(inp: GroundIn):
+    """A1: groundedness-only judge — is each draft claim entailed by cited passages?
+
+    Deterministic claim-split + per-claim entail/passage-cite check via the
+    existing Groq hook (openai/gpt-oss-20b temp 0, qwen/qwen3.8-27b fallback);
+    fail-soft to an offline token-coverage heuristic (model field discloses
+    which path answered). Response {claims: [{text, supported, passage_id}], score, model}.
+    """
+    try:
+        return _win_a_groundedness(inp.brand, inp.text, inp.reply, inp.passage_ids)
+    except Exception as e:
+        return _problem(500, "Internal Server Error", f"groundedness failed: {type(e).__name__}")
+
+
+# ---- A2: retrieval ablation helpers ----
+
+_WIN_A_BM25 = {}
+_WIN_A_THREADS = {"loaded": False, "df": None}
+
+
+def _win_a_virgin_lookup():
+    """KB id->text lookup from the live virgin retriever (handles both lookup shapes)."""
+    agent = get_agent("virgin")
+    retr = getattr(agent, "retriever", None)
+    lookup = {}
+    try:
+        raw = getattr(retr, "lookup", {}) or {}
+        for tid, v in raw.items():
+            try:
+                if isinstance(v, (list, tuple)):
+                    txt = str(v[0] or "")
+                else:
+                    txt = str(v or "")
+                if txt.strip():
+                    lookup[str(tid)] = txt
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return lookup
+
+
+def _win_a_keyword_retriever():
+    """BM25 keyword retriever over the virgin KB (rank-bm25, repo-pinned dep).
+
+    Same tokenizer convention as src/hybrid_retrieval.py. Built once, cached.
+    Returns (query_fn, n_docs).
+    """
+    if "virgin" in _WIN_A_BM25:
+        return _WIN_A_BM25["virgin"]
+    from rank_bm25 import BM25Okapi
+    try:
+        from src.hybrid_retrieval import tokenize as _tok
+    except Exception:
+        def _tok(s):
+            return (s or "").lower().split()
+    lookup = _win_a_virgin_lookup()
+    doc_ids = sorted(lookup.keys())
+    corpus = [_tok(lookup[tid]) for tid in doc_ids]
+    bm25 = BM25Okapi(corpus)
+
+    def query(text: str, k: int = 5):
+        import numpy as np
+        try:
+            scores = np.asarray(bm25.get_scores(_tok(text or "")), dtype=float)
+        except Exception:
+            return []
+        n = len(doc_ids)
+        kk = max(1, min(int(k), n))
+        top = np.argsort(-scores, kind="stable")[:kk]
+        out = []
+        for j in top.tolist():
+            tid = doc_ids[j]
+            out.append({"tweet_id": tid, "score": round(float(scores[j]), 4),
+                        "text": (lookup.get(tid, "") or "")[:200]})
+        return out
+
+    _WIN_A_BM25["virgin"] = (query, len(doc_ids))
+    return _WIN_A_BM25["virgin"]
+
+
+def _win_a_threads():
+    if _WIN_A_THREADS["loaded"]:
+        return _WIN_A_THREADS["df"]
+    _WIN_A_THREADS["loaded"] = True
+    try:
+        import pandas as pd
+        p = Path(__file__).resolve().parent.parent / "data" / "processed" / "virgin_threads.parquet"
+        if p.exists():
+            _WIN_A_THREADS["df"] = pd.read_parquet(p, columns=["thread_id", "text", "position_in_thread"])
+        else:
+            _WIN_A_THREADS["df"] = None
+    except Exception:
+        _WIN_A_THREADS["df"] = None
+    return _WIN_A_THREADS["df"]
+
+
+def _win_a_expand_query(text: str, window: int):
+    """Append up to `window` prior thread turns (virgin_threads.parquet, exact-then-normalized match).
+
+    Returns (query_text, hit: bool). Miss -> query unchanged (hit False); the
+    arm's context_hit_rate reports coverage honestly.
+    """
+    if not window or window <= 0:
+        return text or "", False
+    try:
+        df = _win_a_threads()
+        if df is None or not len(df):
+            return text or "", False
+        t = text or ""
+        m = df[df["text"] == t]
+        if not len(m):
+            norm = " ".join(t.lower().split())
+            m = df[df["text"].str.lower().str.split().str.join(" ") == norm]
+            if not len(m):
+                return t, False
+        row = m.iloc[0]
+        tid, pos = row["thread_id"], int(row["position_in_thread"])
+        prior = df[(df["thread_id"] == tid) & (df["position_in_thread"] < pos)].sort_values(
+            "position_in_thread").tail(int(window))
+        if not len(prior):
+            return t, False
+        ctx = " ".join(str(x)[:280] for x in prior["text"].tolist())
+        return (t + " " + ctx)[:1500], True
+    except Exception:
+        return text or "", False
+
+
+def _win_a_ablation_slice(n: int = 60, seed: int = 7):
+    """Fixed 60-item slice of golden_human_200.csv (seed 7, repo convention).
+
+    Read-only: no data files written or mutated.
+    """
+    import pandas as pd
+    p = Path(__file__).resolve().parent.parent / "evaluation" / "virgin" / "golden_human_200.csv"
+    df = pd.read_csv(p)
+    return df.sample(n=min(int(n), len(df)), random_state=int(seed)).reset_index(drop=True)
+
+
+def _win_a_groundedness_heuristic(draft: str, passages) -> int:
+    """Frozen copy of scripts/run_virgin_eval.py::groundedness_heuristic.
+
+    Kept inline (not imported) so ablation numbers stay bit-stable even if the
+    script evolves: DM + check + length + cite, 1-5.
+    """
+    if not draft:
+        return 1
+    s = 0
+    low = draft.lower()
+    if "dm us" in low or "dm " in low:
+        s += 1
+    if "settings" in low or "restart" in low or "check" in low:
+        s += 1
+    if len(draft.split()) >= 15:
+        s += 1
+    if passages:
+        s += 1
+    return max(1, min(5, s + 1))
+
+
+def _win_a_overlap_f1(a: str, b: str) -> float:
+    sa, sb = set(_win_a_content_tokens(a)), set(_win_a_content_tokens(b))
+    if not sa or not sb:
+        return 0.0
+    inter = len(sa & sb)
+    if not inter:
+        return 0.0
+    prec, rec = inter / len(sb), inter / len(sa)
+    return 2 * prec * rec / (prec + rec)
+
+
+@app.post("/eval/retrieval-ablation")
+def eval_retrieval_ablation(inp: AblIn):
+    """A2: retrieval ablation — k=1 vs 5, keyword (BM25) vs virgin NN, context 0 vs 2.
+
+    Fixed 60-item slice of golden_human_200 (seed 7, read-only). Classifier +
+    templates fixed (final LogReg); only retrieval varies. Per arm:
+    recall_proxy (lexical token-F1>=0.15 hit, disclosed proxy), groundedness
+    heuristic mean + >=4 rate (same frozen estimator as BASELINE_VS_FINAL.md),
+    support_rate (claim-entailment of the template draft vs arm passages —
+    the retrieval-sensitive signal), context_hit_rate, retrieval p50/p95 ms.
+    Entailment is heuristic-offline so numbers reproduce without a Groq key.
+    """
+    k_list = inp.k_list if inp.k_list is not None else [1, 5]
+    arms = inp.arms if inp.arms is not None else ["keyword", "virgin_nn"]
+    cws = inp.context_window if inp.context_window is not None else [0, 2]
+    try:
+        k_list = [int(k) for k in (k_list or [])]
+        cws = [int(c) for c in (cws or [])]
+        arms = [str(a) for a in (arms or [])]
+    except Exception:
+        return _problem(400, "Bad Request", "k_list/context_window must be int lists")
+    if not k_list or not arms or not cws:
+        return _problem(400, "Bad Request", "k_list, arms, context_window must be non-empty")
+    if any(k < 1 or k > 10 for k in k_list):
+        return _problem(400, "Bad Request", "k_list values must be in 1..10")
+    if any(c < 0 or c > 3 for c in cws):
+        return _problem(400, "Bad Request", "context_window values must be in 0..3")
+    for a in arms:
+        if a not in ("keyword", "virgin_nn"):
+            return _problem(400, "Bad Request", f"unknown arm {a!r} (want keyword|virgin_nn)")
+    brand = _normalize_brand(inp.brand)
+    if brand != "virgin":
+        return _problem(400, "Bad Request", "ablation slice is virgin-only (golden_human_200)")
+    try:
+        from src import agent as _agent_mod
+    except Exception as e:
+        return _problem(500, "Internal Server Error", f"agent import failed: {type(e).__name__}")
+    try:
+        sl = _win_a_ablation_slice()
+    except Exception as e:
+        return _problem(500, "Internal Server Error", f"slice load failed: {str(e)[:120]}")
+    texts = sl["text"].tolist()
+    try:
+        nn_agent = get_agent("virgin")
+        nn_retr = getattr(nn_agent, "retriever", None)
+        kw_query, kw_n = _win_a_keyword_retriever()
+    except Exception as e:
+        return _problem(500, "Internal Server Error", f"retriever init failed: {type(e).__name__}")
+    if nn_retr is None:
+        return _problem(500, "Internal Server Error", "virgin NN retriever unavailable")
+    out_arms = []
+    for arm in arms:
+        for k in k_list:
+            for cw in cws:
+                name = f"{arm}:k={k}:ctx={cw}"
+                rec_hits, grounds, sups, lats, ctx_hits = 0, [], [], [], 0
+                for t in texts:
+                    try:
+                        q, hit = _win_a_expand_query(t, cw)
+                    except Exception:
+                        q, hit = t, False
+                    ctx_hits += 1 if hit else 0
+                    t0 = time.perf_counter()
+                    try:
+                        if arm == "keyword":
+                            passages = kw_query(q, k=k)
+                        else:
+                            passages = nn_retr.query(q, k=k) or []
+                    except Exception:
+                        passages = []
+                    lats.append((time.perf_counter() - t0) * 1000)
+                    try:
+                        best_f1 = max([_win_a_overlap_f1(q, (p or {}).get("text", "")) for p in passages] or [0.0])
+                    except Exception:
+                        best_f1 = 0.0
+                    rec_hits += 1 if best_f1 >= 0.15 else 0
+                    try:
+                        pred, conf = _agent_mod._predict_for_brand("virgin", t)
+                    except Exception:
+                        pred, conf = "other_out_of_scope", 0.35
+                    try:
+                        draft, _ids, _u = _agent_mod.draft_grounded(pred, passages, "virgin")
+                    except Exception:
+                        draft = ""
+                    grounds.append(_win_a_groundedness_heuristic(draft, passages))
+                    try:
+                        cl = _win_a_split_claims(draft)
+                        if cl:
+                            sup = sum(1 for c in cl if _win_a_heuristic_entail(c, passages)[0]) / len(cl)
+                        else:
+                            sup = 0.0
+                    except Exception:
+                        sup = 0.0
+                    sups.append(sup)
+                n = len(texts)
+                s = sorted(lats)
+                out_arms.append({
+                    "name": name, "retriever": arm, "k": k, "context_window": cw, "n": n,
+                    "recall_proxy": round(rec_hits / n, 3) if n else 0.0,
+                    "groundedness_mean": round(sum(grounds) / n, 2) if n else 0.0,
+                    "groundedness_ge4_rate": round(sum(g >= 4 for g in grounds) / n, 3) if n else 0.0,
+                    "ge4_rate": round(sum(g >= 4 for g in grounds) / n, 3) if n else 0.0,
+                    "support_rate": round(sum(sups) / n, 3) if n else 0.0,
+                    "context_hit_rate": round(ctx_hits / n, 3) if n else 0.0,
+                    "p50_ms": _pct(s, 0.50), "p95_ms": _pct(s, 0.95),
+                })
+    return {"brand": "virgin", "n": len(texts), "slice": "golden_human_200:seed-7:n=60",
+            "entailment": "heuristic-offline", "arms": out_arms}
+
+
+# ---- A3: transfer compare (cached) ----
+
+_COMPARE_CACHE_PATH = Path(__file__).resolve().parent.parent / "evaluation" / "compare_cache.json"
+
+
+def _win_a_read_compare_cache():
+    try:
+        if _COMPARE_CACHE_PATH.exists():
+            obj = json.loads(_COMPARE_CACHE_PATH.read_text(encoding="utf-8"))
+            if isinstance(obj, dict) and isinstance(obj.get("results"), dict):
+                return obj
+    except Exception:
+        pass
+    return None
+
+
+def _win_a_compute_compare_brand(b: str):
+    """Compute one brand's compare row from frozen artifacts (CSVs + offline draft pass).
+
+    Virgin: final row of results_human200.csv (n=200). Apple: final row of
+    results_human60.csv (n=60) + ground_mean from an offline template-draft
+    pass over golden_human_60 (same frozen heuristic as A2). No LLM calls.
+    """
+    import pandas as pd
+    base = Path(__file__).resolve().parent.parent / "evaluation"
+    if b == "virgin":
+        df = pd.read_csv(base / "virgin" / "results_human200.csv")
+        row = df[df["system"].str.startswith("final")].iloc[0]
+        return {"intent_acc": round(float(row["intent_acc"]), 3),
+                "macro_f1": round(float(row["intent_macroF1"]), 3),
+                "esc_f1": round(float(row["esc_F1"]), 3),
+                "ground_mean": round(float(row["ground_mean"]), 2),
+                "n": int(row["n"])}
+    if b == "apple":
+        df = pd.read_csv(base / "results_human60.csv")
+        row = df[df["system"] == "final"].iloc[0]
+        g = pd.read_csv(base / "golden_human_60.csv")
+        out = {"intent_acc": round(float(row["intent_acc"]), 3),
+               "macro_f1": round(float(row["macroF1"]), 3),
+               "esc_f1": round(float(row["esc_F1"]), 3),
+               "n": int(len(g))}
+        # ground_mean is not in results_human60.csv: offline pass (template drafts, frozen heuristic).
+        try:
+            from src import agent as _am
+            ag = get_agent("apple")
+            gs = []
+            for t in g["text"].tolist():
+                try:
+                    o = ag.handle(t, brand="apple")
+                    gs.append(_win_a_groundedness_heuristic(o.draft_reply, o.grounding_passage_ids))
+                except Exception:
+                    continue
+            out["ground_mean"] = round(sum(gs) / len(gs), 2) if gs else 0.0
+        except Exception:
+            out["ground_mean"] = 0.0
+        return out
+    raise ValueError(f"unknown brand {b}")
+
+
+@app.get("/eval/compare")
+def eval_compare(brands: str = "virgin,apple"):
+    """A3: Virgin-primary + Apple-transfer numbers in one call (cached).
+
+    Values match BASELINE_VS_FINAL.md tables within rounding (virgin §B n=200,
+    apple §B n=60 + offline ground_mean pass). Cache file
+    evaluation/compare_cache.json serves demo traffic (<2s on hit); a miss
+    recomputes from frozen artifacts (no LLM) and refreshes the cache.
+    """
+    try:
+        requested = [x.strip().lower() for x in (brands or "").split(",") if x.strip()]
+    except Exception:
+        requested = []
+    if not requested:
+        return _problem(400, "Bad Request", "brands must be non-empty, e.g. ?brands=virgin,apple")
+    for x in requested:
+        if x not in ("virgin", "apple"):
+            return _problem(400, "Bad Request", f"unknown brand {x!r} (want virgin|apple)")
+    t0 = time.perf_counter()
+    cache = _win_a_read_compare_cache()
+    cached_results = (cache or {}).get("results", {}) if cache else {}
+    missing = [x for x in requested if x not in cached_results]
+    served_cached = not missing and bool(cache)
+    results = {x: cached_results[x] for x in requested if x in cached_results}
+    if missing:
+        try:
+            fresh = {}
+            for x in missing:
+                fresh[x] = _win_a_compute_compare_brand(x)
+        except Exception as e:
+            return _problem(500, "Internal Server Error", f"compare compute failed: {str(e)[:160]}")
+        merged = dict(cached_results)
+        merged.update(fresh)
+        try:
+            payload = {"generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                       "generator": "backend/main.py eval_compare (frozen CSVs + offline ground pass)",
+                       "sources": {"virgin": "evaluation/virgin/results_human200.csv",
+                                   "apple": "evaluation/results_human60.csv (+ offline ground_mean pass)"},
+                       "results": merged}
+            _COMPARE_CACHE_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        except Exception:
+            pass
+        results.update(fresh)
+    ms = round((time.perf_counter() - t0) * 1000, 1)
+    return {"results": {x: results[x] for x in requested}, "cached": bool(served_cached),
+            "latency_ms": ms}

@@ -1,0 +1,115 @@
+{
+  "manifest_version": 1,
+  "vault_tag": "hiver-support-agent-audit-6d951f",
+  "profile": "full",
+  "profile_steps": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16"
+  ],
+  "status": "done",
+  "started_at": "2026-09-15T02:24:43.806465+00:00",
+  "updated_at": "2026-09-15T03:38:44.961574+00:00",
+  "budget_usd": null,
+  "blocked_on": null,
+  "steps": {
+    "1": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:26:07.596066+00:00"
+    },
+    "2": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:32:02.113695+00:00"
+    },
+    "3": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:33:09.616719+00:00"
+    },
+    "4": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:35:17.208479+00:00"
+    },
+    "5": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:42:45.615778+00:00"
+    },
+    "6": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:43:39.487189+00:00"
+    },
+    "7": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:44:11.220155+00:00"
+    },
+    "8": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:52:25.971821+00:00"
+    },
+    "9": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:52:55.528226+00:00"
+    },
+    "10": {
+      "status": "done",
+      "finished_at": "2026-09-15T02:57:51.142626+00:00"
+    },
+    "11": {
+      "status": "done",
+      "finished_at": "2026-09-15T03:01:40.578433+00:00"
+    },
+    "12": {
+      "status": "done",
+      "finished_at": "2026-09-15T03:04:28.346722+00:00"
+    },
+    "13": {
+      "status": "done",
+      "finished_at": "2026-09-15T03:05:36.369450+00:00"
+    },
+    "14": {
+      "status": "done",
+      "finished_at": "2026-09-15T03:10:49.985841+00:00"
+    },
+    "14.5": {
+      "status": "done",
+      "finished_at": "2026-09-15T03:21:27.673142+00:00"
+    },
+    "15": {
+      "status": "done",
+      "finished_at": "2026-09-15T03:32:58.165436+00:00"
+    },
+    "16": {
+      "status": "done",
+      "finished_at": "2026-09-15T03:36:47.517678+00:00"
+    }
+  },
+  "chapters": {},
+  "spend": {
+    "estimated_usd": 0.0,
+    "sources_fetched": 0,
+    "notes_written": 0,
+    "agents_spawned": 0
+  },
+  "levers": {
+    "register": "analyze",
+    "inference_depth": "standard",
+    "domain_notes": "Sourcing: scholarly APIs first for eval/judge methodology (LLM-as-judge validity, agreement metrics, calibration); official docs via Context7/fetch for every selected library (retrieval, storage, LLM SDKs, eval harnesses); engineering sources for data pipeline and IR. Evidence norms: measured experiments outrank vendor claims; GitHub maintenance/issues outrank stars; recent (2024-2026) docs outrank old blog posts. Recency window 1-2 years, verified as of September 14, 2026."
+  },
+  "verify": {
+    "passed": true,
+    "at": "2026-09-15T03:38:44.952574+00:00",
+    "failed_checks": []
+  }
+}

@@ -1,0 +1,43 @@
+# Draft C — must_read_note_ids (n=40, deduplicated)
+Angle: Synthesis-reconciler and practitioner — boundary conditions + implementable build plan + decision log.
+
+- interim-leakage-safe-temporal-split-vs-random-stratified-split: split recipe
+- interim-setfit-vs-llm-intent-with-uncertainty-routing: classifier choice with conditions
+- interim-hybrid-retrieval-payoff: retrieval design + ablation plan
+- caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge: judge spec + gates
+- interim-escalation-calibration-under-shift-depth-investigation: escalation policy + reporting
+- interim-golden-set-adjudication-and-agreement-gate: golden spec + adjudication
+- tne-aicustomer-support-on-twitter-conversation-datasets-at-hugging-face: threaded derivative (794k, 109 companies)
+- mohammadothmanmo-customer-support-tweets-945k-datasets-at-hugging-face: English-conversation derivative
+- github-amruta33customer-support-on-twitter-the-customer-support-on-twitter-datas: corpus reference
+- customer-support-on-twitter-openbigdataorg: dataset documentation
+- github-jessica1438twitter-customer-support-dataset-textual-analysis-and-perspect: analysis precedent
+- github-abh2050customer_support_intelligence-an-interactive-streamlit-app-leverag: per-brand EDA tables
+- ml-case-study-interview-question-discovering-support-ticket-themes-with-bert-emb: ticket-theme case study
+- github-kelukesvps-support-ticket-clustering-clustering-and-topic-modeling-of-vps: clustering precedent
+- bertopic-bertopic-latest-documentation: topic-discovery machinery
+- modern-dataframes-in-python-a-hands-on-tutorial-with-polars-and-duckdb-towards-d: dataframe tutorial
+- python-data-pipelines-with-polars-and-duckdb-andrew-odendaal: pipeline patterns
+- github-lancedblancedb-developer-friendly-oss-embedded-retrieval-library-for-mult: embedded option
+- getting-started-facebookresearchfaiss-wiki-github: FAISS ops
+- github-pgvectorpgvector-open-source-vector-similarity-search-for-postgres-github: pgvector ops + scale-up path
+- hybrid-search-for-rag-combining-bm25-and-dense-vector-search-2026-guide: hybrid guide
+- data-annotation-quality-guidelines-agreement-metrics-gold-tasks-2026: annotation ops + gold tasks
+- inter-annotator-agreement-for-llm-evaluation-guide: IAA ops for LLM eval
+- cohen-fleiss-krippendorff-iaa-metrics-implementation-interactive: metric implementation
+- counting-on-consensus-selecting-the-right-inter-annotator-agreement-metric-for-n: metric selection
+- on-the-evaluation-of-neural-selective-prediction-methods-for-natural-language-pr: selective-pred eval methods
+- a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty: conformal background
+- 211011334-generalized-out-of-distribution-detection-a-survey: OOD framing
+- selective-prediction-tasks: selective-prediction reference
+- selective-prediction-in-ai: selective-prediction reference
+- safety-and-pii-in-customer-support-redaction-refusals-and-escalation-paths-for-p: PII/escalation paths
+- defending-against-prompt-injection-essential-practices-for-2026-orchestratordev: injection practices
+- how-to-prevent-your-chatbot-from-leaking-pii-modelmetry: PII practices
+- improving-security-data-redaction-for-support-chatbots: redaction practices
+- i-rebuilt-my-rag-pipeline-without-langchain-what-got-better-and-what-got-worse-d: plain-pipeline experience
+- llm-evaluation-frameworks-compared-deepeval-vs-ragas-vs-langsmith-vs-braintrust: suite matrix for decision table
+- 220911055-efficient-few-shot-learning-without-prompts: SetFit paper abs
+- github-huggingfacesetfit-efficient-few-shot-learning-with-sentence-transformers: SetFit repo
+- uncertainty-estimation-of-transformer-predictions-for-misclassification-detectio: Shelmanov routing evidence
+- polyaibanking77-datasets-at-hugging-face: Banking77 intent-work-only boundary

@@ -1,0 +1,106 @@
+[
+ {
+  "pair_index": 110,
+  "verdict": "overstated",
+  "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk (Whitehead 6.8 to 16.3 percent, 2.4x, at 1 percent risk) [[interim-escalation-calibration-under-shift-depth-investigation]]; scoring uses Phi_1 (plus-1 correct,",
+  "citation": "240701032-overcoming-common-flaws-in-the-evaluation-of-selective-classification",
+  "suggested_fix": "Restrict this citation to the AUGRC-concept fragment only (abstract supports AUGRC + 5/6 ranking change); move Whitehead 6.8->16.3%/2.4x numbers to interim-escalation-calibration-under-shift-depth-investigation and Phi_1/GRC(c)/gamma-0.5 formula to the selective-prediction toolkit note.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 112,
+  "verdict": "overstated",
+  "sentence": "Vanilla thresholds answer under 8 percent at 1 percent risk (Whitehead 6.8 to 16.3 percent, 2.4x, at 1 percent risk) [[interim-escalation-calibration-under-shift-depth-investigation]]; scoring uses Phi_1 (plus-1 correct,",
+  "citation": "210600170-adaptive-conformal-inference-under-distribution-shift",
+  "suggested_fix": "Cite a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty for the split-conformal band formula 1-alpha..1-alpha+1/(n+1); the adaptive-conformal note is abstract-only and contains no finite-sample band formula.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 113,
+  "verdict": "mismatched",
+  "sentence": "Calibration must be conversation-disjoint and temporal with at least 500 fresh threads, never random alone, because drift violates the exchangeability behind conformal-style guarantees [[210600170-adaptive-conformal-infe",
+  "citation": "210600170-adaptive-conformal-inference-under-distribution-shift",
+  "suggested_fix": "Move citation to interim-escalation-calibration-under-shift-depth-investigation (n>=500 temporal calibration rule) and optionally a-gentle-introduction-to-conformal-prediction-and-distribution-free-uncertainty (e.g. 500 fresh pairs example); the adaptive-conformal abstract contains no 500-thread requirement.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 128,
+  "verdict": "overstated",
+  "sentence": "Ship gold only at alpha at or above 0.80 with lower bound at or above 0.70, per-label alpha at or above 0.70 (Gwet AC1 reported when a label is rarer than about 10 percent), ordinal reply-quality quad-weighted kappa plus",
+  "citation": "krippendorffs-alpha-intercoder-reliability-casrai",
+  "suggested_fix": "Keep CASRAI citation only for the 0.667/0.80 Krippendorff benchmarks it contains; move the 0.70 per-label/ordinal/kappa/Spearman gate numbers to interim-golden-set-adjudication-and-agreement-gate which is their actual source.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 129,
+  "verdict": "mismatched",
+  "sentence": "Ship gold only at alpha at or above 0.80 with lower bound at or above 0.70, per-label alpha at or above 0.70 (Gwet AC1 reported when a label is rarer than about 10 percent), ordinal reply-quality quad-weighted kappa plus",
+  "citation": "counting-on-consensus-selecting-the-right-inter-annotator-agreement-metric-for-n",
+  "suggested_fix": "Replace with interim-golden-set-adjudication-and-agreement-gate: the review contains none of the gate numbers (0.80/0.70/0.667/Spearman/kappa); all thresholds are interim synthesis, not findings of this paper.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 130,
+  "verdict": "overstated",
+  "sentence": "Ship gold only at alpha at or above 0.80 with lower bound at or above 0.70, per-label alpha at or above 0.70 (Gwet AC1 reported when a label is rarer than about 10 percent), ordinal reply-quality quad-weighted kappa plus",
+  "citation": "cohen-fleiss-krippendorff-iaa-metrics-implementation-interactive",
+  "suggested_fix": "Keep this citation for Landis-Koch-style kappa bands only; move the 0.667 Krippendorff tentative/block rule to krippendorffs-alpha-intercoder-reliability-casrai or interim-golden-set-adjudication-and-agreement-gate.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 139,
+  "verdict": "overstated",
+  "sentence": "Simulation validates 200 as near-nominal while 100 is inadequate [[measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid]].",
+  "citation": "measuring-inter-rater-reliability-for-nominal-data-which-coefficients-and-confid",
+  "suggested_fix": "Soften to 'coverage closest to nominal at N=200 in simulations over N=50/100/200'; the source does not declare N=100 inadequate as a rule.",
+  "severity": "minor"
+ },
+ {
+  "pair_index": 149,
+  "verdict": "overstated",
+  "sentence": "Chain-of-thought form-filling reaches mid-0.50s rank correlation on summarization and higher on dialogue, beating prior reference-free metrics [[g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology",
+  "citation": "g-eval-nlg-evaluation-using-gpt-4-with-better-human-alignment-acl-anthology",
+  "suggested_fix": "Keep G-Eval page citation for the 0.514 summarization correlation only; move the pro-LLM tilt / human-alpha-0.07 claim to caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge which is its actual source (abstract page contains no 0.07).",
+  "severity": "major"
+ },
+ {
+  "pair_index": 156,
+  "verdict": "mismatched",
+  "sentence": "Promote judges only behind human-first gates: human agreement first with 20 percent double annotation, then per-dimension weighted agreement near 0.60, escalation near 0.65, raw agreement at or above 75 percent, swap con",
+  "citation": "241115594-a-survey-on-llm-as-a-judge",
+  "suggested_fix": "Replace with caged-judge-protocol-for-grounded-replies-interim-locus-caged-judge: the survey abstract contains none of the gate numbers (20%/0.60/0.65/75%/0.80); all are interim design thresholds.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 170,
+  "verdict": "mismatched",
+  "sentence": "| 4 | Verbosity rewarded over correctness | long-deflection vs terse-correct placeholder | Expected: terse correct wins; Actual: long formatted deflection wins | Style skew 0.10-0.76 [[judging-the-judges-a-systematic-eva",
+  "citation": "llm-judge-biases-position-verbosity-self-preference-aitldr",
+  "suggested_fix": "Replace with judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm: the 0.10-0.76 style-skew numbers appear only there, not in the aitldr blog.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 171,
+  "verdict": "mismatched",
+  "sentence": "| 4 | Verbosity rewarded over correctness | long-deflection vs terse-correct placeholder | Expected: terse correct wins; Actual: long formatted deflection wins | Style skew 0.10-0.76 [[judging-the-judges-a-systematic-eva",
+  "citation": "length-controlled-alpacaevala-simple-way-to-debias-automatic-evaluators",
+  "suggested_fix": "Replace with judging-the-judges-a-systematic-evaluation-of-bias-mitigation-strategies-in-llm: the 0.10-0.76 style-skew numbers are from the judging study, not the AlpacaEval-LC paper (which supports only the 0.94->0.98 fragment).",
+  "severity": "major"
+ },
+ {
+  "pair_index": 191,
+  "verdict": "mismatched",
+  "sentence": "In-process indices grade without Docker or credentials; past 1M chunks adopt Postgres pgvector plus full-text search in one SQL statement [[how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz]][[gith",
+  "citation": "getting-started-facebookresearchfaiss-wiki-github",
+  "suggested_fix": "Replace with how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz: the FAISS wiki documents FAISS only and never prescribes Postgres-pgvector adoption past 1M chunks.",
+  "severity": "major"
+ },
+ {
+  "pair_index": 192,
+  "verdict": "mismatched",
+  "sentence": "In-process indices grade without Docker or credentials; past 1M chunks adopt Postgres pgvector plus full-text search in one SQL statement [[how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz]][[gith",
+  "citation": "github-lancedblancedb-developer-friendly-oss-embedded-retrieval-library-for-mult",
+  "suggested_fix": "Replace with how-to-build-hybrid-search-with-pgvector-and-bm25-in-postgres-ben-moataz: the LanceDB page surveys embedded LanceDB and never prescribes Postgres adoption past 1M chunks.",
+  "severity": "major"
+ }
+]
