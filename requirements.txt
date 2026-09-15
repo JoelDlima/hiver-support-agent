@@ -1,6 +1,15 @@
-# Hiver AppleSupport — CPU-only, <15min repro (Python 3.12)
-# Frozen to venv-tested versions 2026-09-12 (py3.12 win_amd64; pytest 33 green + virgin eval bit-identical).
-# Install: py -3.12 -m venv .venv & .venv\Scripts\activate & pip install -r requirements.txt
+# Hiver — VirginTrains agent (CPU-only, Python 3.12, Windows-first)
+# Frozen to the venv-tested versions below (pytest 75 green + npm build green, 2026-09-15).
+# Install:
+#   py -3.12 -m venv .venv
+#   .venv\Scripts\activate
+#   pip install -r requirements.txt
+#
+# Sections: CORE (serve + test) / LLM DRAFTER (optional, fail-closed) /
+# DATA LAYER / CHALLENGER (report-only extras). Everything imports guard-fail-soft
+# except CORE, which the backend and test suite require.
+
+# ---- CORE: backend + agent + tests (required) ----
 numpy==2.5.3
 scipy==1.18.1
 pandas==3.0.5
@@ -8,19 +17,32 @@ scikit-learn==1.9.0
 joblib==1.6.0
 fastapi==0.141.1
 uvicorn==0.52.4
-streamlit==1.63.0
-pytest==9.1.1
 httpx==0.28.1
 python-multipart==0.0.32
-# Phase 0 Groq ladder (venv-tested 2026-09-12, py3.12 win_amd64):
-# groq 1.7.0 pre-present; instructor 1.17.0 via `C:\Hiver\.venv\Scripts\python.exe -m pip install "instructor==1.17.0"`;
-# rank-bm25 0.2.2 pre-present (Phase 1b retrieval, flag-gated OFF by default).
+pytest==9.1.1
+pydantic==2.13.5
+
+# Phase 4A resilience + observability (imported by backend/main.py + src/resilience.py,
+# src/tracing.py; every import is try/except-guarded, but pinned here because the
+# hardened behaviors are part of the tested surface):
+slowapi==0.1.10          # 429 rate limiting on /predict + /review/enqueue
+pybreaker==1.4.1         # Groq circuit breaker (fail closed to template)
+tenacity==9.1.4          # 429/5xx-only retry with Retry-After
+opentelemetry-sdk==1.44.0
+opentelemetry-instrumentation-fastapi==0.65b0
+structlog==26.1.0        # JSON request logging
+
+# ---- DATA LAYER (parquet + AL pool, Phase 2) ----
+pyarrow==25.0.1
+
+# ---- LLM DRAFTER (optional at serve time; fail-closed without a key) ----
 groq==1.7.0
 instructor==1.17.0
-rank-bm25==0.2.2
+rank-bm25==0.2.2         # hybrid retrieval (flag-gated) + ablation keyword arm
 
-# ---- Optional (offline-tolerant; uncomment only if network + time allow) ----
-# CPU-only torch: install with:
-#   pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
-# sentence-transformers==3.3.1  # MiniLM all-MiniLM-L6-v2; fallback to TF-IDF if offline
-# faiss-cpu==1.10.0  # only if sklearn NearestNeighbors latency proves too high
+# ---- CHALLENGER / REPORT-ONLY (not imported by the serving path; used by
+# scripts/train_setfit_head.py + scripts/train_lightgbm_arm.py + their tests) ----
+lightgbm==4.7.0
+# sentence-transformers / torch: install manually if re-running the SetFit
+# challenger (CPU wheels): pip install sentence-transformers torch --index-url https://download.pytorch.org/whl/cpu
+# setfit==1.2.0
