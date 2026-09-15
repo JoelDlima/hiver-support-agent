@@ -48,3 +48,9 @@ data/processed/golden_candidate.jsonl
 
 # Graphify rebuild cache (regenerates via graphify update .)
 graphify-out/cache/
+
+# Agent-tool state (machine-local; research vault outputs are tracked, tooling is not)
+.claude/
+.freebuff/
+.hyperresearch/
+frontend-next/tsconfig.tsbuildinfo

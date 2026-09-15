@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { FASTAPI_URL } from "../../../../lib";
 
 // BFF proxy: browser never touches FastAPI directly.
-// Upstream GET /eval/compare may not exist yet (workstream A builds it in
-// parallel) — the status code passes through so the UI can render an honest
-// "endpoint pending" state instead of fake data.
+// Upstream: GET /eval/compare (workstream A, live, file-cached).
+// Non-OK statuses pass through so the UI renders an honest pending/error state.
 export async function GET(req: NextRequest) {
   const qs = req.nextUrl.searchParams.toString();
   const upstream = await fetch(`${FASTAPI_URL}/eval/compare${qs ? `?${qs}` : ""}`);

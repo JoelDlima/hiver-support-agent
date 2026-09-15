@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { FASTAPI_URL } from "../../../../lib";
 
 // BFF proxy: browser never touches FastAPI directly.
-// Upstream POST /eval/retrieval-ablation may not exist yet (workstream A builds
-// it in parallel) — the status code passes through so the UI can render an
-// honest "endpoint pending" state instead of fake data.
+// Upstream: POST /eval/retrieval-ablation (workstream A, live).
+// Non-OK statuses pass through so the UI renders an honest pending/error state.
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const upstream = await fetch(`${FASTAPI_URL}/eval/retrieval-ablation`, {

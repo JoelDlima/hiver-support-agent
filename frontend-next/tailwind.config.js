@@ -28,7 +28,7 @@ module.exports = {
         raised: "var(--color-raised)",
         teal: "var(--color-teal)",
         aqua: "var(--color-aqua)",
-        // Compat aliases for pre-retheme page code (another agent owns page.tsx).
+        // Compat aliases for pre-retheme page code.
         canvas: "var(--bg)",
         surface: "var(--surface)",
         line: "var(--border)",

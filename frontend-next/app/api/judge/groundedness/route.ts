@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { FASTAPI_URL } from "../../../../lib";
 
 // BFF proxy: browser never touches FastAPI or keys directly.
-// Upstream POST /judge/groundedness may not exist yet (workstream A builds it
-// in parallel) — the status code passes through so the UI can render an honest
-// "endpoint pending" state instead of fake data.
+// Upstream: POST /judge/groundedness (workstream A, live: Groq leg when keyed,
+// deterministic offline heuristic otherwise). Non-OK statuses pass through so
+// the UI renders an honest pending/error state instead of fake data.
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const upstream = await fetch(`${FASTAPI_URL}/judge/groundedness`, {
