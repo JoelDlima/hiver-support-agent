@@ -159,6 +159,8 @@ C:\Hiver\
 
 ## Usage
 
+> **Reproduce the headline in <15 min** (PS requirement): committed artifacts make it a 2-command run — `python scripts/run_virgin_eval.py` + `python -m pytest tests -q`. Full path in [`docs/REPRO.md`](docs/REPRO.md).
+
 ```powershell
 $env:PYTHONPATH="C:\Hiver"
 # backend
