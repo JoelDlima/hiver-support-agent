@@ -3,7 +3,8 @@ import pandas as pd
 from pathlib import Path
 from src import classifier as clf_mod
 
-POOL = Path(r"C:\Hiver\data\processed\apple_inbound_pool.csv")
+ROOT = Path(__file__).resolve().parents[1]
+POOL = ROOT / "data" / "processed" / "apple_inbound_pool.csv"
 
 def main(n=30000, seed=42):
     df = pd.read_csv(POOL, usecols=["text"]).dropna().sample(min(n, 9999999), random_state=seed)

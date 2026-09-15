@@ -87,7 +87,7 @@ def test_on_mode_topk_differs_gracefully(monkeypatch):
 def test_kb_manifest():
     manifest_path = Path(os.environ.get(
         "VIRGIN_MANIFEST",
-        r"C:\Hiver\evaluation\virgin\kb_manifest.json"))
+        str(Path(__file__).resolve().parents[1] / "evaluation" / "virgin" / "kb_manifest.json")))
     assert manifest_path.exists(), f"missing {manifest_path} — run scripts/build_virgin_manifest.py"
     m = json.loads(manifest_path.read_text(encoding="utf-8"))
     for key in ("n_rows", "rows", "corpus_fingerprint_sha256", "counts",
@@ -99,7 +99,7 @@ def test_kb_manifest():
         assert 0.0 <= m["quality"][key] <= 1.0
     assert len(m["corpus_fingerprint_sha256"]) == 64
 
-    kb = pd.read_csv(r"C:\Hiver\data\processed\virgin_kb.csv", usecols=["tweet_id", "text"])
+    kb = pd.read_csv(Path(__file__).resolve().parents[1] / "data" / "processed" / "virgin_kb.csv", usecols=["tweet_id", "text"])
     assert m["n_rows"] == len(kb) == len(m["rows"])
     # Spot-check per-row hashes recompute from the CSV.
     for i in (0, len(kb) // 2, len(kb) - 1):

@@ -31,7 +31,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-ROOT = Path(r"C:\Hiver")
+ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 POOL_CSV = ROOT / "data/processed/virgin_inbound_pool.csv"

@@ -12,9 +12,10 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, r"C:\Hiver")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-VIRGIN_DIR = Path(r"C:\Hiver\evaluation\virgin")
+ROOT = Path(__file__).resolve().parents[1]
+VIRGIN_DIR = ROOT / "evaluation" / "virgin"
 OUT_MD = VIRGIN_DIR / "RETRIEVAL_ABLATION.md"
 
 

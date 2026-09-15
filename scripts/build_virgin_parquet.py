@@ -32,7 +32,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(r"C:\Hiver")
+ROOT = Path(__file__).resolve().parents[1]
 KB_CSV = ROOT / "data/processed/virgin_kb.csv"
 POOL_CSV = ROOT / "data/processed/virgin_inbound_pool.csv"
 RAW = ROOT / "data/raw/twcs.csv"

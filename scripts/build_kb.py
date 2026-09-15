@@ -4,8 +4,9 @@ from pathlib import Path
 import pandas as pd
 from src.text_norm import normalize
 
-RAW = Path(r"C:\Hiver\data\raw\twcs.csv")
-PROC = Path(r"C:\Hiver\data\processed")
+ROOT = Path(__file__).resolve().parents[1]
+RAW = ROOT / "data" / "raw" / "twcs.csv"
+PROC = ROOT / "data" / "processed"
 PROC.mkdir(parents=True, exist_ok=True)
 
 def main():

@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pandas as pd
 
-VIRGIN_DIR = Path(r"C:\Hiver\evaluation\virgin")
+VIRGIN_DIR = Path(__file__).resolve().parents[1] / "evaluation" / "virgin"
 SPOT = VIRGIN_DIR / "spotcheck_30.csv"
 DRAFTS = VIRGIN_DIR / "llm_judge_30_drafts.csv"
 SCORES = VIRGIN_DIR / "llm_judge_30_scores.csv"

@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, r"C:\Hiver")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.text_norm import normalize
 from src import classifier as clf_mod
 from src.agent import AppleAgent

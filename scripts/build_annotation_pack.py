@@ -5,8 +5,9 @@ with EMPTY label columns for annotator 2. No key needed.
 import pandas as pd
 from pathlib import Path
 
-VIRGIN_DIR = Path(r"C:\Hiver\evaluation\virgin")
-POOL = Path(r"C:\Hiver\data\processed\virgin_inbound_pool.csv")
+ROOT = Path(__file__).resolve().parents[1]
+VIRGIN_DIR = ROOT / "evaluation" / "virgin"
+POOL = ROOT / "data" / "processed" / "virgin_inbound_pool.csv"
 
 
 def main():

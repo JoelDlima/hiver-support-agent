@@ -21,9 +21,10 @@ from run_virgin_eval import VirginRetriever
 from src.agent import AppleAgent
 from evaluation.judge import heuristic_judge, llm_judge, RUBRIC_VERSION
 
-GOLD = Path(r"C:\Hiver\evaluation\virgin\golden_human_200.csv")
-OUT_CSV = Path(r"C:\Hiver\evaluation\virgin\judge_scores_200.csv")
-OUT_MD = Path(r"C:\Hiver\evaluation\virgin\JUDGE_AGREEMENT.md")
+ROOT = Path(__file__).resolve().parents[1]
+GOLD = ROOT / "evaluation" / "virgin" / "golden_human_200.csv"
+OUT_CSV = ROOT / "evaluation" / "virgin" / "judge_scores_200.csv"
+OUT_MD = ROOT / "evaluation" / "virgin" / "JUDGE_AGREEMENT.md"
 
 
 def main():

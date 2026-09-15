@@ -3,9 +3,9 @@ import re, json, sys
 import pandas as pd
 import numpy as np
 
-RAW = r"C:\Hiver\data\intermediate"
-RAW_PATH = r"C:\Hiver\data\raw\twcs.csv"
-SAMPLE_OUT = r"C:\Hiver\data\intermediate\apple_sample.csv"
+RAW = str(Path(__file__).resolve().parents[1] / "data" / "intermediate")
+RAW_PATH = str(Path(__file__).resolve().parents[1] / "data" / "raw" / "twcs.csv")
+SAMPLE_OUT = str(Path(__file__).resolve().parents[1] / "data" / "intermediate" / "apple_sample.csv")
 
 URL_RE = re.compile(r"https?://\S+|www\.\S+", re.IGNORECASE)
 MENTION_RE = re.compile(r"@\w+")

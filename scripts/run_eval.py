@@ -5,7 +5,8 @@ from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_su
 from src.agent import AppleAgent, trivial_baseline, keyword_baseline
 from src.retriever import Retriever
 
-GOLDEN = Path(r"C:\Hiver\evaluation\golden_v1.csv")
+ROOT = Path(__file__).resolve().parents[1]
+GOLDEN = ROOT / "evaluation" / "golden_v1.csv"
 
 def groundedness_heuristic(draft: str, passages) -> int:
     """1-5 heuristic: template replies with DM + diagnostic step score 4; canned 3; empty 1."""
@@ -66,7 +67,7 @@ def main():
     rows.append(evaluate("final (TFIDF-LogReg + TFIDF-NN + template + rules)", agent.handle, golden))
     df = pd.DataFrame(rows)
     print(df.to_string(index=False))
-    df.to_csv(Path(r"C:\Hiver\evaluation\results.csv"), index=False)
+    df.to_csv(ROOT / "evaluation" / "results.csv", index=False)
     print("\nvs-baselines deltas (final - simple):")
     print(f"  intent_acc {df.iloc[2].intent_acc - df.iloc[1].intent_acc:+.3f}, macroF1 {df.iloc[2].intent_macroF1 - df.iloc[1].intent_macroF1:+.3f}, esc_F1 {df.iloc[2].esc_F1 - df.iloc[1].esc_F1:+.3f}")
     print("\nNOTE: golden labels are weak-label drafts (see build_golden). Headline numbers are optimistic vs true human labels — see 'What is misleading' in report.")

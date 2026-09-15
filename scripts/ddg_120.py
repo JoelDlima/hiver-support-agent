@@ -1,4 +1,4 @@
-"""120 meaningful DuckDuckGo searches (12x10 tracks) for Hiver. All inside C:\Hiver.
+"""120 meaningful DuckDuckGo searches (12x10 tracks) for Hiver. Writes inside the repo root.
 Uses lite.duckduckgo.com/lite (lighter, fewer challenges) + html fallback.
 Outputs: research/ddg_120_results.md + appends research/research_log.md
 Honest: logs ok/challenged/error per query, no fake findings.
@@ -9,8 +9,9 @@ from datetime import date
 from urllib.parse import quote_plus
 from urllib.request import Request, urlopen
 
-OUT_MD = Path(r"C:\Hiver\research\ddg_120_results.md")
-LOG = Path(r"C:\Hiver\research\research_log.md")
+ROOT = Path(__file__).resolve().parents[1]
+OUT_MD = ROOT / "research" / "ddg_120_results.md"
+LOG = ROOT / "research" / "research_log.md"
 TODAY = date.today().isoformat()
 
 QUERIES = [

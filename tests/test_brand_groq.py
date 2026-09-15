@@ -2,8 +2,9 @@ import json
 import os
 import sys
 import types
+from pathlib import Path
 
-sys.path.insert(0, r"C:\Hiver")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.agent import AppleAgent
 from src import groq_draft as groq_mod

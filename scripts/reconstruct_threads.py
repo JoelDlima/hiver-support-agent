@@ -31,7 +31,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(r"C:\Hiver")
+ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data/raw/twcs.csv"
 OUT_PQ = ROOT / "data/processed/virgin_threads.parquet"
 OUT_MD = ROOT / "evaluation/virgin/threads_report.md"

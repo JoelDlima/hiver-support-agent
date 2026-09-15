@@ -517,11 +517,13 @@ def _make_retriever_for_brand(brand: str):
                 else:
                     doc_ids = ids.iloc[:, -1].astype(str).tolist()
                 # KB lookup per brand: data/processed/<brand>_kb.csv, fallback to apple_kb.csv
+                # (resolved from the repo root — portable, no machine-specific prefix).
+                _repo_root = Path(__file__).resolve().parents[1]
                 kb_cands = []
                 if b == "virgin":
-                    kb_cands = [Path(r"C:\Hiver\data\processed\virgin_kb.csv")]
+                    kb_cands = [_repo_root / "data" / "processed" / "virgin_kb.csv"]
                 else:
-                    kb_cands = [Path(r"C:\Hiver\data\processed\apple_kb.csv")]
+                    kb_cands = [_repo_root / "data" / "processed" / "apple_kb.csv"]
                 lookup: dict = {}
                 for kb_path in kb_cands:
                     try:

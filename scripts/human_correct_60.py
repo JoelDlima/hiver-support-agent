@@ -4,8 +4,9 @@ Sampling: random 60 from golden_v1, seed 11. Double-label note: single annotator
 import pandas as pd
 from pathlib import Path
 
-SRC = Path(r"C:\Hiver\evaluation\human_review_60_draft.csv")
-OUT = Path(r"C:\Hiver\evaluation\golden_human_60.csv")
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "evaluation" / "human_review_60_draft.csv"
+OUT = ROOT / "evaluation" / "golden_human_60.csv"
 
 # index -> (true_intent, escalate, reason, note)
 FIX = {

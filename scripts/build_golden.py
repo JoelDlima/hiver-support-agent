@@ -4,8 +4,9 @@ from pathlib import Path
 from src import classifier as clf_mod
 from src.text_norm import features_for_escalation
 
-POOL = Path(r"C:\Hiver\data\processed\apple_inbound_pool.csv")
-OUT = Path(r"C:\Hiver\evaluation\golden_v1.csv")
+ROOT = Path(__file__).resolve().parents[1]
+POOL = ROOT / "data" / "processed" / "apple_inbound_pool.csv"
+OUT = ROOT / "evaluation" / "golden_v1.csv"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 # Heuristic escalate label for golden draft (human must review/override)

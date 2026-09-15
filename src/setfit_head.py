@@ -45,7 +45,8 @@ from .virgin_intents import INTENTS
 
 MODEL_NAME = "sentence-transformers/paraphrase-MiniLM-L6-v2"
 EMBED_DIM = 384
-ARTIFACT_DIR = Path(r"C:\Hiver\models\intent_virgin_setfit")
+# Repo root resolved from this file's location (portable; no machine-specific prefix).
+ARTIFACT_DIR = Path(__file__).resolve().parents[1] / "models" / "intent_virgin_setfit"
 SEED = 42
 
 # Same head hyperparams as the TF-IDF baseline (scripts/train_virgin.py) so the

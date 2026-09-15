@@ -5,7 +5,7 @@ import time
 import traceback
 from pathlib import Path
 
-sys.path.insert(0, r"C:\Hiver")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import streamlit as st
 
@@ -64,7 +64,7 @@ def _make_retriever_for_brand(brand: str):
                 ids = pd.read_csv(ids_p)
                 doc_ids = ids["tweet_id"].astype(str).tolist() if "tweet_id" in ids.columns else ids.iloc[:, -1].astype(str).tolist()
                 kb_name = "virgin_kb.csv" if brand == "virgin" else "apple_kb.csv"
-                kb_path = Path(r"C:\Hiver\data\processed") / kb_name
+                kb_path = Path(__file__).resolve().parents[1] / "data" / "processed" / kb_name
                 lookup: dict = {}
                 try:
                     if kb_path.exists():

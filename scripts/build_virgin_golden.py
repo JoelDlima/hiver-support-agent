@@ -23,10 +23,11 @@ from src.agent import _weak_label_generic
 from src.text_norm import features_for_escalation, normalize
 from src.virgin_intents import INTENTS, KEYWORDS, SAFETY_ADDONS
 
-POOL = Path(r"C:\Hiver\data\processed\virgin_inbound_pool.csv")
-OUT_V1 = Path(r"C:\Hiver\evaluation\virgin\golden_v1.csv")
-OUT_HUMAN = Path(r"C:\Hiver\evaluation\virgin\golden_human_200.csv")
-OUT_SPOT = Path(r"C:\Hiver\evaluation\virgin\spotcheck_30.csv")
+ROOT = Path(__file__).resolve().parents[1]
+POOL = ROOT / "data" / "processed" / "virgin_inbound_pool.csv"
+OUT_V1 = ROOT / "evaluation" / "virgin" / "golden_v1.csv"
+OUT_HUMAN = ROOT / "evaluation" / "virgin" / "golden_human_200.csv"
+OUT_SPOT = ROOT / "evaluation" / "virgin" / "spotcheck_30.csv"
 OUT_V1.parent.mkdir(parents=True, exist_ok=True)
 
 SAFETY_SET = [s.lower() for s in SAFETY_ADDONS]

@@ -9,7 +9,8 @@ from src.agent import AppleAgent
 from src.retriever import Retriever
 from evaluation.judge import heuristic_judge, llm_judge, RUBRIC_VERSION
 
-GOLD = Path(r"C:\Hiver\evaluation\golden_human_200.csv")
+ROOT = Path(__file__).resolve().parents[1]
+GOLD = ROOT / "evaluation" / "golden_human_200.csv"
 
 def main(n=200, seed=5):
     df = pd.read_csv(GOLD)
@@ -25,7 +26,7 @@ def main(n=200, seed=5):
                      "ground": js.groundedness, "safety_j": js.safety, "verdict": js.verdict,
                      "llm": note})
     res = pd.DataFrame(rows)
-    res.to_csv(Path(r"C:\Hiver\evaluation\judge_scores_200.csv"), index=False)
+    res.to_csv(ROOT / "evaluation" / "judge_scores_200.csv", index=False)
     # safety recall: human legal_safety cases -> did we escalate?
     saf = res[res.human_reason == "legal_safety"]
     srec = (saf.pred_esc == 1).mean() if len(saf) else float("nan")
@@ -41,7 +42,7 @@ def main(n=200, seed=5):
     print(f"esc acc={acc:.3f} kappa={kap:.3f} P={p:.3f} R={r:.3f} F1={f:.3f}")
     print(f"ground mean={res.ground.mean():.2f} >=4 rate={(res.ground>=4).mean():.3f} verdict PASS={(res.verdict=='PASS').mean():.3f}")
     print(f"llm note: {res.llm.iloc[0]} rubric={RUBRIC_VERSION}")
-    Path(r"C:\Hiver\evaluation\JUDGE_AGREEMENT_V2.md").write_text(
+    Path(ROOT / "evaluation" / "JUDGE_AGREEMENT_V2.md").write_text(
         f"# Judge agreement v2 ({RUBRIC_VERSION})\n\n- n={len(res)} (golden_human_200), heuristic judge offline; LLM hook: {res.llm.iloc[0]}\n"
         f"- Safety: {len(saf)} human legal_safety cases, system escalate recall={srec:.3f} (ship gate >=0.90)\n"
         f"- Escalation vs human: acc={acc:.3f} kappa={kap:.3f} P={p:.3f} R={r:.3f} F1={f:.3f}\n"

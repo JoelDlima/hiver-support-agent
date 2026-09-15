@@ -35,11 +35,12 @@ from src.virgin_intents import KEYWORDS, TEMPLATES
 BOOTSTRAP_RESAMPLES = 2000
 BOOTSTRAP_SEED = 20260912
 
-VIRGIN_DIR = Path(r"C:\Hiver\evaluation\virgin")
+ROOT = Path(__file__).resolve().parents[1]
+VIRGIN_DIR = ROOT / "evaluation" / "virgin"
 GOLDEN_WEAK = VIRGIN_DIR / "golden_v1.csv"
 GOLDEN_HUMAN = VIRGIN_DIR / "golden_human_200.csv"
-INDEX_DIR = Path(r"C:\Hiver\data\indexes\virgin")
-KB_PATH = Path(r"C:\Hiver\data\processed\virgin_kb.csv")
+INDEX_DIR = ROOT / "data" / "indexes" / "virgin"
+KB_PATH = ROOT / "data" / "processed" / "virgin_kb.csv"
 
 VIRGIN_TRIVIAL = ("Thanks for reaching out — please DM us your journey + date/time "
                   "and ticket details so we can help.")

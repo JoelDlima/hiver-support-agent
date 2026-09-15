@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(r"C:\Hiver")
+ROOT = Path(__file__).resolve().parents[1]
 KB_PQ = ROOT / "data/processed/virgin_kb.parquet"
 POOL_PQ = ROOT / "data/processed/virgin_inbound_pool.parquet"
 THREADS_PQ = ROOT / "data/processed/virgin_threads.parquet"

@@ -19,8 +19,9 @@ from src.text_norm import normalize
 from src.virgin_intents import INTENTS, KEYWORDS
 from src.agent import _weak_label_generic
 
-POOL = Path(r"C:\Hiver\data\processed\virgin_inbound_pool.csv")
-MODEL_PATH = Path(r"C:\Hiver\models\intent_virgin.pkl")
+ROOT = Path(__file__).resolve().parents[1]
+POOL = ROOT / "data" / "processed" / "virgin_inbound_pool.csv"
+MODEL_PATH = ROOT / "models" / "intent_virgin.pkl"
 
 
 def build_pipeline() -> Pipeline:

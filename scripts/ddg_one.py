@@ -39,12 +39,12 @@ for base in ["https://lite.duckduckgo.com/lite/?q=", "https://duckduckgo.com/htm
         continue
 ts = datetime.now().strftime("%H:%M:%S")
 finding = ("; ".join(t for t, _ in res[:2])[:280]) if res else "DDG challenge/empty — no invented finding"
-with open(r"C:\Hiver\research\mixed_18min_log.md", "a", encoding="utf-8") as f:
+with open(Path(__file__).resolve().parents[1] / "research" / "mixed_18min_log.md", "a", encoding="utf-8") as f:
     f.write(f"\n## {ts} [ddg-firefoxUA:{status}] {query}\n")
     for t, h in res[:4]:
         f.write(f"- {t} — {h}\n")
     if not res:
         f.write("- (blocked; fallback to normal search later)\n")
-with open(r"C:\Hiver\research\research_log.md", "a", encoding="utf-8") as f:
+with open(Path(__file__).resolve().parents[1] / "research" / "research_log.md", "a", encoding="utf-8") as f:
     f.write(f"- DATE: 2026-09-10 / QUERY: {query} / SOURCE: DuckDuckGo FirefoxUA ({status}) / KEY FINDING: {finding} / RELEVANCE: {track} / IMPACT: mixed-18min session\n")
 print(f"[{ts}] ddg-firefox {status} n={len(res)} :: {query[:60]}")

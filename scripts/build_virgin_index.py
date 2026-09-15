@@ -15,8 +15,9 @@ from pathlib import Path
 import joblib
 import numpy as np
 
-KB = Path(r"C:\Hiver\data\processed\virgin_kb.csv")
-OUT = Path(r"C:\Hiver\data\indexes\virgin")
+ROOT = Path(__file__).resolve().parents[1]
+KB = ROOT / "data" / "processed" / "virgin_kb.csv"
+OUT = ROOT / "data" / "indexes" / "virgin"
 OUT.mkdir(parents=True, exist_ok=True)
 
 URL_RE = re.compile(r"https?://\S+")

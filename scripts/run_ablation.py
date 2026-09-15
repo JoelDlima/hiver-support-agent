@@ -18,7 +18,8 @@ from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_su
 from src.agent import AppleAgent, trivial_baseline, keyword_baseline
 from src.retriever import Retriever
 
-HUMAN60 = Path(r"C:\Hiver\evaluation\golden_human_60.csv")
+ROOT = Path(__file__).resolve().parents[1]
+HUMAN60 = ROOT / "evaluation" / "golden_human_60.csv"
 
 
 def eval_system(name, fn, texts, y_int, y_esc):

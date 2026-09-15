@@ -1,4 +1,4 @@
-"""Resume DDG from #50 onwards (1-based). Incremental save, slow, UA rotation. Inside C:\Hiver only."""
+"""Resume DDG from #50 onwards (1-based). Incremental save, slow, UA rotation. Writes inside the repo root only."""
 import re, time, random
 from pathlib import Path
 from datetime import date
@@ -6,8 +6,9 @@ from urllib.parse import quote_plus
 from urllib.request import Request, urlopen
 import html as ihtml
 
-OUT_MD = Path(r"C:\Hiver\research\ddg_120_results.md")
-LOG = Path(r"C:\Hiver\research\research_log.md")
+ROOT = Path(__file__).resolve().parents[1]
+OUT_MD = ROOT / "research" / "ddg_120_results.md"
+LOG = ROOT / "research" / "research_log.md"
 TODAY = date.today().isoformat()
 
 # Full 120 list (same as ddg_120.py) — we resume at index 49 (query #50)

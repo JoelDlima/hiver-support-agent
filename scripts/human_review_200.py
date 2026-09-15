@@ -5,9 +5,10 @@ from pathlib import Path
 from src import classifier as clf_mod
 from src.text_norm import features_for_escalation, normalize
 
-GOLDEN = Path(r"C:\Hiver\evaluation\golden_v1.csv")
-H60 = Path(r"C:\Hiver\evaluation\golden_human_60.csv")
-OUT = Path(r"C:\Hiver\evaluation\golden_human_200.csv")
+ROOT = Path(__file__).resolve().parents[1]
+GOLDEN = ROOT / "evaluation" / "golden_v1.csv"
+H60 = ROOT / "evaluation" / "golden_human_60.csv"
+OUT = ROOT / "evaluation" / "golden_human_200.csv"
 
 ES_RE = re.compile(r"\b(para|despu[eé]s|desde|gracias|donde|est[aá]|para qu[eé]|mi iphone|no acaba|onde|esta|pra|obrigad)\b", re.I)
 VER_RE = re.compile(r"^\s*(it'?s\s+)?\d{1,2}\.\d(\.\d)?\.?\s*$", re.I)
@@ -96,7 +97,7 @@ def main():
     print("flips intent:", (out.weak_intent != out.human_intent).sum(), "of", len(out))
     # spot-check list: uncertain = rulebook flips + short/link/non-English
     spot = out[out.review_type.str.contains("FLIP")].sample(min(30, (out.review_type.str.contains("FLIP")).sum()), random_state=3)
-    spot.to_csv(Path(r"C:\Hiver\evaluation\spotcheck_30.csv"), index=False)
+    spot.to_csv(ROOT / "evaluation" / "spotcheck_30.csv", index=False)
     print(f"spotcheck {len(spot)} -> spotcheck_30.csv (manual audit these 30 before submit)")
 
 if __name__ == "__main__":

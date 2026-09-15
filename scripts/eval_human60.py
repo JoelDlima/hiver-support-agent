@@ -1,8 +1,10 @@
 import pandas as pd
+from pathlib import Path
 from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
 from src.agent import AppleAgent, trivial_baseline, keyword_baseline
 from src.retriever import Retriever
-df = pd.read_csv(r"C:\Hiver\evaluation\golden_human_60.csv")
+ROOT = Path(__file__).resolve().parents[1]
+df = pd.read_csv(ROOT / "evaluation" / "golden_human_60.csv")
 yt = df.human_intent.tolist(); ye = df.human_escalate.astype(int).tolist()
 retr = Retriever(); agent = AppleAgent(retr, brand="apple")  # Apple golden: pin brand (default is virgin primary)
 rows = []
@@ -13,4 +15,4 @@ for name, fn in [('trivial', trivial_baseline), ('simple-keyword', lambda t: key
     p, r, f, _ = precision_recall_fscore_support(ye, pe, average='binary', zero_division=0)
     rows.append((name, round(acc, 3), round(macro, 3), round(float(p), 3), round(float(r), 3), round(float(f), 3)))
     print(name, rows[-1][1:])
-pd.DataFrame(rows, columns=['system', 'intent_acc', 'macroF1', 'esc_P', 'esc_R', 'esc_F1']).to_csv(r"C:\Hiver\evaluation\results_human60.csv", index=False)
+pd.DataFrame(rows, columns=['system', 'intent_acc', 'macroF1', 'esc_P', 'esc_R', 'esc_F1']).to_csv(ROOT / "evaluation" / "results_human60.csv", index=False)

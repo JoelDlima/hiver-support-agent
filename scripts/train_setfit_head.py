@@ -34,9 +34,10 @@ from src.agent import _weak_label_generic
 from src.virgin_intents import INTENTS, KEYWORDS
 from src import setfit_head as sh
 
-POOL = Path(r"C:\Hiver\data\processed\virgin_inbound_pool.csv")
-GOLDEN_HUMAN = Path(r"C:\Hiver\evaluation\virgin\golden_human_200.csv")
-BASELINE_CSV = Path(r"C:\Hiver\evaluation\virgin\results_human200.csv")  # read-only
+ROOT = Path(__file__).resolve().parents[1]
+POOL = ROOT / "data" / "processed" / "virgin_inbound_pool.csv"
+GOLDEN_HUMAN = ROOT / "evaluation" / "virgin" / "golden_human_200.csv"
+BASELINE_CSV = ROOT / "evaluation" / "virgin" / "results_human200.csv"  # read-only
 OUT_DIR = sh.ARTIFACT_DIR
 CACHE_DIR = OUT_DIR / "_cache"
 

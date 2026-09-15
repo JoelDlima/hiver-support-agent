@@ -32,9 +32,9 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import cohen_kappa_score
 
-sys.path.insert(0, r"C:\Hiver")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-VIRGIN_DIR = Path(r"C:\Hiver\evaluation\virgin")
+VIRGIN_DIR = Path(__file__).resolve().parents[1] / "evaluation" / "virgin"
 DRAFTS = VIRGIN_DIR / "llm_judge_30_drafts.csv"
 HUMAN = VIRGIN_DIR / "human_grades_30.csv"
 GOLD200 = VIRGIN_DIR / "golden_human_200.csv"

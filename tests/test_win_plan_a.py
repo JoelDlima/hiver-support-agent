@@ -6,8 +6,9 @@ tests/test_resilience_tracing.py) so /predict rate limits never flake.
 """
 import sys
 import uuid
+from pathlib import Path
 
-sys.path.insert(0, r"C:\Hiver")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pytest
 from fastapi.testclient import TestClient

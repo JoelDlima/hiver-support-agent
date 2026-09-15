@@ -3,8 +3,9 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-INDEX_DIR = Path(r"C:\Hiver\data\indexes")
-KB_PATH = Path(r"C:\Hiver\data\processed\apple_kb.csv")
+_ROOT = Path(__file__).resolve().parents[1]
+INDEX_DIR = _ROOT / "data" / "indexes"
+KB_PATH = _ROOT / "data" / "processed" / "apple_kb.csv"
 
 class Retriever:
     def __init__(self):

@@ -16,8 +16,9 @@ from scipy import sparse
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 
-RAW = Path(r"C:\Hiver\data\raw\twcs.csv")
-OUT = Path(r"C:\Hiver\data\indexes")
+ROOT = Path(__file__).resolve().parents[1]
+RAW = ROOT / "data" / "raw" / "twcs.csv"
+OUT = ROOT / "data" / "indexes"
 OUT.mkdir(parents=True, exist_ok=True)
 
 URL_RE = re.compile(r"https?://\S+")

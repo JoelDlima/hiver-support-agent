@@ -9,7 +9,8 @@ from sklearn.pipeline import Pipeline
 from .text_norm import normalize
 from .intents import INTENTS, KEYWORDS
 
-MODEL_DIR = Path(r"C:\Hiver\models")
+# Repo root resolved from this file's location (portable; no machine-specific prefix).
+MODEL_DIR = Path(__file__).resolve().parents[1] / "models"
 MODEL_PATH = MODEL_DIR / "intent_classifier.pkl"
 
 def weak_label(text: str) -> str:

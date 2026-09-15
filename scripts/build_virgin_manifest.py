@@ -32,9 +32,10 @@ import re
 import subprocess
 from pathlib import Path
 
-KB = Path(r"C:\Hiver\data\processed\virgin_kb.csv")
-DOC_IDS = Path(r"C:\Hiver\data\indexes\virgin\doc_ids.csv")
-OUT = Path(r"C:\Hiver\evaluation\virgin\kb_manifest.json")
+ROOT = Path(__file__).resolve().parents[1]
+KB = ROOT / "data" / "processed" / "virgin_kb.csv"
+DOC_IDS = ROOT / "data" / "indexes" / "virgin" / "doc_ids.csv"
+OUT = ROOT / "evaluation" / "virgin" / "kb_manifest.json"
 
 URL_RE = re.compile(r"https?://\S+")
 HANDLE_RE = re.compile(r"@\w+")
