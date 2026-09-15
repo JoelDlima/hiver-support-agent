@@ -5,6 +5,8 @@
 // (EvalRunner, compare strip, ablation) → golden/agreement (judge summary) →
 // failure gallery → latency (metrics, liveness, local-inference strip) →
 // grounding notes + replay tools. Every pre-existing widget stays mounted.
+// R5: the 3D graph and the live log tail are demoted to Advanced disclosures
+// with one-line justifications (kept reachable, out of the main narrative).
 
 import dynamic from "next/dynamic";
 import PipelineTimeline from "../PipelineTimeline";
@@ -188,34 +190,8 @@ export default function ProofTab({ vm }: { vm: DemoVM }) {
           <h3 className="font-display text-xl font-semibold tracking-[-0.03em]">
             Retrieval evidence
           </h3>
-          {/* React-Flow is the default retrieval view; the 3D graph
-              is a lazy toggle and only mounts on demand. */}
-          <div className="inline-flex rounded-full border border-hairline-soft bg-paper p-1">
-            <button
-              type="button"
-              onClick={() => vm.setRetrievalView("flow")}
-              aria-pressed={retrievalView === "flow"}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium ${
-                retrievalView === "flow"
-                  ? "bg-teal font-semibold text-[#03211f]"
-                  : "text-muted hover:opacity-75"
-              }`}
-            >
-              Flow + links
-            </button>
-            <button
-              type="button"
-              onClick={() => vm.setRetrievalView("3d")}
-              aria-pressed={retrievalView === "3d"}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium ${
-                retrievalView === "3d"
-                  ? "bg-teal font-semibold text-[#03211f]"
-                  : "text-muted hover:opacity-75"
-              }`}
-            >
-              3D graph
-            </button>
-          </div>
+          {/* React-Flow evidence view is the single retrieval view; the 3D
+              graph stays available under Advanced below. */}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
           <LiveBadge
@@ -241,21 +217,30 @@ export default function ProofTab({ vm }: { vm: DemoVM }) {
             ? `${passages.length} passages`
             : `${topK} passages`}
         </p>
-        {retrievalView === "3d" ? (
+        <div className="mt-3">
+          <EvidenceView
+            draftReply={result.draft_reply || ""}
+            groundingIds={result.grounding_passage_ids || []}
+            passages={passages}
+            loading={passagesLoading}
+            loadError={passagesError}
+          />
+        </div>
+        {/* R5 Advanced: 3D graph — same passages in a three.js scatter; kept for
+            the 3D-viz capability, but the Flow view above carries all evidence. */}
+        <details className="mt-3 rounded-2xl border border-hairline-soft bg-paper p-4">
+          <summary className="cursor-pointer text-sm font-medium text-muted">
+            Advanced — 3D retrieval graph (three.js)
+          </summary>
+          <p className="mt-2 text-xs text-muted">
+            Why it exists: 3D passage scatter (query-centered) — a rendering demo
+            of the same retrieval rows; breaks nothing if unused, the Flow view is
+            the evidence surface.
+          </p>
           <div className="mt-3">
             <RetrievalGraph3D passages={passages} />
           </div>
-        ) : (
-          <div className="mt-3">
-            <EvidenceView
-              draftReply={result.draft_reply || ""}
-              groundingIds={result.grounding_passage_ids || []}
-              passages={passages}
-              loading={passagesLoading}
-              loadError={passagesError}
-            />
-          </div>
-        )}
+        </details>
       </section>
 
       <EmbedScene
@@ -356,7 +341,21 @@ export default function ProofTab({ vm }: { vm: DemoVM }) {
 
       <CurlCopy text={text} brand={brand} />
 
-      <LogTail />
+      {/* R5 Advanced: log/trace tail — debugging aid only; the pipeline trace
+          above already shows the measured per-stage timings. */}
+      <details className="rounded-[24px] border border-hairline bg-card p-6">
+        <summary className="cursor-pointer text-sm font-medium text-muted">
+          Advanced — live log tail (SSE)
+        </summary>
+        <p className="mt-2 text-xs text-muted">
+          Why it exists: raw backend log stream for debugging request flow; the
+          pipeline trace above already shows per-stage timings, so this is
+          diagnostics, not proof.
+        </p>
+        <div className="mt-3">
+          <LogTail />
+        </div>
+      </details>
 
       <section className="rounded-[24px] border border-hairline bg-card p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
