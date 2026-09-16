@@ -33,8 +33,8 @@ Timebox: MAX_SECONDS=600 wall-clock for the fit; chosen hyperparams fit in
 ~1-3 min CPU on this matrix (measured and recorded in the report).
 
 Usage:
-  C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\train_lightgbm_arm.py
-  (requires lightgbm==4.7.0 in .venv; PYTHONPATH=C:\\Hiver)
+  .venv\\Scripts\\python.exe scripts\\train_lightgbm_arm.py
+  (requires lightgbm==4.7.0 in .venv; PYTHONPATH=.)
 """
 
 from __future__ import annotations

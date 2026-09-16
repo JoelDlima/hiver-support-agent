@@ -19,7 +19,7 @@ Writes (NEW file only):
 Reads (READ-ONLY): data/processed/virgin_inbound_pool.csv, models/intent_virgin.pkl.
 
 Usage:
-  C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\active_learning.py
+  .venv\\Scripts\\python.exe scripts\\active_learning.py
 """
 
 import importlib.util

@@ -1,6 +1,6 @@
 # Per-Intent Evaluation — Human-60 Headline Set (Swarm D, §21–22)
 
-Date: 2026-09-10 · Source: `evaluation/golden_human_60.csv` (human_* columns are truth) · System: final (`TFIDF-LogReg + TFIDF-NN + template + rules`, `src/agent.py:AppleAgent.handle`) · Method: `sklearn.metrics.classification_report` + `confusion_matrix(labels=INTENTS, zero_division=0)` · Repro: `PYTHONPATH=C:\Hiver C:\Hiver\.venv\Scripts\python.exe scripts/eval_human60.py`
+Date: 2026-09-10 · Source: `evaluation/golden_human_60.csv` (human_* columns are truth) · System: final (`TFIDF-LogReg + TFIDF-NN + template + rules`, `src/agent.py:AppleAgent.handle`) · Method: `sklearn.metrics.classification_report` + `confusion_matrix(labels=INTENTS, zero_division=0)` · Repro: `PYTHONPATH=. .venv\Scripts\python.exe scripts/eval_human60.py`
 
 ## Headline (do NOT cite weak-200 as headline — see §"misleading")
 

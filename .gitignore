@@ -36,21 +36,14 @@ Thumbs.db
 .env.*
 !.env.example
 
-# SearXNG research instance (local-only; VERSION 1)
-searxng/.venv-sxng/
-searxng/hiver-settings.yml
-searxng/sxng-out.log
-searxng/sxng-err.log
-
 # Phase 4 runtime artifacts
 data/traces.jsonl
 data/processed/golden_candidate.jsonl
 
-# Graphify rebuild cache (regenerates via graphify update .)
-graphify-out/cache/
 
 # Agent-tool state (machine-local; research vault outputs are tracked, tooling is not)
 .claude/
 .freebuff/
 .hyperresearch/
+CLAUDE.md
 frontend-next/tsconfig.tsbuildinfo

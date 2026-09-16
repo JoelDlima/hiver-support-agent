@@ -15,7 +15,7 @@
  Writes ONLY models/intent_virgin_setfit/ (+ stdout). Never touches
  models/intent_virgin.pkl, goldens, evaluation CSVs, or the frontend.
 
- Usage: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\train_setfit_head.py
+ Usage: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\train_setfit_head.py
  """
 
 import json

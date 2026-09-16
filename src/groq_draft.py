@@ -10,7 +10,7 @@ tool-use are NOT supported with Structured Outputs (plain-text stream path only)
 Instructor path: `instructor.from_provider("groq/<model>")` (instructor==1.17.0)
 with graceful ImportError fallback to the existing JSON-schema parsing
 (no hard dependency at import time).
-Research: research/models/groq_qwen_integration.md (stream+response_format=400 -> two paths;
+Research: docs/research/models/groq_qwen_integration.md (stream+response_format=400 -> two paths;
 reasoning_effort default; max_completion_tokens; £/HH:MM grounding).
 """
 import json

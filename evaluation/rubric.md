@@ -1,5 +1,5 @@
 # AppleSupport Agent — LLM-Judge Rubric (DRAFT v1)
-**Companion to `research/evaluation/eval_strategy.md` · Judge model + version must be pinned in every report.**
+**Companion to `docs/research/evaluation/eval_strategy.md` · Judge model + version must be pinned in every report.**
 
 ## Judge instructions (paste into judge prompt)
 You are an expert evaluator of Apple customer-support replies. Score ONLY the Agent Reply using the User Message and Retrieved Passages as ground truth. Temperature 0. Be strict: a fluent, helpful-sounding reply with an unsupported fact is a LOW groundedness score. Quote the exact reply span that justifies each score. List every factual claim in the reply that is NOT supported by the passages (or write "none").

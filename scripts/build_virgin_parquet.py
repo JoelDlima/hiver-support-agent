@@ -23,7 +23,7 @@ definition as scripts/build_virgin_manifest.py) so the parquet layer provably
 preserves corpus content.
 
 Usage:
-  C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\build_virgin_parquet.py
+  .venv\\Scripts\\python.exe scripts\\build_virgin_parquet.py
 """
 
 import hashlib

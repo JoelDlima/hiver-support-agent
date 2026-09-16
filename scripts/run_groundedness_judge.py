@@ -22,7 +22,7 @@ Method (no tuning to the test set):
 Writes evaluation/virgin/JUDGE_AGREEMENT_V3.md. Never writes CSVs/MDs it does
 not own; never mutates golden files.
 
-Usage: C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\run_groundedness_judge.py
+Usage: .venv\\Scripts\\python.exe scripts\\run_groundedness_judge.py
 """
 import json
 import sys

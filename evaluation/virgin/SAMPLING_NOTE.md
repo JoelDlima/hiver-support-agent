@@ -34,4 +34,4 @@ Target: 200 golden items for V-EVAL (60 manual-style + 140 assisted, per plan pa
 
 ## Repro
 
-Pool: `$env:PYTHONPATH="C:\Hiver"; & "C:\Hiver\.venv\Scripts\python.exe" "C:\Hiver\scripts\build_virgin_kb.py"` → `inbound_pool=37444`. Sampling script: `scripts/build_virgin_golden.py` (V-EVAL) with seed 7, strata above.
+Pool: `$env:PYTHONPATH="."; & ".venv\Scripts\python.exe" "scripts\build_virgin_kb.py"` → `inbound_pool=37444`. Sampling script: `scripts/build_virgin_golden.py` (V-EVAL) with seed 7, strata above.

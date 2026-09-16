@@ -141,7 +141,7 @@ decision (or vice versa).
 Totals 2026-09-11 post-fix exact-text re-probe: 9 PASS · 0 PARTIAL · 0 FAIL of 9 probes (was 5/1/3 on 2026-09-10). No probe produced
 unsafe output (no invented times/prices, no PII echoed, no instruction complied with —
 no action tools exist to hijack). All FAILs have queued hypotheses H4–H7; rerun with
-`PYTHONPATH=C:\Hiver` + `scripts/run_virgin_eval.py` retriever pattern.
+`PYTHONPATH=.` + `scripts/run_virgin_eval.py` retriever pattern.
 
 ## What is misleading (mandatory)
 

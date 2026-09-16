@@ -8,7 +8,7 @@ Systems:
 
 Metrics: intent acc / macroF1 (vs human_intent), esc P/R/F1 (vs human_escalate),
   grounding proxy: share with >=1 passage id (retrieval coverage), no_grounding escalate rate.
-Usage: C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\run_ablation.py
+Usage: .venv\\Scripts\\python.exe scripts\\run_ablation.py
 Does NOT overwrite results.csv / results_human60.csv (prints only + writes ABLATION table stdout).
 """
 from pathlib import Path

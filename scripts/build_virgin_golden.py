@@ -13,7 +13,7 @@ Stage 2 (human review, single-annotator AI-assisted, documented):
   + evaluation/virgin/spotcheck_30.csv (30 uncertain flips for audit)
 
 Mirrors scripts/build_golden.py + scripts/human_review_200.py (Apple).
-Repro: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\build_virgin_golden.py
+Repro: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\build_virgin_golden.py
 """
 import re
 import pandas as pd

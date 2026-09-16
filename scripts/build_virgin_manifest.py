@@ -21,7 +21,7 @@ Heuristic definitions (also stored in the manifest `params`):
   alphabetic chars are ASCII a-z (ASCII-ratio heuristic, no language model).
 - URL: share of rows containing http:// or https://.
 
-Usage: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\build_virgin_manifest.py
+Usage: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\build_virgin_manifest.py
 """
 
 import csv

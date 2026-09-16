@@ -1,7 +1,7 @@
 """VirginTrains intent taxonomy (Phase 1 V-DATA filled, V-MODEL shim origin).
 
 10 intents from REVAMP_V2_PLAN.md. KEYWORDS are weak-label rules refined from
-the 65,346-row Virgin union scan (see research/datasets/virgin_data_quality.md).
+the 65,346-row Virgin union scan (see docs/research/datasets/virgin_data_quality.md).
 TEMPLATES are brand-voice drafts (<=280 chars): acknowledge -> Delay-Repay /
 amendment step -> DM booking ref; never invent times/prices.
 """

@@ -15,7 +15,7 @@ This doc is the exact procedure to finish the "proof" once a key exists. Nothing
   (legal_safety | money_threshold | money_review | human_request | unresolvable | complaint_review | none).
 - Adjudication: disagreements resolved by rulebook (`src/virgin_intents.py` DESCRIPTIONS + money/safety
   lexicons); log flips like the 41-flip log for golden-200.
-- Command: `$env:PYTHONPATH="C:\Hiver"; C:\Hiver\.venv\Scripts\python.exe -c
+- Command: `$env:PYTHONPATH="."; .venv\Scripts\python.exe -c
   "import pandas as pd; from sklearn.metrics import cohen_kappa_score;
   a=pd.read_csv('annotator1.csv'); b=pd.read_csv('annotator2.csv');
   print('intent κ=', round(cohen_kappa_score(a.human_intent,b.human_intent),3));

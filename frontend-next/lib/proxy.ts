@@ -45,7 +45,12 @@ export async function proxyJson(path: string, init?: RequestInit, timeoutMs = 25
 // SSE passthrough (no timeout — streams stay open; connect errors still 502).
 export async function proxyStream(path: string, init?: RequestInit) {
   try {
-    const upstream = await fetch(`${FASTAPI_URL}${path}`, { ...withApiKey(init) });
+    // cache: "no-store" is required: Next caches fetch GETs by default, which
+    // would buffer an infinite SSE body forever and never flush headers.
+    const upstream = await fetch(`${FASTAPI_URL}${path}`, {
+      ...withApiKey(init),
+      cache: "no-store",
+    });
     if (!upstream.body) return backendUnreachable();
     return new Response(upstream.body, {
       status: upstream.status,

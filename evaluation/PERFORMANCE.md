@@ -1,6 +1,6 @@
 # Performance (§28)
 
-Date: 2026-09-10. Env: Windows, `C:\Hiver\.venv` (measured `sklearn 1.9.0 / pandas 3.0.5`; `requirements.txt` pins 1.7.1/2.2.3 — drift noted, re-pin before release).
+Date: 2026-09-10. Env: Windows, `.venv` (measured `sklearn 1.9.0 / pandas 3.0.5`; `requirements.txt` pins 1.7.1/2.2.3 — drift noted, re-pin before release).
 Method: `time.perf_counter`, 1 warmup, sequential single-process; percentiles via `np.median/np.percentile` (no p99 — n=20 too small, per research log).
 
 ## End-to-end (`agent.handle`: classifier + retriever k=5 + draft + rules)
@@ -32,4 +32,4 @@ Per-request breakdown (measured): classifier single `predict` **≈147 ms incl. 
 
 ## Gaps (honest, not measured)
 No p99 (sample too small), no concurrent-load test (single-worker qps only), no process RSS measurement (CPU-only; file sizes above, RSS not profiled), no API-server overhead (numbers are in-process `handle()`).
-Repro: `$env:PYTHONPATH="C:\Hiver"; C:\Hiver\.venv\Scripts\python.exe C:\Users\Joel\AppData\Local\Temp\opencode\meas_perf.py` (+ `meas_load.py` for load split).
+Repro: `$env:PYTHONPATH="."; .venv\Scripts\python.exe C:\Users\Joel\AppData\Local\Temp\opencode\meas_perf.py` (+ `meas_load.py` for load split).

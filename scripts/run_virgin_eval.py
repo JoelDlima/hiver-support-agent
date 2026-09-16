@@ -13,7 +13,7 @@ Outputs:
   evaluation/virgin/results_weak200.csv, results_human200.csv,
   evaluation/virgin/BASELINE_VS_FINAL.md (simple-can-win honesty + misleading §)
 
-Usage: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\run_virgin_eval.py
+Usage: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\run_virgin_eval.py
 """
 from dataclasses import dataclass
 from pathlib import Path

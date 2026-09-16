@@ -12,7 +12,7 @@ Zero label leakage: output carries NO weak/human labels, NO stratum tags, NO
 review_type/note columns. The script grep-asserts this before exiting.
 
 Usage:
-    C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\make_relabel_pack.py
+    .venv\\Scripts\\python.exe scripts\\make_relabel_pack.py
 """
 
 from pathlib import Path

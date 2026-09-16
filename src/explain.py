@@ -22,7 +22,7 @@ Two surfaces (both JSON-serializable, for UI consumption):
      every output under "background").
 
 Usage:
-  C:\\Hiver\\.venv\\Scripts\\python.exe -m src.explain "my train was delayed ..."
+  .venv\\Scripts\\python.exe -m src.explain "my train was delayed ..."
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """FastAPI for Hiver support agent (VirginTrains primary, AppleSupport kept). Stateless, CPU-only + optional Groq."""
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 import asyncio
@@ -654,27 +654,6 @@ def judge(inp: JudgeIn):
 def healthz():
     return {"ok": True}
 
-
-# ---- Graphify repository knowledge graph (offline-built artifact, no LLM at serve time)
-_GRAPHIFY_DIR = Path(__file__).resolve().parent.parent / "graphify-out"
-
-
-@app.get("/graph")
-def graph_page():
-    """Interactive repository knowledge graph (graphify-out/graph.html)."""
-    fp = _GRAPHIFY_DIR / "graph.html"
-    if not fp.exists():
-        return JSONResponse({"detail": "graph artifact not built (see scripts/build_docs_overlay.py)"}, status_code=404)
-    return FileResponse(str(fp), media_type="text/html")
-
-
-@app.get("/graph/json")
-def graph_json():
-    """Raw knowledge-graph JSON (nodes/edges) for the repo map."""
-    fp = _GRAPHIFY_DIR / "graph.json"
-    if not fp.exists():
-        return JSONResponse({"detail": "graph artifact not built (see scripts/build_docs_overlay.py)"}, status_code=404)
-    return FileResponse(str(fp), media_type="application/json")
 
 @app.get("/readyz")
 def readyz():

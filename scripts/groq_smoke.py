@@ -4,10 +4,10 @@
 - With GROQ_API_KEY/OPENAI_API_KEY set: reports groq vs template per case.
 - Never prints secrets: only whether a key env var is set + which var.
 
-Usage (from C:\\Hiver):
-    $env:PYTHONPATH="C:\\Hiver"
-    python C:\\Hiver\\scripts\\groq_smoke.py            # no-key run
-    $env:GROQ_API_KEY="gsk_..."; python C:\\Hiver\\scripts\\groq_smoke.py  # live run
+Usage (from .):
+    $env:PYTHONPATH="."
+    python scripts\\groq_smoke.py            # no-key run
+    $env:GROQ_API_KEY="gsk_..."; python scripts\\groq_smoke.py  # live run
 """
 import os
 import sys

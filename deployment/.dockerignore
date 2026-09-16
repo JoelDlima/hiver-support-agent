@@ -5,7 +5,6 @@ __pycache__/
 *.pyc
 .git/
 .gitignore
-.graphifyignore
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -19,12 +18,10 @@ data/processed/*inbound_pool*
 data/processed/*.parquet
 !data/processed/virgin_threads.parquet
 models/intent_virgin_setfit/
-research/
-searxng/
+docs/research/
 .freebuff/
 .hyperresearch/
 .claude/
-graphify-out/cache/
 *.log
 .DS_Store
 .env

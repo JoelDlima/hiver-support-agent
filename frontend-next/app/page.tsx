@@ -343,9 +343,6 @@ export default function Page() {
           </p>
           <p className="mt-1 text-xs text-muted">
             <a className="underline hover:opacity-75" href="/review">Review inbox</a>
-            {" · "}
-            <a className="underline hover:opacity-75" href="/api/graph" target="_blank" rel="noreferrer">Advanced — repository knowledge graph</a>
-            <span> (offline-built code+docs map — see graphify-out/)</span>
           </p>
         </div>
 

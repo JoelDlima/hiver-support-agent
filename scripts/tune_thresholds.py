@@ -39,7 +39,7 @@ no held-out split (same 200 used to pick + report); re-tune on >=500
 human labels before treating gates as launch-blocking.
 
 Usage:
-  C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\tune_thresholds.py
+  .venv\\Scripts\\python.exe scripts\\tune_thresholds.py
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 # Ablation — which components matter (§24)
 
 Date: 2026-09-10. Set: `golden_human_60.csv` (n=60, human_intent/human_escalate). Script: `scripts/run_ablation.py` (created this task).
-Repro: `$env:PYTHONPATH="C:\Hiver"; C:\Hiver\.venv\Scripts\python.exe C:\Hiver\scripts\run_ablation.py` (prints only; never overwrites results CSVs).
+Repro: `$env:PYTHONPATH="."; .venv\Scripts\python.exe scripts\run_ablation.py` (prints only; never overwrites results CSVs).
 
 ## Systems
 - **A final**: `AppleAgent(retriever)` — LogReg + TF-IDF-NN k=5 + template + 4-trigger rules.

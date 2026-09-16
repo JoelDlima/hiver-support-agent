@@ -6,7 +6,7 @@ Index: `TfidfVectorizer(sublinear_tf, 1–2-gram, min_df=2, max_features=50000, 
 ## Method
 - Proxy definition (task-spec): hit = top-k contains ≥1 passage with `score = 1 − cosine_dist > 0.08` (same 0.08 as `decide_escalation.no_grounding`). This measures **availability/coverage, not relevance** — there are no judged relevant passages per query.
 - Queries: all 60 `golden_human_60.csv` inbound texts, `retriever.query(t, k=5)`, 1 warmup, `time.perf_counter`, sequential, venv (`sklearn 1.9.0` measured; `requirements.txt` pins 1.7.1 — env drift noted).
-- Repro: `$env:PYTHONPATH="C:\Hiver"; C:\Hiver\.venv\Scripts\python.exe C:\Users\Joel\AppData\Local\Temp\opencode\meas_retrieval.py`
+- Repro: `$env:PYTHONPATH="."; .venv\Scripts\python.exe C:\Users\Joel\AppData\Local\Temp\opencode\meas_retrieval.py`
 
 ## Results (measured 2026-09-10, this machine)
 | Metric | Value |

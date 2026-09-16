@@ -4,7 +4,7 @@ Writes evaluation/virgin/confusion_human200.csv (rows = human label,
 cols = predicted label, counts; last column = row total n).
 Prints intent accuracy, Cohen's kappa, and the top-5 confusions.
 
-Usage: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\confusion_virgin.py
+Usage: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\confusion_virgin.py
 """
 
 import sys

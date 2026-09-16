@@ -6,7 +6,7 @@ context=[0,2] on the fixed 60-item golden_human_200 seed-7 slice) and writes
 evaluation/virgin/RETRIEVAL_ABLATION.md FROM the endpoint response, so the
 docs table matches endpoint output by construction.
 
-Reproduce: C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\run_retrieval_ablation.py
+Reproduce: .venv\\Scripts\\python.exe scripts\\run_retrieval_ablation.py
 """
 import json
 import sys

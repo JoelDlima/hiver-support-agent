@@ -3,14 +3,14 @@
 Key via GROQ_API_KEY env only — never in code, logs, or outputs.
 Judge model: llama-3.3-70b-versatile (Groq-hosted; NOT the pinned gpt-4o-mini — disclosed
 in outputs). Rubric: evaluation/rubric.md dimensions, temp 0, JSON treated as hint
-(strict:false) + server-side validate + 1 retry, per research/models/groq_qwen_integration.md.
+(strict:false) + server-side validate + 1 retry, per docs/research/models/groq_qwen_integration.md.
 
 Steps:
   --drafts : no key needed. agent.handle + heuristic judge -> llm_judge_30_drafts.csv
   --judge  : key needed. Groq LLM judge per draft -> llm_judge_30_scores.csv (paced ~2.5s)
   --agree HUMAN_CSV : no key. Cohen kappa LLM-vs-human -> stdout (+ LLM_JUDGE_30.md by hand)
 
-Usage: $env:PYTHONPATH="C:\\Hiver"; C:\\Hiver\\.venv\\Scripts\\python.exe scripts/run_llm_judge_30.py --drafts
+Usage: $env:PYTHONPATH="."; .venv\\Scripts\\python.exe scripts/run_llm_judge_30.py --drafts
 """
 import argparse
 import json

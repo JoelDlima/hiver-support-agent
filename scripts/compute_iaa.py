@@ -10,8 +10,8 @@ Refuses with a clear error on empty/unfilled input. `--selftest` runs a
 synthetic mode with hand-checkable tables that proves the math.
 
 Usage:
-    C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\compute_iaa.py --selftest
-    C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\compute_iaa.py
+    .venv\\Scripts\\python.exe scripts\\compute_iaa.py --selftest
+    .venv\\Scripts\\python.exe scripts\\compute_iaa.py
 """
 
 import argparse

@@ -1,8 +1,0 @@
-Upstream: https://github.com/searxng/searxng.git
-Pinned HEAD (shallow, single-branch): 61d660276f1288e7d512e8d8da46cb8442728454
-Cloned: 2026-09-12 (research infra for Hiver expedition)
-Windows note: see WINDOWS_CHECKOUT_NOTE.txt (4 `:socket` templates skipped on NTFS).
-Local-only additions: hiver-settings.yml (gitignored, holds dev secret),
-winshim/pwd.py (Windows import stub), SXRUNBOOK.md, WINDOWS_CHECKOUT_NOTE.txt,
-UPSTREAM.txt (this file). Embedded .git removed so VERSION 1 is self-contained;
-to refresh: re-clone upstream and re-apply the note files.

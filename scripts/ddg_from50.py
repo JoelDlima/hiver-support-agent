@@ -7,8 +7,8 @@ from urllib.request import Request, urlopen
 import html as ihtml
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT_MD = ROOT / "research" / "ddg_120_results.md"
-LOG = ROOT / "research" / "research_log.md"
+OUT_MD = ROOT / "docs" / "research" / "ddg_120_results.md"
+LOG = ROOT / "docs" / "research_log.md"
 TODAY = date.today().isoformat()
 
 # Full 120 list (same as ddg_120.py) — we resume at index 49 (query #50)

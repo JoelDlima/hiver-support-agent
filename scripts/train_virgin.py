@@ -6,7 +6,7 @@ Mirrors scripts/train_classifier.py (Apple) for brand=virgin:
 - TF-IDF (1,2)-gram LogReg, same hyperparams as src/classifier.build_pipeline
 - output models/intent_virgin.pkl (per brands.py virgin.model_path)
 
-Usage: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\train_virgin.py
+Usage: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\train_virgin.py
 """
 import joblib
 import pandas as pd

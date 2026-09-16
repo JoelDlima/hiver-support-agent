@@ -28,7 +28,7 @@ Date: 2026-09-10 · Rubric: `evaluation/rubric.md` (DRAFT v1, 5 dims, weights 0.
 - Human–human benchmark for context: Judge's Verdict static baseline κ̄=0.801; Tier-1 LLM judges reach κ 0.781–0.816 with |z|<1 (websearch 2026-09-10). Our 0.465/0.015 sits far below — honest distance-to-ship.
 - BFF-Bench lesson (websearch): reference-free judges agree with experts only where the judge could itself answer correctly (κ 0.78→0.30 collapse on judge-wrong items); human-written references recover κ to ~0.83–0.92. Implication for us: any future LLM judge MUST be reference-guided (passages + human label as reference), never free-floating.
 
-## 75-pair protocol — next (frozen, from `research/papers/academic_review.md`)
+## 75-pair protocol — next (frozen, from `docs/research/papers/academic_review.md`)
 
 50 grade pairs + 25 attack/swap pairs, blinded, 2 humans + 1 pinned judge, same rubric. Report per-dimension quadratically-weighted κ + Spearman ρ + mean bias, and PASS/FAIL Cohen's κ with safety-FAIL recall. Ship-gate: groundedness wκ ≥ 0.60 AND safety-FAIL recall ≥ 0.90. Run judge twice; report self-consistency + swap-consistency ≥85% + verbosity-correlation. Pin model version; re-calibrate on any model change. This is the week-2 study that un-gates the LLM judge — not a claim that it passed.
 

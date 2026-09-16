@@ -23,7 +23,7 @@ Writes (NEW files only):
   evaluation/virgin/threads_report.md   (dialog counts, orphan rate, gap splits)
 
 Usage:
-  C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\reconstruct_threads.py
+  .venv\\Scripts\\python.exe scripts\\reconstruct_threads.py
 """
 
 import time

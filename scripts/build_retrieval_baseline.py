@@ -1,8 +1,8 @@
 """Baseline retrieval repro: TF-IDF + sklearn NearestNeighbors over AppleSupport replies.
 
 CPU-only, stdlib + pandas + scikit-learn + scipy (already in .venv).
-Persists artifacts to C:\\Hiver\\data\\indexes for reuse by downstream agents.
-Usage: C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\build_retrieval_baseline.py
+Persists artifacts to data\\indexes for reuse by downstream agents.
+Usage: .venv\\Scripts\\python.exe scripts\\build_retrieval_baseline.py
 """
 import csv
 import json

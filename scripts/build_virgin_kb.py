@@ -1,7 +1,7 @@
 """Build VirginTrains KB: outbound VirginTrains replies deduped + inbound mention pool.
 
 Mirrors scripts/build_kb.py (Apple) for the VirginTrains brand.
-- Source: C:\\Hiver\\data\\raw\\twcs.csv (PS strict: TWCS only)
+- Source: data\\raw\\twcs.csv (PS strict: TWCS only)
 - Outbound: author_id == "VirginTrains", clean len > 10, template-cap K=5
 - Inbound pool: case-insensitive @VirginTrains mention, clean len > 10
 - Outputs: data/processed/virgin_kb.csv + data/processed/virgin_inbound_pool.csv

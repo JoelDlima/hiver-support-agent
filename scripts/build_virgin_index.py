@@ -1,10 +1,10 @@
 """Build VirginTrains TF-IDF + NearestNeighbors index (Phase 1 V-MODEL).
 
-Reads:  C:\\Hiver\\data\\processed\\virgin_kb.csv  (created by V-DATA scripts/build_virgin_kb.py)
-Writes: C:\\Hiver\\data\\indexes\\virgin\\{tfidf_vectorizer.pkl,nn_index.pkl,doc_ids.csv,tfidf_matrix.npz,index_meta.json}
+Reads:  data\\processed\\virgin_kb.csv  (created by V-DATA scripts/build_virgin_kb.py)
+Writes: data\\indexes\\virgin\\{tfidf_vectorizer.pkl,nn_index.pkl,doc_ids.csv,tfidf_matrix.npz,index_meta.json}
 
 Fail-closed: if virgin_kb.csv missing, exits with clear message (V-DATA not done yet).
-Usage: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\build_virgin_index.py
+Usage: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\build_virgin_index.py
 """
 import csv
 import json

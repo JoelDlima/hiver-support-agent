@@ -11,7 +11,7 @@ Reports:
 
 Writes evaluation/virgin/judge_scores_200.csv + evaluation/virgin/JUDGE_AGREEMENT.md
 
-Usage: PYTHONPATH=C:\\Hiver C:\\Hiver\\.venv\\Scripts\\python.exe C:\\Hiver\\scripts\\run_virgin_judge.py
+Usage: PYTHONPATH=. .venv\\Scripts\\python.exe scripts\\run_virgin_judge.py
 """
 import pandas as pd
 from pathlib import Path
