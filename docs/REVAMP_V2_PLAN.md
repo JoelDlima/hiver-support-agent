@@ -2,7 +2,7 @@
 
 ## Why revamp
 - Apple too common; reviewers see Apple/Amazon always. VirginTrains (27,817 outbound, UK rail) = very unlikely, memorable, still >>200 golden. Strictly TWCS (PS datasets only; Banking77 intent-only).
-- Current TF-IDF+template = best for repro/trust, not fluency. Groq `llama-3.3-70b-versatile` (276–394 tok/s, $0.59/0.79, 131k, JSON mode) wins fluency when key arrives. Revamp keeps keyless default + Groq behind schema+gate (no key needed now).
+- Current TF-IDF+template = best for repro/trust, not fluency. Groq `openai/gpt-oss-20b` (historical: `llama-3.3-70b-versatile`, retired 2026-09-12) wins fluency when key arrives. Revamp keeps keyless default + Groq behind schema+gate (no key needed now).
 
 ## Brand: VirginTrains (primary), Apple kept as v1 evidence + transfer proof
 - Virgin intents (9+other): delay_claim, ticket_change_refund, timetable_platform, lost_property, complaint_service, fare_ticketing, accessibility_assistance, howto_guidance, support_access_followup, other_out_of_scope.

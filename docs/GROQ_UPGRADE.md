@@ -30,7 +30,7 @@ auto-retry 2× on 429/5xx). We stay on the `openai`-compatible client — one de
 
 ## 2. Model + decoding
 
-- Model: `llama-3.3-70b-versatile` (70B, 131k context, 32k max completion, ~280 tok/s per Groq docs, ~394 tok/s
+- Model: `openai/gpt-oss-20b` (historical: `llama-3.3-70b-versatile`, retired 2026-09-12) (70B-class context, ~280 tok/s per Groq docs, ~394 tok/s
   third-party bench). Pinned in `GROQ_MODEL` + per-brand `groq_model` config.
 - `temperature=0`, `max_tokens=256`, passages truncated to top-3 × 300 chars, inbound to 800 chars.
 - System prompt: UK support, brand param, ≤280 chars, calm/plain, one next step, DM on PII, never invent

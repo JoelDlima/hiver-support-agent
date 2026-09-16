@@ -32,7 +32,7 @@ safety n=3 — autonomy still not claimed; triage copilot + open FAILs).
 ## Why judges pick this over 10,000 generic wrappers
 1. **Niche brand with cash consequences.** VirginTrains (27,817) Delay Repay/amendment vs Apple #10,001. Wrong £/HH:MM costs money (Air Canada $812 precedent in docs) — our £/time gate + never-guess-times is load-bearing, not garnish.
 2. **Proof over prose.** Dual golden (200, 41 flips, κ 0.772 Virgin / 0.465 Apple), baselines that BEAT us on intent (simple 0.795 vs final 0.665 — published), safety 1.000/n=3 stated-tiny + money 0.350 headlined, open 3 FAILs with hypotheses. 9/9 competitors hide one of these.
-3. **Groq-gated, not Groq-wrapped.** llama-3.3-70b (276–394 tok/s, $0.59/0.79) behind JSON-schema + £/time validation, fail-closed to template; zero LLM scores keyless. Answers "just a prompt" structurally.
+3. **Groq-gated, not Groq-wrapped.** `openai/gpt-oss-20b` (historical: llama-3.3-70b, retired 2026-09-12) behind JSON-schema + £/time validation, fail-closed to template; zero LLM scores keyless. Answers "just a prompt" structurally.
 4. **Repro + frontend live.** 2.3-min CPU pipeline, 17 tests, API both brands + Streamlit switcher (Virgin default). Reviewer runs 5 probes in minutes instead of reading claims.
 
 ## Research backing: 208 searches (RESEARCH_COUNT.md) — DDG blocked episodes logged, websearch cross-checks, no invented findings.

@@ -1,0 +1,34 @@
+# Hiver serving image — keep build context small and secret-free.
+# NOTE: docker build context is the repo root (docker build -f deployment/Dockerfile.simple .),
+# so this file must live here. deployment/.dockerignore is a mirror for discoverability.
+.venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.graphifyignore
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+frontend-next/node_modules/
+frontend-next/.next/
+frontend-next/out/
+data/raw/
+data/traces.jsonl
+data/processed/review_queue.db
+data/processed/*inbound_pool*
+data/processed/*.parquet
+!data/processed/virgin_threads.parquet
+models/intent_virgin_setfit/
+research/
+searxng/
+.freebuff/
+.hyperresearch/
+.claude/
+graphify-out/cache/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+frontend-next/.env*.local

@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FASTAPI_URL } from "../../../../../lib";
+import { NextRequest } from "next/server";
+import { proxyJson } from "../../../../../lib/proxy";
 
 // POST /api/review/[id]/edit -> APPROVED_WITH_EDITS (feeds golden candidates)
+// Dead backend -> JSON 502 via proxyJson.
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const body = await req.json().catch(() => ({}));
   const id = encodeURIComponent(params.id);
-  const upstream = await fetch(`${FASTAPI_URL}/review/${id}/edit`, {
+  return proxyJson(`/review/${id}/edit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -18,6 +19,4 @@ export async function POST(
       corrected_intent: body.corrected_intent || null,
     }),
   });
-  const data = await upstream.json().catch(() => ({ error: "upstream empty" }));
-  return NextResponse.json(data, { status: upstream.status });
 }

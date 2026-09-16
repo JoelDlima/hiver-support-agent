@@ -25,7 +25,7 @@ pydantic==2.13.5
 # Phase 4A resilience + observability (imported by backend/main.py + src/resilience.py,
 # src/tracing.py; every import is try/except-guarded, but pinned here because the
 # hardened behaviors are part of the tested surface):
-slowapi==0.1.10          # 429 rate limiting on /predict + /review/enqueue
+slowapi==0.1.10          # 429 rate limiting: /predict + /predict/stream + /review/enqueue + /eval/* + /embed2d + /judge/groundedness
 pybreaker==1.4.1         # Groq circuit breaker (fail closed to template)
 tenacity==9.1.4          # 429/5xx-only retry with Retry-After
 opentelemetry-sdk==1.44.0
@@ -38,7 +38,10 @@ pyarrow==25.0.1
 # ---- LLM DRAFTER (optional at serve time; fail-closed without a key) ----
 groq==1.7.0
 instructor==1.17.0
+openai==3.3.0            # OpenAI-compat fallback client in src/groq_draft.py:_client()
 rank-bm25==0.2.2         # hybrid retrieval (flag-gated) + ablation keyword arm
+pyyaml==6.0.3            # autonomy_matrix.yaml via src/review_store.py (fail-soft import)
+streamlit==1.63.0        # legacy demo frontend/app.py (no server)
 
 # ---- CHALLENGER / REPORT-ONLY (not imported by the serving path; used by
 # scripts/train_setfit_head.py + scripts/train_lightgbm_arm.py + their tests) ----

@@ -4,7 +4,7 @@ import httpx
 events = []
 tokens = []
 final = {}
-with httpx.stream("POST", "http://127.0.0.1:8104/predict/stream",
+with httpx.stream("POST", "http://127.0.0.1:8000/predict/stream",
                   json={"text": "my train delayed, claim delay repay", "brand": "virgin"},
                   timeout=90) as r:
     for line in r.iter_lines():

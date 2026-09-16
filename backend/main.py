@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from pydantic import BaseModel, Field
 from typing import Optional
+import asyncio
 import collections
 import datetime
 import json
@@ -13,8 +14,7 @@ import threading
 import time, uuid
 from pathlib import Path
 from src.agent import AppleAgent
-from src.retriever import Retriever
-from src import brands as brands_mod
+from src import brands as brands_mod  # legacy src.retriever used only via src/brand_retrieval.py fallback
 
 # ---- Phase 4A (additive): hardening + observability imports (fail-soft) ----
 try:
@@ -302,7 +302,8 @@ class _RequestIDMiddleware:
             rid = ""
         if not rid:
             try:
-                rid = uuid.uuid4().hex[:8]
+                # Full 128-bit hex (was [:8]/32-bit — collision-trivial, see M6).
+                rid = uuid.uuid4().hex
             except Exception:
                 rid = "unknown"
         t0 = time.perf_counter()
@@ -438,6 +439,31 @@ except Exception:
     def _rate_limit_5pm(fn):
         return fn
 
+
+def _require_api_key(request: Request):
+    """Optional shared-secret gate for mutating/expensive routes.
+
+    Open by default (demo loopback): when HIVER_API_KEY is unset, all routes stay
+    public. When set, the guarded routes require header X-API-Key matching via
+    secrets.compare_digest. The Next.js BFF forwards its server-side HIVER_API_KEY
+    automatically (see frontend-next/lib/proxy.ts), so browser clients never hold it.
+    Returns None when allowed, else a 401 _problem response.
+    """
+    try:
+        import secrets as _secrets
+        expected = (os.environ.get("HIVER_API_KEY", "") or "").strip()
+        if not expected:
+            return None
+        try:
+            got = (request.headers.get("X-API-Key", "") or "").strip()
+        except Exception:
+            got = ""
+        if got and _secrets.compare_digest(got, expected):
+            return None
+        return _problem(401, "Unauthorized", "missing or invalid X-API-Key")
+    except Exception:
+        return _problem(401, "Unauthorized", "missing or invalid X-API-Key")
+
 try:
     if _tracing is not None:
         _tracing.init_tracing()
@@ -482,6 +508,7 @@ def traces_tail(limit: int = 50):
 # Per-brand retriever/agent cache (brand-agnostic, keyless default).
 _retrievers = {}
 _agents = {}
+_agent_lock = threading.Lock()
 
 
 def _normalize_brand(brand: Optional[str]) -> str:
@@ -492,83 +519,29 @@ def _normalize_brand(brand: Optional[str]) -> str:
 
 
 def _make_retriever_for_brand(brand: str):
-    """Load per-brand TF-IDF index (data/indexes/<brand>/); fallback to legacy/apple, else None.
+    """Load per-brand TF-IDF index (canonical factory in src/brand_retrieval.py).
 
+    Thin wrapper kept for backward compat (get_agent + tests import this name).
     Read-only: never builds or modifies KB/classifier/golden (V-EVAL owns those).
     """
-    b = _normalize_brand(brand)
     try:
-        for index_dir in brands_mod.get_index_candidates(b):
-            try:
-                p = Path(index_dir)
-                vec_p = p / "tfidf_vectorizer.pkl"
-                nn_p = p / "nn_index.pkl"
-                ids_p = p / "doc_ids.csv"
-                if not (vec_p.exists() and nn_p.exists() and ids_p.exists()):
-                    continue
-                import joblib
-                import pandas as pd
-                vec = joblib.load(vec_p)
-                nn = joblib.load(nn_p)
-                ids = pd.read_csv(ids_p)
-                # doc_ids.csv has either tweet_id or (row,tweet_id) columns
-                if "tweet_id" in ids.columns:
-                    doc_ids = ids["tweet_id"].astype(str).tolist()
-                else:
-                    doc_ids = ids.iloc[:, -1].astype(str).tolist()
-                # KB lookup per brand: data/processed/<brand>_kb.csv, fallback to apple_kb.csv
-                # (resolved from the repo root — portable, no machine-specific prefix).
-                _repo_root = Path(__file__).resolve().parents[1]
-                kb_cands = []
-                if b == "virgin":
-                    kb_cands = [_repo_root / "data" / "processed" / "virgin_kb.csv"]
-                else:
-                    kb_cands = [_repo_root / "data" / "processed" / "apple_kb.csv"]
-                lookup: dict = {}
-                for kb_path in kb_cands:
-                    try:
-                        if kb_path.exists():
-                            kb = pd.read_csv(kb_path, usecols=["tweet_id", "text", "clean"])
-                            lookup = {str(r.tweet_id): (r.text, r.clean) for r in kb.itertuples()}
-                            break
-                    except Exception:
-                        continue
-
-                class _BrandRetriever:
-                    def __init__(self, _vec, _nn, _doc_ids, _lookup):
-                        self.vec = _vec
-                        self.nn = _nn
-                        self.doc_ids = _doc_ids
-                        self.lookup = _lookup
-
-                    def query(self, text: str, k: int = 5):
-                        Xq = self.vec.transform([(text or "").lower()])
-                        dist, idx = self.nn.kneighbors(Xq, n_neighbors=min(k, len(self.doc_ids)))
-                        out = []
-                        for d, j in zip(dist[0], idx[0]):
-                            tid = self.doc_ids[j]
-                            raw, clean = self.lookup.get(tid, ("", ""))
-                            out.append({"tweet_id": tid, "distance": float(d),
-                                        "score": float(1 - d), "text": raw, "clean": clean})
-                        return out
-
-                return _BrandRetriever(vec, nn, doc_ids, lookup)
-            except Exception:
-                continue
+        from src.brand_retrieval import make_retriever_for_brand as _factory
+        return _factory(brand)
     except Exception:
         pass
-    # Final fallback: legacy apple Retriever for apple only, else None
-    if b == "apple":
-        try:
-            return Retriever()
-        except Exception:
-            return None
     return None
+
 
 
 def get_agent(brand: Optional[str] = None):
     b = _normalize_brand(brand)
-    if b not in _agents or _agents[b] is None:
+    if b in _agents and _agents[b] is not None:
+        return _agents[b]
+    # Locked lazy init: prevents duplicate joblib/pandas loads on first-request
+    # stampede and torn _retrievers/_agents state under threaded workers.
+    with _agent_lock:
+        if b in _agents and _agents[b] is not None:
+            return _agents[b]
         try:
             if b not in _retrievers:
                 _retrievers[b] = _make_retriever_for_brand(b)
@@ -582,13 +555,66 @@ def get_agent(brand: Optional[str] = None):
     return _agents[b]
 
 
+def _check_brand_ready(brand: str) -> dict:
+    """Probe model + index artifacts for one brand (no silent fallback).
+
+    Returns {brand, model_ok, index_ok, retriever_ok, missing[]}. get_agent()
+    intentionally never raises (fail-closed to AppleAgent(None)), so readiness
+    must check the files, not just that get_agent() returned.
+    """
+    b = _normalize_brand(brand)
+    missing: list = []
+    model_ok = False
+    try:
+        for mp in brands_mod.get_model_candidates(b):
+            try:
+                if mp and Path(mp).exists():
+                    model_ok = True
+                    break
+            except Exception:
+                continue
+        if not model_ok:
+            missing.append("classifier")
+    except Exception:
+        missing.append("classifier")
+    index_ok = False
+    try:
+        for index_dir in brands_mod.get_index_candidates(b):
+            try:
+                p = Path(index_dir)
+                if (p / "tfidf_vectorizer.pkl").exists() and (p / "nn_index.pkl").exists() and (p / "doc_ids.csv").exists():
+                    index_ok = True
+                    break
+            except Exception:
+                continue
+        if not index_ok:
+            missing.append("index")
+    except Exception:
+        if "index" not in missing:
+            missing.append("index")
+    retriever_ok = False
+    try:
+        agent = get_agent(b)
+        retriever_ok = getattr(agent, "retriever", None) is not None
+        if not retriever_ok:
+            missing.append("retriever")
+    except Exception:
+        missing.append("retriever")
+    return {"brand": b, "model_ok": model_ok, "index_ok": index_ok,
+            "retriever_ok": retriever_ok, "missing": missing,
+            "ok": not missing}
+
+
 # Backward-compat single-agent accessor (defaults to virgin primary).
 def get_default_agent():
     return get_agent(brands_mod.DEFAULT_BRAND)
 
 class PredictIn(BaseModel):
-    text: str
-    brand: Optional[str] = Field(default="virgin", description="Brand: virgin (default, primary) or apple (v1 evidence). Unknown falls back to virgin.")
+    # Generous cap (fail-fast on abuse); serving still truncates to MAX_CHARS=2000
+    # with truncated:true rather than 422 on normal over-length input.
+    # Required field (missing -> 422); empty string -> escalate/unresolvable downstream.
+    text: str = Field(..., max_length=20000)
+    brand: Optional[str] = Field(default="virgin", max_length=32, description="Brand: virgin (default, primary) or apple (v1 evidence). Unknown falls back to virgin.")
     offline: bool = Field(default=False, description="Workstream A4: template-only draft, no LLM calls; echoed back as 'offline'.")
 
 
@@ -652,19 +678,37 @@ def graph_json():
 
 @app.get("/readyz")
 def readyz():
+    # Honest readiness: probe artifacts per brand instead of trusting get_agent(),
+    # which fail-closes to AppleAgent(None) and therefore can never raise.
+    # Virgin is required; apple is transfer-proof (reported, does not fail the gate
+    # because its per-brand index dir was never built — it serves via legacy fallback).
     try:
-        # Both brands must be loadable (apple kept as transfer proof).
-        get_agent("virgin")
-        get_agent("apple")
-        return {"ready": True}
-    except Exception as e:
-        return JSONResponse({"ready": False, "error": str(e)}, status_code=500)
+        virgin = _check_brand_ready("virgin")
+        try:
+            apple = _check_brand_ready("apple")
+        except Exception:
+            apple = {"brand": "apple", "ok": False, "missing": ["probe-failed"]}
+        ready = bool(virgin.get("ok"))
+        body = {"ready": ready, "virgin": virgin, "apple": apple}
+        if not ready:
+            return JSONResponse(body, status_code=503)
+        return body
+    except Exception:
+        return JSONResponse({"ready": False, "error": "readiness probe failed"}, status_code=503)
 
 @app.post("/predict")
 @_rate_limit_5pm
 def predict(inp: PredictIn, request: Request):
     t0 = time.perf_counter()
-    rid = request.headers.get("X-Request-ID", str(uuid.uuid4())[:8])
+    # Client-supplied X-Request-ID is echoed for trace correlation (a test pins this),
+    # but a supplied ID that already exists in the inspect store mints a fresh one
+    # instead of overwriting someone else's record (M6 integrity fix).
+    rid = (request.headers.get("X-Request-ID", "") or "").strip() or uuid.uuid4().hex
+    try:
+        if _get_inspect(rid) is not None:
+            rid = uuid.uuid4().hex
+    except Exception:
+        pass
     raw = inp.text or ""
     truncated = len(raw) > MAX_CHARS
     text = raw[:MAX_CHARS] if truncated else raw
@@ -676,31 +720,9 @@ def predict(inp: PredictIn, request: Request):
     except Exception:
         _offline_env = False
     offline_mode = bool(getattr(inp, "offline", False)) or _offline_env
-    if offline_mode:
-        # Never silently degrade AND never call the LLM: stub out the Groq hook for
-        # the duration of handle() so no HTTP is attempted even with keys set.
-        _groq_mod = None
-        try:
-            from src import groq_draft as _groq_mod
-        except Exception:
-            _groq_mod = None
-        _orig_draft = getattr(_groq_mod, "draft_with_groq", None) if _groq_mod is not None else None
-
-        def _offline_stub(*a, **k):
-            return None, {"reason": "offline", "draft_path": "template"}
-
-        try:
-            if _groq_mod is not None and _orig_draft is not None:
-                _groq_mod.draft_with_groq = _offline_stub
-            r = agent.handle(text, brand)
-        finally:
-            try:
-                if _groq_mod is not None and _orig_draft is not None:
-                    _groq_mod.draft_with_groq = _orig_draft
-            except Exception:
-                pass
-    else:
-        r = agent.handle(text, brand)
+    # Thread-safe offline: passed through handle() -> groq skip (no module-global
+    # monkey-patching, so concurrent offline + online requests cannot interleave).
+    r = agent.handle(text, brand, offline=offline_mode)
     # Phase 4A: OTel pipeline spans + structlog bound log (fail-closed).
     try:
         if _tracing is not None:
@@ -756,13 +778,25 @@ def predict(inp: PredictIn, request: Request):
     }
 
 @app.post("/predict/stream")
+@_rate_limit_5pm
 def predict_stream(inp: PredictIn, request: Request):
     """SSE: stage events (classify/retrieve) live, then Groq draft chunks live, then final technicals."""
+    denied = _require_api_key(request)
+    if denied is not None:
+        def _denied_gen():
+            yield "data: {\"event\": \"error\", \"detail\": \"missing or invalid X-API-Key\"}\n\n"
+        return StreamingResponse(_denied_gen(), media_type="text/event-stream")
     raw = inp.text or ""
     truncated = len(raw) > MAX_CHARS
     text = raw[:MAX_CHARS] if truncated else raw
     brand = _normalize_brand(inp.brand)
-    rid = request.headers.get("X-Request-ID", str(uuid.uuid4())[:8])
+    # Same M6 collision rule as /predict: never overwrite another record's ID.
+    rid = (request.headers.get("X-Request-ID", "") or "").strip() or uuid.uuid4().hex
+    try:
+        if _get_inspect(rid) is not None:
+            rid = uuid.uuid4().hex
+    except Exception:
+        pass
     t0 = time.perf_counter()
     try:
         _s_offline_env = (os.environ.get("HIVER_OFFLINE", "") or "").strip().lower() in ("1", "true", "yes", "on")
@@ -773,30 +807,9 @@ def predict_stream(inp: PredictIn, request: Request):
     def gen():
         yield f"data: {json.dumps({'event': 'start', 'request_id': rid, 'brand': brand})}\n\n"
         agent = get_agent(brand)
-        # Fast deterministic stages (same code path as /predict, timed live)
-        if offline_mode:
-            _s_groq = None
-            try:
-                from src import groq_draft as _s_groq
-            except Exception:
-                _s_groq = None
-            _s_orig = getattr(_s_groq, "draft_with_groq", None) if _s_groq is not None else None
-
-            def _s_stub(*a, **k):
-                return None, {"reason": "offline", "draft_path": "template"}
-
-            try:
-                if _s_groq is not None and _s_orig is not None:
-                    _s_groq.draft_with_groq = _s_stub
-                r = agent.handle(text, brand)
-            finally:
-                try:
-                    if _s_groq is not None and _s_orig is not None:
-                        _s_groq.draft_with_groq = _s_orig
-                except Exception:
-                    pass
-        else:
-            r = agent.handle(text, brand)
+        # Fast deterministic stages (same code path as /predict, timed live).
+        # Thread-safe offline: passed through, never monkey-patched.
+        r = agent.handle(text, brand, offline=offline_mode)
         try:
             if _tracing is not None:
                 _tracing.emit_pipeline_spans(rid, brand, r.intent, r.escalate_signals or {},
@@ -916,8 +929,8 @@ def inspect_one(request_id: str):
 
 
 @app.get("/logs/stream")
-def logs_stream():
-    def gen():
+async def logs_stream(request: Request):
+    async def gen():
         # Snapshot backlog + sequence atomically so lines arriving mid-replay are not lost.
         try:
             with _log_lock:
@@ -929,7 +942,13 @@ def logs_stream():
             yield f"data: {line}\n\n"
         last_beat = time.time()
         while True:
-            time.sleep(0.5)
+            # Disconnect check: an open browser tab otherwise pins a worker forever.
+            try:
+                if await request.is_disconnected():
+                    break
+            except Exception:
+                pass
+            await asyncio.sleep(0.5)
             try:
                 with _log_lock:
                     seq = _log_seq
@@ -958,7 +977,11 @@ def logs_stream():
 
 
 @app.post("/eval/run")
-def eval_run(inp: EvalRunIn):
+@_rate_limit_5pm
+def eval_run(inp: EvalRunIn, request: Request):
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     try:
         n = int(inp.n) if inp.n is not None else 20
     except Exception:
@@ -1053,7 +1076,8 @@ def eval_run(inp: EvalRunIn):
 
 
 @app.get("/embed2d")
-def embed2d(brand: Optional[str] = "virgin", q: str = ""):
+@_rate_limit_5pm
+def embed2d(request: Request, brand: Optional[str] = "virgin", q: str = ""):
     b = _normalize_brand(brand)
     query_text = (q or "")[:500]
     try:
@@ -1139,27 +1163,27 @@ SERVER_STARTED_AT = datetime.datetime.now(datetime.timezone.utc).isoformat()
 # ---------------------------------------------------------------------------
 
 class ReviewEnqueueIn(BaseModel):
-    text: str = ""
-    brand: Optional[str] = "virgin"
-    idempotency_key: Optional[str] = None
-    sla_minutes: Optional[int] = None
+    text: str = Field(default="", max_length=20000)
+    brand: Optional[str] = Field(default="virgin", max_length=32)
+    idempotency_key: Optional[str] = Field(default=None, max_length=128)
+    sla_minutes: Optional[int] = Field(default=None, ge=1, le=1440)
 
 
 class ReviewApproveIn(BaseModel):
-    reviewer: Optional[str] = "reviewer"
-    rationale: Optional[str] = ""
+    reviewer: Optional[str] = Field(default="reviewer", max_length=128)
+    rationale: Optional[str] = Field(default="", max_length=2000)
 
 
 class ReviewEditIn(BaseModel):
-    reviewer: Optional[str] = "reviewer"
-    rationale: Optional[str] = ""
-    final_text: Optional[str] = ""
-    corrected_intent: Optional[str] = None
+    reviewer: Optional[str] = Field(default="reviewer", max_length=128)
+    rationale: Optional[str] = Field(default="", max_length=2000)
+    final_text: Optional[str] = Field(default="", max_length=2000)
+    corrected_intent: Optional[str] = Field(default=None, max_length=64)
 
 
 class ReviewRejectIn(BaseModel):
-    reviewer: Optional[str] = "reviewer"
-    rationale: Optional[str] = ""
+    reviewer: Optional[str] = Field(default="reviewer", max_length=128)
+    rationale: Optional[str] = Field(default="", max_length=2000)
 
 
 def _review_store():
@@ -1181,7 +1205,7 @@ def review_queue(status: Optional[str] = None, brand: Optional[str] = None,
         off = 0
     st = (status or "").upper().strip() or None
     if st and st not in ("PENDING", "APPROVED", "APPROVED_WITH_EDITS", "REJECTED", "EXPIRED"):
-        return JSONResponse({"detail": f"unknown status {status}"}, status_code=400)
+        return _problem(400, "Bad Request", f"unknown status {status}")
     try:
         rs.expire_overdue()
     except Exception:
@@ -1217,23 +1241,29 @@ def review_matrix():
 
 
 @app.post("/review/expire-sweep")
-def review_expire_sweep():
+def review_expire_sweep(request: Request):
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     rs = _review_store()
     try:
         n = int(rs.expire_overdue())
-    except Exception as e:
-        return JSONResponse({"detail": str(e)[:200]}, status_code=500)
+    except Exception:
+        return _problem(500, "Internal Server Error", "expire sweep failed")
     return {"expired": n}
 
 
 @app.post("/review/enqueue")
 @_rate_limit_5pm
 def review_enqueue(inp: ReviewEnqueueIn, request: Request):
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     rs = _review_store()
     brand = _normalize_brand(inp.brand)
     text = (inp.text or "")[:MAX_CHARS]
     if not text.strip():
-        return JSONResponse({"detail": "empty text"}, status_code=400)
+        return _problem(400, "Bad Request", "empty text")
     agent = get_agent(brand)
     r = agent.handle(text, brand)
     # Phase 4A: trace the enqueue path too (fail-closed).
@@ -1262,8 +1292,13 @@ def review_enqueue(inp: ReviewEnqueueIn, request: Request):
         row = rs.enqueue_from_result(r, text, brand,
                                      idempotency_key=(inp.idempotency_key or None),
                                      sla_minutes=inp.sla_minutes)
-    except Exception as e:
-        return JSONResponse({"detail": str(e)[:200]}, status_code=500)
+    except Exception:
+        # Generic client message (no raw DB error leak); server logs via structlog.
+        try:
+            logger.exception("review enqueue failed")
+        except Exception:
+            pass
+        return _problem(500, "Internal Server Error", "enqueue failed")
     row["route"] = route
     return row
 
@@ -1273,7 +1308,7 @@ def review_get(escalation_id: str):
     rs = _review_store()
     row = rs.get_escalation(escalation_id)
     if not row:
-        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+        return _problem(404, "Not Found", "unknown escalation")
     return row
 
 
@@ -1282,7 +1317,7 @@ def review_transfer(escalation_id: str):
     rs = _review_store()
     row = rs.get_escalation(escalation_id)
     if not row:
-        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+        return _problem(404, "Not Found", "unknown escalation")
     return rs.build_warm_transfer(row)
 
 
@@ -1290,37 +1325,62 @@ def review_transfer(escalation_id: str):
 def review_audit(escalation_id: str):
     rs = _review_store()
     if not rs.get_escalation(escalation_id):
-        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+        return _problem(404, "Not Found", "unknown escalation")
     return {"escalation_id": escalation_id, "events": rs.list_audit(escalation_id)}
 
 
 def _do_review_transition(escalation_id: str, to_status: str, reviewer, rationale,
                           final_text=None, corrected_intent=None):
     rs = _review_store()
+    # Allowlist corrected_intent against the row's brand taxonomy so garbage
+    # intents cannot pollute warm_transfer.intent / stats GROUP BY (H5 fix).
+    if corrected_intent is not None and str(corrected_intent).strip():
+        try:
+            row = rs.get_escalation(escalation_id)
+            brow = (row or {}).get("brand") or brands_mod.DEFAULT_BRAND
+            try:
+                from src.agent import _intent_assets as _ia
+                valid, _, _, _, _ = _ia(brow)
+            except Exception:
+                valid = []
+            if valid and str(corrected_intent).strip() not in list(valid):
+                return _problem(409, "Conflict",
+                                f"unknown corrected_intent '{str(corrected_intent)[:64]}' for brand '{brow}'")
+        except Exception:
+            pass
     try:
         return rs.transition(escalation_id, to_status, reviewer=reviewer or "reviewer",
                              rationale=rationale or "", final_text=final_text,
                              corrected_intent=corrected_intent)
     except KeyError:
-        return JSONResponse({"detail": "unknown escalation"}, status_code=404)
+        return _problem(404, "Not Found", "unknown escalation")
     except ValueError as e:
-        return JSONResponse({"detail": str(e)[:200]}, status_code=409)
+        return _problem(409, "Conflict", str(e)[:200])
 
 
 @app.post("/review/{escalation_id}/approve")
-def review_approve(escalation_id: str, inp: ReviewApproveIn):
+def review_approve(escalation_id: str, inp: ReviewApproveIn, request: Request):
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     return _do_review_transition(escalation_id, "APPROVED", inp.reviewer, inp.rationale)
 
 
 @app.post("/review/{escalation_id}/edit")
-def review_edit(escalation_id: str, inp: ReviewEditIn):
+def review_edit(escalation_id: str, inp: ReviewEditIn, request: Request):
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     return _do_review_transition(escalation_id, "APPROVED_WITH_EDITS", inp.reviewer,
                                  inp.rationale, final_text=inp.final_text,
                                  corrected_intent=inp.corrected_intent)
 
 
 @app.post("/review/{escalation_id}/reject")
-def review_reject(escalation_id: str, inp: ReviewRejectIn):
+def review_reject(escalation_id: str, inp: ReviewRejectIn, request: Request):
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     return _do_review_transition(escalation_id, "REJECTED", inp.reviewer, inp.rationale)
 
 @app.get("/metrics")
@@ -1540,7 +1600,8 @@ def _win_a_groundedness(brand: str, text: str, reply: str, passage_ids=None):
 
 
 @app.post("/judge/groundedness")
-def judge_groundedness(inp: GroundIn):
+@_rate_limit_5pm
+def judge_groundedness(inp: GroundIn, request: Request):
     """A1: groundedness-only judge — is each draft claim entailed by cited passages?
 
     Deterministic claim-split + per-claim entail/passage-cite check via the
@@ -1548,6 +1609,9 @@ def judge_groundedness(inp: GroundIn):
     fail-soft to an offline token-coverage heuristic (model field discloses
     which path answered). Response {claims: [{text, supported, passage_id}], score, model}.
     """
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     try:
         return _win_a_groundedness(inp.brand, inp.text, inp.reply, inp.passage_ids)
     except Exception as e:
@@ -1712,7 +1776,8 @@ def _win_a_overlap_f1(a: str, b: str) -> float:
 
 
 @app.post("/eval/retrieval-ablation")
-def eval_retrieval_ablation(inp: AblIn):
+@_rate_limit_5pm
+def eval_retrieval_ablation(inp: AblIn, request: Request):
     """A2: retrieval ablation — k=1 vs 5, keyword (BM25) vs virgin NN, context 0 vs 2.
 
     Fixed 60-item slice of golden_human_200 (seed 7, read-only). Classifier +
@@ -1723,6 +1788,9 @@ def eval_retrieval_ablation(inp: AblIn):
     the retrieval-sensitive signal), context_hit_rate, retrieval p50/p95 ms.
     Entailment is heuristic-offline so numbers reproduce without a Groq key.
     """
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     k_list = inp.k_list if inp.k_list is not None else [1, 5]
     arms = inp.arms if inp.arms is not None else ["keyword", "virgin_nn"]
     cws = inp.context_window if inp.context_window is not None else [0, 2]
@@ -1881,7 +1949,8 @@ def _win_a_compute_compare_brand(b: str):
 
 
 @app.get("/eval/compare")
-def eval_compare(brands: str = "virgin,apple"):
+@_rate_limit_5pm
+def eval_compare(request: Request, brands: str = "virgin,apple"):
     """A3: Virgin-primary + Apple-transfer numbers in one call (cached).
 
     Values match BASELINE_VS_FINAL.md tables within rounding (virgin §B n=200,
@@ -1889,6 +1958,9 @@ def eval_compare(brands: str = "virgin,apple"):
     evaluation/compare_cache.json serves demo traffic (<2s on hit); a miss
     recomputes from frozen artifacts (no LLM) and refreshes the cache.
     """
+    denied = _require_api_key(request)
+    if denied is not None:
+        return denied
     try:
         requested = [x.strip().lower() for x in (brands or "").split(",") if x.strip()]
     except Exception:

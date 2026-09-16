@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FASTAPI_URL } from "../../../lib";
+import { NextRequest } from "next/server";
+import { proxyJson } from "../../../lib/proxy";
 
 // BFF proxy: browser never touches FastAPI or keys directly.
+// Dead backend -> JSON 502 via proxyJson (never a Next 500 HTML cascade).
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const upstream = await fetch(`${FASTAPI_URL}/predict`, {
+  return proxyJson("/predict", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -12,6 +13,4 @@ export async function POST(req: NextRequest) {
       brand: body.brand || "virgin",
     }),
   });
-  const data = await upstream.json();
-  return NextResponse.json(data, { status: upstream.status });
 }

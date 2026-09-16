@@ -47,62 +47,16 @@ def _intents_for_brand(brand: str) -> list:
 
 
 def _make_retriever_for_brand(brand: str):
-    """Load per-brand TF-IDF index read-only; None on any failure (fail-closed)."""
+    """Load per-brand TF-IDF index read-only; None on any failure (fail-closed).
+
+    Canonical factory lives in src/brand_retrieval.py (shared with backend) —
+    this is a thin wrapper so the two demos cannot drift again.
+    """
     try:
-        for index_dir in brands_mod.get_index_candidates(brand):
-            try:
-                p = Path(index_dir)
-                vec_p = p / "tfidf_vectorizer.pkl"
-                nn_p = p / "nn_index.pkl"
-                ids_p = p / "doc_ids.csv"
-                if not (vec_p.exists() and nn_p.exists() and ids_p.exists()):
-                    continue
-                import joblib
-                import pandas as pd
-                vec = joblib.load(vec_p)
-                nn = joblib.load(nn_p)
-                ids = pd.read_csv(ids_p)
-                doc_ids = ids["tweet_id"].astype(str).tolist() if "tweet_id" in ids.columns else ids.iloc[:, -1].astype(str).tolist()
-                kb_name = "virgin_kb.csv" if brand == "virgin" else "apple_kb.csv"
-                kb_path = Path(__file__).resolve().parents[1] / "data" / "processed" / kb_name
-                lookup: dict = {}
-                try:
-                    if kb_path.exists():
-                        kb = pd.read_csv(kb_path, usecols=["tweet_id", "text", "clean"])
-                        lookup = {str(r.tweet_id): (r.text, r.clean) for r in kb.itertuples()}
-                except Exception:
-                    lookup = {}
-
-                class _BrandRetriever:
-                    def __init__(self, _vec, _nn, _doc_ids, _lookup):
-                        self.vec = _vec
-                        self.nn = _nn
-                        self.doc_ids = _doc_ids
-                        self.lookup = _lookup
-
-                    def query(self, text: str, k: int = 5):
-                        Xq = self.vec.transform([(text or "").lower()])
-                        dist, idx = self.nn.kneighbors(Xq, n_neighbors=min(k, len(self.doc_ids)))
-                        out = []
-                        for d, j in zip(dist[0], idx[0]):
-                            tid = self.doc_ids[j]
-                            raw, clean = self.lookup.get(tid, ("", ""))
-                            out.append({"tweet_id": tid, "distance": float(d),
-                                        "score": float(1 - d), "text": raw, "clean": clean})
-                        return out
-
-                return _BrandRetriever(vec, nn, doc_ids, lookup)
-            except Exception:
-                continue
+        from src.brand_retrieval import make_retriever_for_brand as _factory
+        return _factory(brand)
     except Exception:
-        pass
-    if brand == "apple":
-        try:
-            from src.retriever import Retriever
-            return Retriever()
-        except Exception:
-            return None
-    return None
+        return None
 
 
 st.set_page_config(page_title="Hiver support demo — VirginTrains primary", layout="centered")

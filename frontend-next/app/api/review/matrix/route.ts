@@ -1,10 +1,7 @@
-import { NextResponse } from "next/server";
-import { FASTAPI_URL } from "../../../../lib";
+import { proxyJson } from "../../../../lib/proxy";
 
 export async function GET() {
-  const upstream = await fetch(`${FASTAPI_URL}/review/matrix`);
-  const data = await upstream.json().catch(() => ({ matrix: null }));
-  return NextResponse.json(data, { status: upstream.status });
+  return proxyJson("/review/matrix");
 }
 
 export const dynamic = "force-dynamic";

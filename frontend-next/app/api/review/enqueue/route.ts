@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FASTAPI_URL } from "../../../../lib";
+import { NextRequest } from "next/server";
+import { proxyJson } from "../../../../lib/proxy";
 
 // POST /api/review/enqueue -> FastAPI POST /review/enqueue
+// Dead backend -> JSON 502 via proxyJson.
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const upstream = await fetch(`${FASTAPI_URL}/review/enqueue`, {
+  return proxyJson("/review/enqueue", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -14,6 +15,4 @@ export async function POST(req: NextRequest) {
       sla_minutes: body.sla_minutes ?? null,
     }),
   });
-  const data = await upstream.json().catch(() => ({ error: "upstream empty" }));
-  return NextResponse.json(data, { status: upstream.status });
 }

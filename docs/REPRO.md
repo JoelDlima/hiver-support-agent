@@ -40,8 +40,11 @@ on the frozen artifact path; full suite 75 passed as of V2).
 ## Full rebuild path (~6-8 minutes; only if you want to regenerate artifacts)
 
 ```powershell
-# raw data: data/raw/twcs.csv (gitignored; download once via kagglehub,
-# dataset thoughtvector/customer-support-on-twitter -- see README Prerequisites)
+# raw data: data/raw/twcs.csv (gitignored). Install downloader + fetch once:
+#   pip install kagglehub
+#   kagglehub dataset download thoughtvector/customer-support-on-twitter
+#   copy the downloaded twcs.csv to data/raw/twcs.csv
+# (frozen-path repro above does not need this; see README Prerequisites)
 python scripts\build_virgin_kb.py      # -> virgin_kb.csv (27,172) + inbound pool (37,444)
 python scripts\build_virgin_index.py   # -> TF-IDF NN index (build ~0.5s, p50 7.9ms)
 python scripts\train_virgin.py         # -> models/intent_virgin.pkl (30k weak, balanced)

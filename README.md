@@ -2,7 +2,7 @@
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python&logoColor=white)](requirements.txt)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](frontend-next/package.json)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)](backend/main.py)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.141-009688?style=for-the-badge&logo=fastapi&logoColor=white)](backend/main.py)
 [![Data CC BY-NC-SA 4.0](https://img.shields.io/badge/Data-CC_BY--NC--SA_4.0-lightgrey?style=for-the-badge)](https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter)
 
 <br />
@@ -11,7 +11,7 @@
 <h3 align="center">Hiver — VirginTrains Support Agent</h3>
 
   <p align="center">
-    VirginTrains primary agent: classifies intent (10 classes, TF-IDF + LogReg — 0.795 acc / 0.803 macroF1 on human-200), drafts grounded RAG replies, triages auto-handle vs escalate-with-reason (esc F1 0.767).
+    VirginTrains primary agent: classifies intent (10 classes, TF-IDF + LogReg — 0.795 acc / 0.803 macroF1 on human-200, Δ +0.005 vs keywords = noise, CI [−0.015,+0.025] p=1.0), drafts grounded RAG replies, triages auto-handle vs escalate-with-reason (esc F1 0.767, Δ +0.529 — the real win).
     <br />
     <a href="docs/REPORT_VIRGIN_6PAGE.md"><strong>Explore the docs »</strong></a>
     <br />
@@ -57,7 +57,7 @@ VirginTrains is the primary brand (UK rail: Delay Repay + amendment + timetable)
 
 `delay_claim, ticket_change_refund, timetable_platform, lost_property, complaint_service, fare_ticketing, accessibility_assistance, howto_guidance, support_access_followup, other_out_of_scope`
 
-Brand pool (source: `docs/REPORT_VIRGIN_6PAGE.md` §1): 27,817 outbound / 37,444 inbound pool (union 65,346). Index: 27,172 docs, 19,898 feats, build 0.5s, p50 7.1ms / p95 7.9ms (source: `docs/REPORT_VIRGIN_6PAGE.md` §2).
+Brand pool (source: `docs/REPORT_VIRGIN_6PAGE.md` §1): 27,817 outbound / 37,444 inbound pool (union ≈65.3k pre-dedup rows; exact union varies by dedup — see SAMPLING_NOTE strata sum 37,444). Index: 27,172 docs, 19,898 feats, build ~0.5–0.6s, p50 ~7–8ms / p95 ~8–9ms dev-CPU (ranges: `data/indexes/virgin/index_meta.json` reports 0.6s/7.9/8.7ms, `RETRIEVAL_ABLATION.md` virgin_nn k=5 ctx0 reports 7.1/8.2ms — same order of magnitude, machine-dependent).
 
 Headline — human-200 (source: `evaluation/virgin/results_human200.csv`, `evaluation/virgin/BASELINE_VS_FINAL.md` §B). Golden `evaluation/virgin/golden_human_200.csv`: 60 manual-style + 140 rulebook-assisted, 41/200 intent flips, weak-vs-human acc 0.795 κ 0.772, single-annotator (no inter-annotator κ yet).
 
@@ -107,9 +107,12 @@ CPU-only, Windows PowerShell. Backend on `:8000`, frontend on `:3000`. No key ne
 ### Prerequisites
 
 * Python 3.12 (`py -3.12`)
-* Node.js + npm (for `frontend-next` — Next.js 14)
+* Node.js ≥18.17 + npm (for `frontend-next` — Next.js 14)
 * Git (to inspect `evaluation/`, `docs/`)
 * Optional only for live drafts: `GROQ_API_KEY` in env (never in code/logs)
+* Optional only for full data rebuild: `pip install kagglehub` then `kagglehub dataset download thoughtvector/customer-support-on-twitter` → place `twcs.csv` at `data/raw/twcs.csv` (gitignored; frozen-path repro does not need it)
+
+Notes: `/predict` + `/predict/stream` + `/review/enqueue` + `/eval/*` + `/embed2d` + `/judge/groundedness` are rate-limited to 5/min/IP (429 + `Retry-After: 60`) — pace live demo clicks. `HIVER_OFFLINE=1` forces template-only drafts (no LLM calls, `offline: true` echoed). Frontend needs `FASTAPI_URL` per shell or a `frontend-next/.env.local` copy of `.env.example`. Beyond loopback, set `HIVER_API_KEY` on BOTH backend and frontend envs — review mutations + stream/eval routes then require it (BFF forwards server-side; open demo when unset). Review/inspect payloads retain raw customer text (needed for human triage) — treat the queue DB as PII runtime state (gitignored, shorten retention, never publish).
 
 ```powershell
 py -3.12 --version

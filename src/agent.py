@@ -39,6 +39,8 @@ class AgentResult:
 TRIVIAL_CANNED = "Thanks for reaching out — please DM us your device + iOS version and detail so we can help."
 
 _PIPELINE_CACHE: Dict[str, object] = {}
+# Cached per-brand crowd-remap token sets (avoids importlib on every handle() call).
+_CROWD_TOKENS_CACHE: Dict[str, list] = {}
 
 
 def _intent_assets(brand: str):
@@ -109,6 +111,8 @@ def _weak_label_for_brand(brand: str, text: str) -> str:
 
 def _predict_for_brand(brand: str, text: str):
     """Try per-brand joblib model(s); fallback to weak_label (conf 0.35)."""
+    import logging as _logging
+    _log = _logging.getLogger("hiver.agent")
     b = (brand or brands_mod.DEFAULT_BRAND).lower().strip()
     if b not in brands_mod.BRANDS:
         b = brands_mod.DEFAULT_BRAND
@@ -119,13 +123,15 @@ def _predict_for_brand(brand: str, text: str):
             proba = pipe.predict_proba([text])
             preds = pipe.predict([text])
             return str(preds[0]), float(proba.max())
-        except Exception:
-            pass
+        except Exception as e:
+            _log.warning("intent cache predict failed brand=%s: %s — trying model files", b, type(e).__name__)
     # Try model files in order
+    tried = []
     for mp in brands_mod.get_model_candidates(b):
         try:
             p = Path(mp)
             if not p.exists():
+                tried.append(f"{p.name}:missing")
                 continue
             import joblib
             obj = joblib.load(p)
@@ -134,9 +140,11 @@ def _predict_for_brand(brand: str, text: str):
             proba = pipe.predict_proba([text])
             preds = pipe.predict([text])
             return str(preds[0]), float(proba.max())
-        except Exception:
+        except Exception as e:
+            tried.append(f"{Path(mp).name}:{type(e).__name__}")
             continue
-    # Fallback
+    # Fallback (magic 0.35 is the weak-label contract: low_conf -> escalate downstream).
+    _log.warning("intent fallback to weak_label brand=%s tried=[%s]", b, ",".join(tried))
     return _weak_label_for_brand(b, text), 0.35
 
 
@@ -207,7 +215,9 @@ def decide_escalation(intent: str, conf: float, text: str, passages: List[Dict],
         # Money + explicit money language escalates at ANY confidence: confident
         # money errors (repeat-refund @0.92, F6) cost cash; recall > precision here.
         # Plain delay questions without money words still auto-handle below.
-        if any(p in low for p in ["refund", "repay", "compensation", "chargeback", "charged", "overcharg", "reprint", "reissue", "receipt", "£", "$"]):
+        # Money trigger vocabulary (single place: keep in sync with text_norm.has_money
+        # and virgin KEYWORDS when adding synonyms — e.g. "charge back" added 2026-09-16).
+        if any(p in low for p in ["refund", "repay", "compensation", "chargeback", "charge back", "charged", "overcharg", "reprint", "reissue", "receipt", "£", "$"]):
             decision, reason = "escalate", "money_review"
         elif conf < 0.7:
             decision, reason = "escalate", "money_threshold"
@@ -230,7 +240,7 @@ class AppleAgent:
         b = (brand or brands_mod.DEFAULT_BRAND).lower().strip()
         self.brand = b if b in brands_mod.BRANDS else brands_mod.DEFAULT_BRAND
 
-    def handle(self, text: str, brand: str | None = None) -> AgentResult:
+    def handle(self, text: str, brand: str | None = None, offline: bool = False) -> AgentResult:
         t0 = time.perf_counter()
         eff = (brand or self.brand or brands_mod.DEFAULT_BRAND).lower().strip()
         if eff not in brands_mod.BRANDS:
@@ -260,12 +270,20 @@ class AppleAgent:
             pass
         # Crowd remap (virgin F4a fix): curated overcrowding token present but weak-trained
         # classifier says "other" unsurely -> trust the lexicon. Narrow: other-predictions only.
-        # Substring match, same convention as KEYWORDS weak rules.
+        # Substring match, same convention as KEYWORDS weak rules. Token set cached
+        # per brand (no importlib in the hot path after first call).
         try:
             if eff != "apple" and pred == other and float(conf) < 0.6:
+                toks = _CROWD_TOKENS_CACHE.get(eff)
+                if toks is None:
+                    try:
+                        toks = list(getattr(importlib.import_module(
+                            brands_mod.get_intent_module_name(eff)),
+                            "CROWD_REMAP_TOKENS", []) or [])
+                    except Exception:
+                        toks = []
+                    _CROWD_TOKENS_CACHE[eff] = toks
                 low_t = (text or "").lower()
-                toks = getattr(importlib.import_module(brands_mod.get_intent_module_name(eff)),
-                                "CROWD_REMAP_TOKENS", [])
                 if any(t and t.lower() in low_t for t in (toks or [])):
                     if "complaint_service" in intents:
                         pred, conf = "complaint_service", min(float(conf), 0.55)
@@ -279,12 +297,13 @@ class AppleAgent:
             except Exception:
                 passages = []
         retrieve_ms = round((time.perf_counter() - t_ret) * 1000, 1)
-        # Try Groq first (fail-closed to template)
+        # Try Groq first (fail-closed to template). offline=True skips the LLM
+        # entirely (thread-safe; no module-global monkey-patching).
         t_draft = time.perf_counter()
         draft = None
         draft_path = "template"
-        groq_info = {}
-        if groq_mod is not None:
+        groq_info: dict = {"reason": "offline", "draft_path": "template"} if offline else {}
+        if not offline and groq_mod is not None:
             try:
                 g_text, g_info = groq_mod.draft_with_groq(pred, text, passages, eff)
                 groq_info = g_info or {}

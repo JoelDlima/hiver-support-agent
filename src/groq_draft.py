@@ -218,9 +218,14 @@ def _extract_usage(resp):
         return _empty_usage()
 
 
-def draft_with_groq(intent, inbound, passages, brand="virgin"):
+def draft_with_groq(intent, inbound, passages, brand="virgin", offline=False):
     """Non-streaming Groq draft. Returns (text|None, info)."""
     info_base = {"brand": brand, "intent": intent, "model": GROQ_MODEL}
+    if offline:
+        # Thread-safe offline short-circuit (no module-global mutation; see
+        # backend/main.py — offline is passed through, never monkey-patched).
+        return None, {**info_base, "reason": "offline", "draft_path": "template",
+                      "usage": _empty_usage()}
     # Exact strings that would be sent (computed once so info matches the request).
     try:
         _sys_prompt, _user_prompt = _prompts(intent, inbound, passages, brand)
@@ -319,11 +324,45 @@ def draft_with_groq(intent, inbound, passages, brand="virgin"):
                   "sys_prompt": _sys_prompt, "user_prompt": _user_prompt, "usage": _empty_usage()}
 
 
-def stream_groq_draft(intent, inbound, passages, brand="virgin"):
+def _iter_stream_pieces(stream):
+    """Yield text pieces from a Groq/OpenAI chunk stream; skip malformed chunks."""
+    for chunk in stream:
+        try:
+            c = chunk.choices[0]
+        except Exception:
+            continue
+        try:
+            piece = c.delta.content if (c.delta and c.delta.content is not None) else None
+        except Exception:
+            piece = None
+        if piece:
+            yield piece
+
+
+def _finalize_stream_buf(buf, info_base, model_used, via, inbound, passages):
+    """Parse + validate a drained stream buffer into the final (None, info) tuple."""
+    raw = FENCE_RE.sub("", "".join(buf).strip()).strip()
+    try:
+        obj = json.loads(raw)
+        draft = (obj.get("draft_reply") or "").strip() if isinstance(obj, dict) else raw
+    except Exception:
+        draft = raw
+    ok, reason = validate_draft(draft, inbound, passages)
+    if not ok:
+        return None, {**info_base, "model": model_used, "reason": f"validation-fail:{reason}",
+                       "draft_path": "template", "draft": None}
+    return None, {**info_base, "model": model_used, "reason": "ok", "draft_path": "groq",
+                   "via": via, "draft": draft}
+
+
+def stream_groq_draft(intent, inbound, passages, brand="virgin", offline=False):
     """Streaming Groq draft (plain text + parse; stream+response_format=400 so NO response_format here).
     Yields (chunk_text|None, done_info|None). Final yield carries (None, info) with full draft in info['draft'].
     """
     info_base = {"brand": brand, "intent": intent, "model": GROQ_MODEL}
+    if offline:
+        yield None, {**info_base, "reason": "offline", "draft_path": "template", "draft": None}
+        return
     if not _api_key():
         yield None, {**info_base, "reason": "no-key", "draft_path": "template", "draft": None}
         return
@@ -343,7 +382,8 @@ def stream_groq_draft(intent, inbound, passages, brand="virgin"):
         model=GROQ_MODEL,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
         temperature=0.6,
-        max_completion_tokens=2048,
+        # Same 256-token budget as the non-stream path (M7 fix: no param drift).
+        max_completion_tokens=256,
         top_p=0.95,
         reasoning_effort="default",
         stop=None,
@@ -362,34 +402,13 @@ def stream_groq_draft(intent, inbound, passages, brand="virgin"):
             model_used = GROQ_MODEL
             buf = []
             try:
-                for chunk in stream:
-                    try:
-                        c = chunk.choices[0]
-                    except Exception:
-                        continue
-                    piece = None
-                    try:
-                        if c.delta and c.delta.content is not None:
-                            piece = c.delta.content
-                    except Exception:
-                        piece = None
-                    if piece:
-                        buf.append(piece)
-                        yield piece, None
+                for piece in _iter_stream_pieces(stream):
+                    buf.append(piece)
+                    yield piece, None
             except Exception as e:
                 yield None, {**info_base, "model": model_used, "reason": "error", "error_type": type(e).__name__, "draft_path": "template", "draft": None}
                 return
-            raw = FENCE_RE.sub("", "".join(buf).strip()).strip()
-            try:
-                obj = json.loads(raw)
-                draft = (obj.get("draft_reply") or "").strip() if isinstance(obj, dict) else raw
-            except Exception:
-                draft = raw
-            ok, reason = validate_draft(draft, inbound, passages)
-            if not ok:
-                yield None, {**info_base, "model": model_used, "reason": f"validation-fail:{reason}", "draft_path": "template", "draft": None}
-            else:
-                yield None, {**info_base, "model": model_used, "reason": "ok", "draft_path": "groq", "via": via, "draft": draft}
+            yield _finalize_stream_buf(buf, info_base, model_used, via, inbound, passages)
             return
         try:
             kwargs["model"] = GROQ_FALLBACK_MODEL
@@ -402,31 +421,10 @@ def stream_groq_draft(intent, inbound, passages, brand="virgin"):
         model_used = GROQ_MODEL
     buf = []
     try:
-        for chunk in stream:
-            try:
-                c = chunk.choices[0]
-            except Exception:
-                continue
-            piece = None
-            try:
-                if c.delta and c.delta.content is not None:
-                    piece = c.delta.content
-            except Exception:
-                piece = None
-            if piece:
-                buf.append(piece)
-                yield piece, None
+        for piece in _iter_stream_pieces(stream):
+            buf.append(piece)
+            yield piece, None
     except Exception as e:
         yield None, {**info_base, "model": model_used, "reason": "error", "error_type": type(e).__name__, "draft_path": "template", "draft": None}
         return
-    raw = FENCE_RE.sub("", "".join(buf).strip()).strip()
-    try:
-        obj = json.loads(raw)
-        draft = (obj.get("draft_reply") or "").strip() if isinstance(obj, dict) else raw
-    except Exception:
-        draft = raw
-    ok, reason = validate_draft(draft, inbound, passages)
-    if not ok:
-        yield None, {**info_base, "model": model_used, "reason": f"validation-fail:{reason}", "draft_path": "template", "draft": None}
-    else:
-        yield None, {**info_base, "model": model_used, "reason": "ok", "draft_path": "groq", "via": via, "draft": draft}
+    yield _finalize_stream_buf(buf, info_base, model_used, via, inbound, passages)

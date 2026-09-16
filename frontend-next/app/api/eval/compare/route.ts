@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FASTAPI_URL } from "../../../../lib";
+import { NextRequest } from "next/server";
+import { proxyJson } from "../../../../lib/proxy";
 
 // BFF proxy: browser never touches FastAPI directly.
 // Upstream: GET /eval/compare (workstream A, live, file-cached).
 // Non-OK statuses pass through so the UI renders an honest pending/error state.
+// Dead backend -> JSON 502 via proxyJson.
 export async function GET(req: NextRequest) {
   const qs = req.nextUrl.searchParams.toString();
-  const upstream = await fetch(`${FASTAPI_URL}/eval/compare${qs ? `?${qs}` : ""}`);
-  const data = await upstream.json();
-  return NextResponse.json(data, { status: upstream.status });
+  return proxyJson(`/eval/compare${qs ? `?${qs}` : ""}`);
 }
 
 export const dynamic = "force-dynamic";

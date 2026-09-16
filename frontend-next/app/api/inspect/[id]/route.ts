@@ -1,15 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FASTAPI_URL } from "../../../../lib";
+import { NextRequest } from "next/server";
+import { proxyJson } from "../../../../lib/proxy";
 
 // Thin fetch passthrough: GET /api/inspect/[id] -> GET {FASTAPI_URL}/inspect/[id]
+// Dead backend -> JSON 502 via proxyJson.
 export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const id = encodeURIComponent(params.id);
-  const upstream = await fetch(`${FASTAPI_URL}/inspect/${id}`);
-  const data = await upstream.json().catch(() => ({ error: "upstream empty" }));
-  return NextResponse.json(data, { status: upstream.status });
+  return proxyJson(`/inspect/${id}`);
 }
 
 export const dynamic = "force-dynamic";

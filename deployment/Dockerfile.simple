@@ -22,24 +22,30 @@ COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # App code + baked artifacts (read-only at runtime).
+# evaluation/ is required: /eval/run + /eval/retrieval-ablation + /eval/compare
+# read golden/results CSVs, /review/matrix reads evaluation/virgin/thresholds.json.
+# virgin_threads.parquet backs the ablation context_window>0 arms (degrades to
+# hit=False when absent — copy it so the column is real, not theater).
 COPY src ./src
 COPY backend ./backend
 COPY models ./models
 COPY data/indexes ./data/indexes
-COPY data/processed/virgin_kb.csv data/processed/apple_kb.csv ./data/processed/
-COPY autonomy_matrix.yaml promptfooconfig.yaml pytest.ini ./
+COPY data/processed/virgin_kb.csv data/processed/apple_kb.csv data/processed/virgin_threads.parquet ./data/processed/
+COPY evaluation ./evaluation
+COPY autonomy_matrix.yaml ./
 
 # Non-root user + read-only-friendly perms. The review queue lives in
 # data/processed/ (SQLite, created on demand) so it stays writable.
+# NOTE: traces path is data/traces.jsonl (a FILE); only create parent dirs here.
 RUN useradd -r -m appuser \
-    && mkdir -p /app/data/processed /app/data/traces.jsonl \
+    && mkdir -p /app/data/processed /app/data \
     && chown -R appuser:appuser /app/data
 USER appuser
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3).status==200 else 1)"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+  CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=5).status==200 else 1)"
 
 # Exec form; uvicorn manages workers (no gunicorn needed for this profile).
 CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers ${WORKERS:-2} --no-access-log --proxy-headers"]

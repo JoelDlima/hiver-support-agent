@@ -85,8 +85,17 @@ class HybridVirginRetriever:
                  tfidf_topn: int = TFIDF_TOPN_DEFAULT,
                  min_cosine: float = 0.0):
         if base is None:
-            from scripts.run_virgin_eval import VirginRetriever
-            base = VirginRetriever()
+            # Canonical base from src/ (not scripts/ — scripts are not a package
+            # and need PYTHONPATH luck). Falls back to the frozen eval copy only
+            # if src/ is unavailable.
+            try:
+                from src.brand_retrieval import make_retriever_for_brand
+                base = make_retriever_for_brand("virgin")
+            except Exception:
+                base = None
+            if base is None:
+                from scripts.run_virgin_eval import VirginRetriever
+                base = VirginRetriever()
         self._base = base
         self.enabled = is_hybrid_enabled()
         self.rrf_k = rrf_k
@@ -95,10 +104,22 @@ class HybridVirginRetriever:
         self.min_cosine = min_cosine
         self._bm25 = None  # built lazily, ON-mode only (OFF stays identical + fast)
 
+    @staticmethod
+    def _base_text(base, tid: str) -> str:
+        # Base lookup shapes differ: serving BrandRetriever stores (text, clean)
+        # tuples, the frozen eval VirginRetriever stores plain strings.
+        try:
+            v = (getattr(base, "lookup", {}) or {}).get(tid, "")
+            if isinstance(v, (list, tuple)):
+                return str(v[0] if len(v) > 0 else "")
+            return str(v or "")
+        except Exception:
+            return ""
+
     def _ensure_bm25(self):
         if self._bm25 is None:
             from rank_bm25 import BM25Okapi
-            corpus = [tokenize(self._base.lookup.get(tid, ""))
+            corpus = [tokenize(self._base_text(self._base, tid))
                       for tid in self._base.doc_ids]
             self._bm25 = BM25Okapi(corpus)
         return self._bm25
@@ -155,7 +176,7 @@ class HybridVirginRetriever:
                 cosine_score=tfidf_cos.get(tid),
                 rrf=rrf,
                 min_cosine=self.min_cosine,
-                text=self._base.lookup.get(tid, ""),
+                text=self._base_text(self._base, tid),
                 clean="",
                 distance=tfidf_dist.get(tid),
             ))

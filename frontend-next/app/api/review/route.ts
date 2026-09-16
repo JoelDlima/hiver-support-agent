@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { FASTAPI_URL } from "../../../lib";
+import { NextRequest } from "next/server";
+import { proxyJson } from "../../../lib/proxy";
 
 // GET /api/review -> FastAPI GET /review/queue (live inbox polling).
+// Dead backend -> JSON 502 via proxyJson.
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const qs = new URLSearchParams();
@@ -11,9 +12,7 @@ export async function GET(req: NextRequest) {
   if (status) qs.set("status", status);
   if (brand) qs.set("brand", brand);
   if (limit) qs.set("limit", limit);
-  const upstream = await fetch(`${FASTAPI_URL}/review/queue?${qs.toString()}`);
-  const data = await upstream.json().catch(() => ({ items: [], count: 0 }));
-  return NextResponse.json(data, { status: upstream.status });
+  return proxyJson(`/review/queue?${qs.toString()}`);
 }
 
 export const dynamic = "force-dynamic";

@@ -17,7 +17,10 @@ import pandas as pd
 from pathlib import Path
 from sklearn.metrics import cohen_kappa_score, accuracy_score, precision_recall_fscore_support
 
-from run_virgin_eval import VirginRetriever
+try:
+    from scripts.run_virgin_eval import VirginRetriever
+except ImportError:  # allow `python scripts/run_virgin_judge.py` without PYTHONPATH
+    from run_virgin_eval import VirginRetriever
 from src.agent import AppleAgent
 from evaluation.judge import heuristic_judge, llm_judge, RUBRIC_VERSION
 

@@ -30,7 +30,9 @@ providers:
     label: virgin-final-keyless
     config:
       force_template: true
-      pythonExecutable: C:/Hiver/.venv/Scripts/python.exe
+      # Portable: uses PATH python (run inside the venv). Override with
+      # PROMPTFOO_PYTHON env when python detection fails on Windows.
+      pythonExecutable: ${PROMPTFOO_PYTHON:-python}
 prompts:
   - "{{text}}"
 defaultTest:

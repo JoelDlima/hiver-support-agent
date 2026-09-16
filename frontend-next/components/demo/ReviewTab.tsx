@@ -28,8 +28,9 @@ export default function ReviewTab() {
           </a>
         </div>
         <p className="mt-3 text-xs text-muted">
-          Demo path: run a query in Try it → escalated runs appear in the queue →
-          approve → audit trail visible on /review.
+          Demo path: run a query in Try it → if escalated, enqueue it via POST
+          /api/review/enqueue (Try it does not auto-enqueue) → approve on /review →
+          audit trail visible per item.
         </p>
       </section>
     </div>

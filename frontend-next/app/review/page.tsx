@@ -14,6 +14,8 @@ export default function ReviewPage() {
   const [rationale, setRationale] = useState("");
   const [sel, setSel] = useState(0);
   const [threshold, setThreshold] = useState(0.45);
+  const [onlyBelow, setOnlyBelow] = useState(false);
+  const [busyIds, setBusyIds] = useState<ReadonlySet<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [apiOk, setApiOk] = useState<boolean | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -54,6 +56,8 @@ export default function ReviewPage() {
   }, []);
 
   async function act(id: string, kind: "approve" | "edit" | "reject", finalText?: string) {
+    if (busyIds.has(id)) return;
+    setBusyIds((prev) => new Set(prev).add(id));
     setError(null);
     try {
       const r = await fetch(`/api/review/${encodeURIComponent(id)}/${kind}`, {
@@ -72,6 +76,12 @@ export default function ReviewPage() {
       await load();
     } catch (e) {
       setError(`Action failed: ${e}`);
+    } finally {
+      setBusyIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
   }
 
@@ -79,7 +89,9 @@ export default function ReviewPage() {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const tag = (document.activeElement?.tagName || "").toLowerCase();
-      if (tag === "input" || tag === "textarea") return;
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+      // Avoid accidental approve/reject when a button has focus (e.g. after click + pressing r/s).
+      if (tag === "button" && e.key !== "j" && e.key !== "k") return;
       if (e.key === "j") setSel((s) => Math.min(s + 1, Math.max(items.length - 1, 0)));
       else if (e.key === "k") setSel((s) => Math.max(s - 1, 0));
       else if (e.key === "r" || e.key === "a") {
@@ -96,6 +108,10 @@ export default function ReviewPage() {
   }, [items]);
 
   const pending = items.length;
+  const belowCount = items.filter((it) => Number(it.intent_confidence ?? 1) < threshold).length;
+  const visible = onlyBelow
+    ? items.filter((it) => Number(it.intent_confidence ?? 1) < threshold)
+    : items;
 
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink">
@@ -160,20 +176,38 @@ export default function ReviewPage() {
             <p className="text-sm text-muted">
               {pending === 0
                 ? "Inbox empty — enqueue an escalation via POST /review/enqueue or the triage page."
-                : `${pending} pending · j/k move · r approve · s escalate · e edit inline`}
+                : `${pending} pending · ${belowCount} below threshold ${threshold.toFixed(2)} · j/k move · r approve · s escalate · e edit inline`}
             </p>
+            <label className="flex items-center gap-2 text-sm text-muted">
+              <input
+                type="checkbox"
+                checked={onlyBelow}
+                onChange={(e) => setOnlyBelow(e.target.checked)}
+                className="size-4"
+              />
+              Show only below-threshold rows (client-side display filter)
+            </label>
             {error ? <p className="text-sm text-red-700 dark:text-red-300">{error}</p> : null}
-            {items.map((it, i) => (
-              <div key={it.id} onClick={() => setSel(i)}>
-                <ReviewRow
-                  item={it}
-                  selected={i === sel}
-                  now={now}
-                  reviewer={reviewer}
-                  onAction={act}
-                />
-              </div>
-            ))}
+            {visible.map((it) => {
+              const i = items.indexOf(it);
+              const below = Number(it.intent_confidence ?? 1) < threshold;
+              return (
+                <div key={it.id} onClick={() => setSel(i)}>
+                  {below ? (
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-300">
+                      Below threshold {threshold.toFixed(2)}
+                    </p>
+                  ) : null}
+                  <ReviewRow
+                    item={it}
+                    selected={i === sel}
+                    now={now}
+                    reviewer={reviewer}
+                    onAction={act}
+                  />
+                </div>
+              );
+            })}
           </section>
           <aside className="space-y-4">
             <ThresholdSlider value={threshold} onChange={setThreshold} />

@@ -83,5 +83,10 @@ export type EvalDone = {
 export const FASTAPI_URL =
   process.env.FASTAPI_URL || "http://127.0.0.1:8000";
 
+// NOTE: server-only BFF helpers live in ./lib/proxy.ts (imports next/server).
+// They are intentionally NOT re-exported here: lib.ts is also imported by
+// client components (type-only today), and a next/server import would break
+// the client bundle the day someone value-imports from here.
+
 // Shared SmartGrey-ported classnames helper (see ./lib/cn.ts).
 export { cn } from "./lib/cn";

@@ -59,9 +59,10 @@ export default function ThresholdSlider({
         </div>
       </dl>
       <p className="mt-3 text-xs text-muted">
-        Production gate 0.45 (src/agent.py low_conf): coverage 97.0%, abstains 6/200 to the
-        review queue. Raising the bar cuts auto-coverage for +0.01 acc — the risk dial.
-        Source: evaluation/virgin/thresholds.json.
+        Display filter for this inbox (client-side): rows below the slider are highlighted as
+        below-threshold. Production gate is fixed at 0.45 in src/agent.py low_conf — moving
+        this slider does not change serving policy. Reference grid: coverage 97.0% at 0.45
+        (6/200 abstain). Source: evaluation/virgin/thresholds.json (report-only analysis).
       </p>
     </div>
   );

@@ -333,7 +333,7 @@ export default function Page() {
     <div className="min-h-screen bg-canvas font-sans text-ink">
       <main className="mx-auto max-w-6xl px-4 py-6">
         {/* 1. Title block */}
-        <div>
+        <div id="triage" className="scroll-mt-20">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">
             Hiver Support Intelligence
           </p>
@@ -350,7 +350,7 @@ export default function Page() {
         </div>
 
         {/* 2. Tabs + liveness */}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div id="proof" className="mt-4 flex scroll-mt-20 flex-wrap items-center gap-2">
           <div className="inline-flex rounded-full border border-hairline-soft bg-paper p-1">
             {tabs.map((t) => (
               <button
@@ -373,7 +373,7 @@ export default function Page() {
         {tab === "review" ? <ReviewTab /> : null}
       </main>
 
-      <footer className="border-t border-line">
+      <footer id="eval" className="scroll-mt-20 border-t border-line">
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted">
           Local backend FastAPI 127.0.0.1:8000 · browser → /api/* → FastAPI · Groq key server-only.
         </p>

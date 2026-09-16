@@ -1,0 +1,33 @@
+# Hiver serving image — keep build context small and secret-free.
+# (Fixes D4: without this, docker build ships .venv/, 492MB raw dump, .git, node_modules.)
+.venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.graphifyignore
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+frontend-next/node_modules/
+frontend-next/.next/
+frontend-next/out/
+data/raw/
+data/traces.jsonl
+data/processed/review_queue.db
+data/processed/*inbound_pool*
+data/processed/*.parquet
+!data/processed/virgin_threads.parquet
+models/intent_virgin_setfit/
+research/
+searxng/
+.freebuff/
+.hyperresearch/
+.claude/
+graphify-out/cache/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+frontend-next/.env*.local

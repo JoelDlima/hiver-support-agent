@@ -36,12 +36,15 @@ BRANDS = {
         "legacy_index_dir": None,
         "sensitive_intents": {"delay_claim", "ticket_change_refund", "complaint_service", "accessibility_assistance"},
         "money_intents": {"delay_claim", "ticket_change_refund", "fare_ticketing"},
+        # Single source of truth with src/virgin_intents.py:SAFETY_ADDONS (agent
+        # prefers the module list; this copy is the fallback — keep in sync).
         "safety_addons": [
             "overcrowd",
             "overcrowded",
             "overcrowding",
             "packed",
             "rammed",
+            "crammed",
             "crush",
             "crushed",
             "crushing",
